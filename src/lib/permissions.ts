@@ -14,9 +14,9 @@ export const PERMISSIONS = {
       { code: 'billing.reverse', label: 'Reversar facturas' },
     ],
   },
-  // Estadísticas
+  // Insights
   statistics: {
-    label: '📊 Estadísticas',
+    label: '📊 Insights',
     perms: [
       { code: 'statistics.access',    label: 'Acceso al módulo' },
       { code: 'statistics.summary',   label: 'Ver resumen general' },
@@ -83,6 +83,19 @@ export const PERMISSIONS = {
       { code: 'staff.manage', label: 'Gestionar personal' },
     ],
   },
+  // Horarios Escolares
+  scheduling: {
+    label: '🏫 Horarios Escolares',
+    perms: [
+      { code: 'scheduling.access',    label: 'Acceso al módulo' },
+      { code: 'scheduling.configure', label: 'Configurar jornadas y maestros' },
+      { code: 'scheduling.view',      label: 'Ver horarios' },
+      { code: 'scheduling.generate',  label: 'Generar horarios' },
+      { code: 'scheduling.edit',      label: 'Editar borradores' },
+      { code: 'scheduling.approve',   label: 'Aprobar borradores' },
+      { code: 'scheduling.publish',   label: 'Publicar horario oficial' },
+    ],
+  },
 } as const;
 
 export type PermissionCode = string;
@@ -100,17 +113,7 @@ export const LEGACY_ROLES = [
   { name: 'viewer',    label: 'Visualizador' },
 ] as const;
 
-/** Permisos del rol (para el formulario de roles) */
-export const ROLE_PERMISSIONS = [
-  { code: 'facturas.ver',      label: '📄 Ver facturas' },
-  { code: 'facturas.crear',    label: '✏️ Crear facturas' },
-  { code: 'facturas.aplicar',  label: '✅ Aplicar facturas' },
-  { code: 'facturas.imprimir', label: '🖨️ Imprimir facturas' },
-  { code: 'facturas.anular',   label: '🚫 Anular facturas' },
-  { code: 'facturas.revertir', label: '↩️ Revertir facturas' },
-  { code: 'cajas.ver',         label: '👁️ Ver cajas' },
-  { code: 'cajas.abrir',       label: '🔓 Abrir caja' },
-  { code: 'cajas.cerrar',      label: '🔒 Cerrar caja' },
-  { code: 'pdv.acceso',        label: '🖥️ Acceso Punto de Venta' },
-  { code: 'estadisticas.ver',  label: '📊 Ver estadísticas' },
-] as const;
+/** Mapa plano de code → label para lookup rápido */
+export const PERMISSION_LABEL_MAP: Record<string, string> = Object.fromEntries(
+  Object.values(PERMISSIONS).flatMap(m => m.perms.map(p => [p.code, p.label]))
+);

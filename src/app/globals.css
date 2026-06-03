@@ -49,38 +49,40 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  /* SODISA brand: navy #0c3a5b, blue #4b94d0, light-blue #7fd3f1, orange #f9a24e */
+  --background: oklch(0.99 0 0);
+  --foreground: oklch(0.15 0.02 245);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --card-foreground: oklch(0.15 0.02 245);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.15 0.02 245);
+  --primary: oklch(0.27 0.075 245);        /* SODISA navy #0c3a5b */
+  --primary-foreground: oklch(0.98 0 0);
+  --secondary: oklch(0.96 0.005 245);
+  --secondary-foreground: oklch(0.27 0.075 245);
+  --muted: oklch(0.96 0.005 245);
+  --muted-foreground: oklch(0.52 0.025 245);
+  --accent: oklch(0.74 0.16 55);           /* SODISA orange #f9a24e */
+  --accent-foreground: oklch(0.15 0.02 245);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --border: oklch(0.91 0.008 245);
+  --input: oklch(0.91 0.008 245);
+  --ring: oklch(0.58 0.13 245);            /* SODISA blue #4b94d0 */
+  --chart-1: oklch(0.58 0.13 245);
+  --chart-2: oklch(0.74 0.16 55);
+  --chart-3: oklch(0.82 0.085 220);
+  --chart-4: oklch(0.45 0.10 245);
+  --chart-5: oklch(0.27 0.075 245);
+  --radius: 0.5rem;
+  /* Sidebar: SODISA dark navy */
+  --sidebar: oklch(0.22 0.065 245);        /* #0c3a5b roughly */
+  --sidebar-foreground: oklch(0.88 0.02 245);
+  --sidebar-primary: oklch(0.74 0.16 55);  /* orange for active */
+  --sidebar-primary-foreground: oklch(0.15 0.02 245);
+  --sidebar-accent: oklch(0.30 0.075 245);
+  --sidebar-accent-foreground: oklch(0.95 0.01 245);
+  --sidebar-border: oklch(0.32 0.06 245);
+  --sidebar-ring: oklch(0.58 0.13 245);
 }
 
 .dark {

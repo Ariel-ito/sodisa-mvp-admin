@@ -44,4 +44,5 @@ export async function adminFetch<T = unknown>(
 }
 
 /** Helper para el fetcher de SWR */
-export const swrFetcher = (path: string) => adminFetch(path);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const swrFetcher = (path: string): Promise<any> => adminFetch(path);

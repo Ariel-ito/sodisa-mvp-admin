@@ -2,6 +2,7 @@
 
 import { Suspense, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -53,11 +54,15 @@ function LoginForm() {
     <div className="flex min-h-screen">
       {/* Left panel — brand */}
       <div className="hidden lg:flex lg:w-[42%] flex-col justify-between bg-primary text-primary-foreground p-10">
-        <div className="flex items-center gap-3">
-          <div className="flex size-9 items-center justify-center rounded-xl bg-accent text-accent-foreground font-bold text-base">
-            S
-          </div>
-          <span className="font-semibold text-lg tracking-wide">SODISA</span>
+        <div className="flex items-center">
+          <Image
+            src="/logo-sodisa-blanco.png"
+            alt="SODISA"
+            width={160}
+            height={60}
+            className="h-10 w-auto"
+            priority
+          />
         </div>
 
         <div className="space-y-4">
@@ -78,11 +83,15 @@ function LoginForm() {
       <div className="flex flex-1 flex-col items-center justify-center px-6 bg-background">
         <div className="w-full max-w-sm space-y-8">
           {/* Mobile logo */}
-          <div className="flex items-center gap-3 lg:hidden">
-            <div className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-sm">
-              S
-            </div>
-            <span className="font-semibold text-base">SODISA Admin</span>
+          <div className="flex items-center lg:hidden">
+            <Image
+              src="/logo-sodisa.png"
+              alt="SODISA"
+              width={140}
+              height={53}
+              className="h-9 w-auto"
+              priority
+            />
           </div>
 
           <div className="space-y-1">

@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import { Building2, Users, Shield, LayoutDashboard, LogOut } from 'lucide-react';
@@ -46,14 +47,15 @@ export function Sidebar() {
     <aside className="flex h-full w-60 flex-col bg-sidebar text-sidebar-foreground shrink-0">
 
       {/* ── Logo ─────────────────────────────────────────────────── */}
-      <div className="flex h-14 items-center gap-3 px-4 border-b border-sidebar-border">
-        <div className="flex size-8 items-center justify-center rounded-lg bg-accent text-accent-foreground font-bold text-sm shrink-0">
-          S
-        </div>
-        <div className="flex flex-col leading-none">
-          <span className="font-semibold text-sm text-white">SODISA</span>
-          <span className="text-[10px] text-sidebar-foreground/50 uppercase tracking-widest">Panel Admin</span>
-        </div>
+      <div className="flex h-14 items-center px-4 border-b border-sidebar-border">
+        <Image
+          src="/logo-sodisa-blanco.png"
+          alt="SODISA"
+          width={130}
+          height={49}
+          className="h-7 w-auto select-none"
+          priority
+        />
       </div>
 
       {/* ── Nav ──────────────────────────────────────────────────── */}

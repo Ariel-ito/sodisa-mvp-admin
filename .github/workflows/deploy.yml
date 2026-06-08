@@ -24,6 +24,8 @@ jobs:
 
       - name: Build
         run: npm run build
+        env:
+          NEXT_PUBLIC_API_URL: https://app-sodisa-mvp-api.azurewebsites.net
 
       - name: Prepare standalone package
         run: |

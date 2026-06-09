@@ -205,10 +205,9 @@ export default function EmpresasPage() {
                 </div>
 
                 {/* Fila 2: host / db */}
-                <div className="text-xs text-muted-foreground">
-                  <span className="font-mono">{company.dbHost}</span>
-                  <span className="mx-1.5 text-muted-foreground/30">·</span>
-                  <span className="font-mono">{company.dbDatabase}</span>
+                <div className="text-xs text-muted-foreground space-y-0.5 overflow-hidden">
+                  <p className="font-mono truncate">{company.dbHost}</p>
+                  <p className="font-mono truncate text-muted-foreground/60">{company.dbDatabase}</p>
                 </div>
 
                 {/* Fila 3: conexión + acciones */}

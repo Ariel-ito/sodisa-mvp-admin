@@ -11,6 +11,7 @@ import { swrFetcher } from '@/lib/api';
 import { getUser } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Sparkline, type SparkPoint } from '@/components/empresas/Sparkline';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -32,6 +33,11 @@ interface Company {
 }
 
 interface UcaRow { id: number }
+
+interface PingHistoryEntry {
+  companyId: number;
+  logs: { ok: boolean; latencyMs: number | null }[];
+}
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -61,13 +67,32 @@ export default function DashboardPage() {
     if (u) setUserName(u.name.split(' ')[0]);
   }, []);
 
-  const { data: companies } = useSWR<Company[]>('/portal/companies', swrFetcher);
-  const { data: users }     = useSWR<unknown[]>('/portal/users',     swrFetcher);
-  const { data: roles }     = useSWR<unknown[]>('/portal/roles',     swrFetcher);
-  const { data: accesses }  = useSWR<UcaRow[]>('/portal/access',     swrFetcher);
-  const { data: health }    = useSWR<HealthData>('/health',          swrFetcher, { refreshInterval: 30_000 });
+  const { data: companies }   = useSWR<Company[]>('/portal/companies', swrFetcher);
+  const { data: users }       = useSWR<unknown[]>('/portal/users',     swrFetcher);
+  const { data: roles }       = useSWR<unknown[]>('/portal/roles',     swrFetcher);
+  const { data: accesses }    = useSWR<UcaRow[]>('/portal/access',     swrFetcher);
+  const { data: health }      = useSWR<HealthData>('/health',          swrFetcher, { refreshInterval: 30_000 });
+  const { data: pingHistory } = useSWR<PingHistoryEntry[]>(
+    '/portal/companies/ping-history-all?hours=2',
+    swrFetcher,
+    { refreshInterval: 5 * 60_000 },
+  );
 
-  const activeCompanies = (companies ?? []).filter((c) => c.isActive);
+  // Map companyId → sparkline points
+  const sparkMap = new Map<number, SparkPoint[]>(
+    (pingHistory ?? []).map(e => [e.companyId, e.logs]),
+  );
+
+  // Fallos primero, luego OK, luego sin datos — para que el dashboard sea un health check real
+  const activeCompanies = (companies ?? [])
+    .filter((c) => c.isActive)
+    .sort((a, b) => {
+      const rank = (c: Company) =>
+        c.lastPingAt === null ? 1 :   // sin datos → al final
+        !c.lastPingOk        ? -1 :   // fallo → primero
+        0;                            // ok → medio
+      return rank(a) - rank(b);
+    });
 
   const stats = [
     {
@@ -231,43 +256,45 @@ export default function DashboardPage() {
               Ver todas →
             </Link>
           </div>
-          <div className="rounded-xl border bg-card shadow-sm divide-y">
+          <div className="rounded-xl border bg-card shadow-sm divide-y max-h-72 overflow-y-auto">
             {!companies ? (
               <div className="px-4 py-6 text-center text-sm text-muted-foreground">Cargando…</div>
             ) : activeCompanies.length === 0 ? (
               <div className="px-4 py-6 text-center text-sm text-muted-foreground">No hay empresas activas.</div>
             ) : (
-              activeCompanies.slice(0, 5).map((company) => (
-                <div key={company.id} className="flex items-center justify-between px-4 py-3">
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <div className="size-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0 text-xs font-bold text-primary">
-                      {company.name.charAt(0).toUpperCase()}
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium truncate">{company.name}</p>
-                      <p className="text-xs text-muted-foreground font-mono">{company.slug}</p>
+              activeCompanies.map((company) => (
+                <Link
+                  key={company.id}
+                  href={`/empresas/${company.id}`}
+                  className="flex items-center gap-3 px-4 py-3 hover:bg-muted/40 transition-colors"
+                >
+                  {/* Avatar */}
+                  <div className="size-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0 text-xs font-bold text-primary">
+                    {company.name.charAt(0).toUpperCase()}
+                  </div>
+
+                  {/* Nombre + estado actual */}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate leading-tight">{company.name}</p>
+                    <div className="flex items-center gap-1 mt-0.5">
+                      {company.lastPingAt === null ? (
+                        <span className="text-[10px] text-muted-foreground/40">sin datos</span>
+                      ) : company.lastPingOk ? (
+                        <span className="text-[10px] font-medium text-green-600 flex items-center gap-0.5">
+                          <Wifi className="size-2.5" />{company.lastPingMs}ms
+                        </span>
+                      ) : (
+                        <span className="text-[10px] font-medium text-red-500 flex items-center gap-0.5">
+                          <WifiOff className="size-2.5" />Sin conexión
+                        </span>
+                      )}
                     </div>
                   </div>
-                  {company.lastPingAt === null ? (
-                    <span className="text-xs text-muted-foreground/40">—</span>
-                  ) : company.lastPingOk ? (
-                    <span className="text-xs font-medium text-green-600 flex items-center gap-1">
-                      <Wifi className="size-3" />{company.lastPingMs}ms
-                    </span>
-                  ) : (
-                    <span className="text-xs font-medium text-red-500 flex items-center gap-1">
-                      <WifiOff className="size-3" />Sin conexión
-                    </span>
-                  )}
-                </div>
-              ))
-            )}
-            {activeCompanies.length > 5 && (
-              <div className="px-4 py-2.5 text-center">
-                <Link href="/empresas" className="text-xs text-muted-foreground hover:text-foreground">
-                  +{activeCompanies.length - 5} más →
+
+                  {/* Sparkline últimas 2h */}
+                  <Sparkline points={sparkMap.get(company.id) ?? []} />
                 </Link>
-              </div>
+              ))
             )}
           </div>
         </div>

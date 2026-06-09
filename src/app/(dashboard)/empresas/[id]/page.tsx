@@ -5,6 +5,7 @@ import useSWR from 'swr';
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
 import { EmpresaForm, CompanyData } from '@/components/empresas/EmpresaForm';
+import { PingHistoryChart } from '@/components/empresas/PingHistoryChart';
 import { swrFetcher } from '@/lib/api';
 
 export default function EditarEmpresaPage({ params }: { params: Promise<{ id: string }> }) {
@@ -29,7 +30,15 @@ export default function EditarEmpresaPage({ params }: { params: Promise<{ id: st
         </nav>
         <h1 className="text-2xl font-semibold">Editar empresa</h1>
       </div>
+
       <EmpresaForm mode="edit" initial={company} />
+
+      {/* Historial de pings */}
+      {company.id !== undefined && (
+        <div className="rounded-xl border bg-card shadow-sm p-5">
+          <PingHistoryChart companyId={company.id} />
+        </div>
+      )}
     </div>
   );
 }

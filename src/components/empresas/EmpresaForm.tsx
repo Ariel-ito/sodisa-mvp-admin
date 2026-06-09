@@ -46,7 +46,7 @@ export function EmpresaForm({ initial, mode }: Props) {
   const [saving, setSaving] = useState(false);
   const [testing, setTesting] = useState(false);
   const [syncing, setSyncing] = useState(false);
-  const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null);
+  const [testResult, setTestResult] = useState<{ ok: boolean; message: string } | null>(null);
   const [syncResult, setSyncResult] = useState<string | null>(null);
 
   function set<K extends keyof CompanyData>(key: K, value: CompanyData[K]) {
@@ -81,13 +81,13 @@ export function EmpresaForm({ initial, mode }: Props) {
     setTesting(true);
     setTestResult(null);
     try {
-      const result = await adminFetch<{ success: boolean; message: string }>(
+      const result = await adminFetch<{ ok: boolean; message: string }>(
         `/portal/companies/${initial!.id}/test-connection`,
         { method: 'POST' }
       );
       setTestResult(result);
     } catch (err) {
-      setTestResult({ success: false, message: err instanceof ApiError ? err.message : 'Error desconocido' });
+      setTestResult({ ok: false, message: err instanceof ApiError ? err.message : 'Error desconocido' });
     } finally {
       setTesting(false);
     }
@@ -207,8 +207,8 @@ export function EmpresaForm({ initial, mode }: Props) {
       </div>
 
       {testResult && (
-        <div className={`rounded-md px-3 py-2 text-sm ${testResult.success ? 'bg-green-50 text-green-700' : 'bg-destructive/10 text-destructive'}`}>
-          {testResult.success ? '✅ ' : '❌ '}{testResult.message}
+        <div className={`rounded-md px-3 py-2 text-sm ${testResult.ok ? 'bg-green-50 text-green-700' : 'bg-destructive/10 text-destructive'}`}>
+          {testResult.ok ? '✅ ' : '❌ '}{testResult.message}
         </div>
       )}
       {syncResult && (

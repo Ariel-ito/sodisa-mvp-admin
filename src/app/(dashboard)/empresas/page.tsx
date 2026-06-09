@@ -10,6 +10,12 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { swrFetcher, adminFetch } from '@/lib/api';
+import { Sparkline, type SparkPoint } from '@/components/empresas/Sparkline';
+
+interface PingHistoryEntry {
+  companyId: number;
+  logs: SparkPoint[];
+}
 
 interface Company {
   id: number;
@@ -78,6 +84,14 @@ function PingStatus({ company, refreshing }: { company: Company; refreshing: boo
 
 export default function EmpresasPage() {
   const { data: companies, isLoading, mutate } = useSWR<Company[]>('/portal/companies', swrFetcher);
+  const { data: pingHistory } = useSWR<PingHistoryEntry[]>(
+    '/portal/companies/ping-history-all?hours=2',
+    swrFetcher,
+    { refreshInterval: 5 * 60_000 },
+  );
+  const sparkMap = new Map<number, SparkPoint[]>(
+    (pingHistory ?? []).map(e => [e.companyId, e.logs]),
+  );
   const [refreshing, setRefreshing] = useState<Record<number, boolean>>({});
 
   async function forceRefresh(id: number) {
@@ -119,6 +133,7 @@ export default function EmpresasPage() {
                     Última conexión
                     <span className="ml-1 text-[10px] font-normal text-muted-foreground/60">(auto · 5 min)</span>
                   </TableHead>
+                  <TableHead className="text-muted-foreground/60 text-xs font-normal">Últimas 2h</TableHead>
                   <TableHead className="text-right">Acciones</TableHead>
                 </TableRow>
               </TableHeader>
@@ -162,6 +177,11 @@ export default function EmpresasPage() {
                           <RotateCw className="size-3" />
                         </button>
                       </div>
+                    </TableCell>
+
+                    {/* Sparkline */}
+                    <TableCell>
+                      <Sparkline points={sparkMap.get(company.id) ?? []} />
                     </TableCell>
 
                     <TableCell>
@@ -210,9 +230,9 @@ export default function EmpresasPage() {
                   <p className="font-mono truncate text-muted-foreground/60">{company.dbDatabase}</p>
                 </div>
 
-                {/* Fila 3: conexión + acciones */}
+                {/* Fila 3: conexión + sparkline + acciones */}
                 <div className="flex items-center justify-between gap-2 pt-2 border-t">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 min-w-0">
                     <PingStatus company={company} refreshing={refreshing[company.id] ?? false} />
                     <button
                       onClick={() => forceRefresh(company.id)}
@@ -223,6 +243,7 @@ export default function EmpresasPage() {
                       <RotateCw className="size-3" />
                     </button>
                   </div>
+                  <Sparkline points={sparkMap.get(company.id) ?? []} width={56} />
                   <div className="flex items-center gap-1">
                     <Button variant="ghost" size="icon-sm" title="Gestionar usuarios"
                       nativeButton={false} render={<Link href={`/empresas/${company.id}/usuarios`} />}>

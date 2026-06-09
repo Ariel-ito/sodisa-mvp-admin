@@ -1,6 +1,7 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
+import { Menu } from 'lucide-react';
 import useSWR from 'swr';
 import { swrFetcher } from '@/lib/api';
 
@@ -42,7 +43,7 @@ function HealthBadge() {
     return (
       <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
         <span className="size-1.5 rounded-full bg-muted-foreground/40 animate-pulse" />
-        <span>Verificando…</span>
+        <span className="hidden sm:inline">Verificando…</span>
       </div>
     );
   }
@@ -60,20 +61,40 @@ function HealthBadge() {
       }`}
     >
       <span className={`size-1.5 rounded-full ${ok ? 'bg-green-500' : 'bg-red-500'}`} />
-      {ok ? `API OK${latency ? ` · ${latency}ms` : ''}` : 'API Error'}
+      {/* Texto completo en sm+, abreviado en mobile */}
+      <span className="hidden sm:inline">
+        {ok ? `API OK${latency ? ` · ${latency}ms` : ''}` : 'API Error'}
+      </span>
+      <span className="sm:hidden">
+        {ok ? 'OK' : 'Error'}
+      </span>
     </div>
   );
 }
 
 // ── TopBar ────────────────────────────────────────────────────────────────────
 
-export function TopBar() {
+interface Props {
+  onMenuOpen?: () => void;
+}
+
+export function TopBar({ onMenuOpen }: Props) {
   const title = usePageTitle();
 
   return (
-    <header className="flex h-14 items-center border-b bg-background px-6 gap-4 shrink-0">
+    <header className="flex h-14 items-center border-b bg-background px-4 md:px-6 gap-3 shrink-0">
+
+      {/* Hamburger: solo visible en mobile */}
+      <button
+        className="flex items-center justify-center size-8 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors md:hidden shrink-0"
+        onClick={onMenuOpen}
+        aria-label="Abrir menú"
+      >
+        <Menu className="size-5" />
+      </button>
+
       {/* Page title */}
-      <h1 className="flex-1 text-sm font-semibold text-foreground">{title}</h1>
+      <h1 className="flex-1 text-sm font-semibold text-foreground truncate">{title}</h1>
 
       {/* API health */}
       <HealthBadge />

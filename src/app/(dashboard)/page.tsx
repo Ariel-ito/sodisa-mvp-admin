@@ -128,19 +128,19 @@ export default function DashboardPage() {
           </p>
         </div>
 
-        {/* Quick actions */}
-        <div className="flex items-center gap-2 flex-wrap justify-end">
+        {/* Quick actions — iconos solos en mobile, texto en sm+ */}
+        <div className="flex items-center gap-2 flex-wrap justify-end shrink-0">
           <Button variant="outline" size="sm" nativeButton={false} render={<Link href="/empresas/nueva" />}>
             <Plus className="size-3.5" />
-            Empresa
+            <span className="hidden sm:inline">Empresa</span>
           </Button>
           <Button variant="outline" size="sm" nativeButton={false} render={<Link href="/usuarios/nuevo" />}>
             <Plus className="size-3.5" />
-            Usuario
+            <span className="hidden sm:inline">Usuario</span>
           </Button>
           <Button size="sm" nativeButton={false} render={<Link href="/roles/nuevo" />}>
             <Plus className="size-3.5" />
-            Rol
+            <span className="hidden sm:inline">Rol</span>
           </Button>
         </div>
       </div>

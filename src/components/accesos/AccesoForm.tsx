@@ -23,7 +23,10 @@ export interface UcaData {
   isActive: boolean;
   user?: { name: string; email: string };
   activeRoles?: string[];
+  /** Direct permission codes (from user_company_permissions) */
   activePermissions?: string[];
+  /** Which of those direct permissions originated from a role */
+  activePermissionsFromRole?: string[];
   grantedUntil?: string | null;
   reason?: string | null;
 }
@@ -37,18 +40,31 @@ interface Props {
 export function AccesoForm({ initial, companyId, mode }: Props) {
   const router = useRouter();
 
-  const [email, setEmail] = useState(initial?.user?.email ?? '');
-  const [name, setName] = useState(initial?.user?.name ?? '');
-  const [password, setPassword] = useState('');
-  const [externalId, setExternalId] = useState(initial?.externalId ?? '');
+  const [email, setEmail]             = useState(initial?.user?.email ?? '');
+  const [name, setName]               = useState(initial?.user?.name ?? '');
+  const [password, setPassword]       = useState('');
+  const [externalId, setExternalId]   = useState(initial?.externalId ?? '');
   const [supervisorPin, setSupervisorPin] = useState(initial?.supervisorPin ?? '');
-  const [isActive, setIsActive] = useState(initial?.isActive ?? true);
-  const [roles, setRoles] = useState<string[]>(initial?.activeRoles ?? []);
+  const [isActive, setIsActive]       = useState(initial?.isActive ?? true);
+  const [roles, setRoles]             = useState<string[]>(initial?.activeRoles ?? []);
   const [permissions, setPermissions] = useState<string[]>(initial?.activePermissions ?? []);
   const [grantedUntil, setGrantedUntil] = useState(initial?.grantedUntil ?? '');
-  const [reason, setReason] = useState(initial?.reason ?? '');
+  const [reason, setReason]           = useState(initial?.reason ?? '');
 
-  const [saving, setSaving] = useState(false);
+  /**
+   * Codes that are direct permissions AND came from a role (sourceRoleId != null).
+   * Loaded from the API — purely for the "ROL" badge in PermisosGrid.
+   */
+  const [fromRolePermissions] = useState<string[]>(initial?.activePermissionsFromRole ?? []);
+
+  /**
+   * Codes that will be added as direct permissions when saved
+   * (from roles added in THIS editing session, not yet in the DB).
+   * Used for the "ROL +" preview badges in PermisosGrid.
+   */
+  const [pendingRolePermissions, setPendingRolePermissions] = useState<string[]>([]);
+
+  const [saving, setSaving]           = useState(false);
   const [resettingPwd, setResettingPwd] = useState(false);
   const [bicModalOpen, setBicModalOpen] = useState(false);
 
@@ -64,7 +80,7 @@ export function AccesoForm({ initial, companyId, mode }: Props) {
             email,
             name:     name || undefined,
             password: password || undefined,
-            externalId:   externalId   || undefined,
+            externalId:    externalId    || undefined,
             supervisorPin: supervisorPin || undefined,
             isActive,
           }),
@@ -72,19 +88,21 @@ export function AccesoForm({ initial, companyId, mode }: Props) {
         toast.success('Acceso creado correctamente');
         router.push(`/empresas/${companyId}/usuarios`);
       } else {
-        // Save basic info + roles + permissions in parallel
+        // 1. Basic info
         await adminFetch(`/portal/access/${initial!.id}`, {
           method: 'PUT',
           body: JSON.stringify({
-            externalId: externalId || null,
+            externalId:    externalId    || null,
             supervisorPin: supervisorPin || null,
             isActive,
           }),
         });
+        // 2. Roles — syncRoles auto-copies/removes the role's permissions in the backend
         await adminFetch(`/portal/access/${initial!.id}/roles`, {
           method: 'PUT',
           body: JSON.stringify({ roles }),
         });
+        // 3. Direct permission overrides (only the manually managed ones)
         await adminFetch(`/portal/access/${initial!.id}/permissions`, {
           method: 'PUT',
           body: JSON.stringify({
@@ -100,7 +118,6 @@ export function AccesoForm({ initial, companyId, mode }: Props) {
           });
         }
         toast.success('Acceso actualizado correctamente');
-        // Limpiar caché de SWR para que al volver al edit page obtenga datos frescos
         await mutate(`/portal/access/${initial!.id}`);
         router.push(`/empresas/${companyId}/usuarios`);
       }
@@ -247,17 +264,21 @@ export function AccesoForm({ initial, companyId, mode }: Props) {
           <RolesSection
             selected={roles}
             onChange={setRoles}
-            permissions={permissions}
-            onPermissionsChange={setPermissions}
+            onPendingRolePermissionsChange={setPendingRolePermissions}
           />
         </section>
       )}
 
-      {/* Permisos directos — solo en modo edición */}
+      {/* Permisos — solo en modo edición */}
       {mode === 'edit' && (
         <section className="flex flex-col gap-4">
-          <h2 className="font-medium text-base border-b pb-2">Permisos directos por módulo</h2>
-          <PermisosGrid selected={permissions} onChange={setPermissions} />
+          <h2 className="font-medium text-base border-b pb-2">Permisos por módulo</h2>
+          <PermisosGrid
+            selected={permissions}
+            onChange={setPermissions}
+            fromRolePermissions={fromRolePermissions}
+            pendingRolePermissions={pendingRolePermissions}
+          />
         </section>
       )}
 

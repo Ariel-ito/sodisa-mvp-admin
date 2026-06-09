@@ -18,7 +18,12 @@ interface ApiUca {
   userName?: string;
   userEmail?: string;
   roles?: string[];
-  permissions?: { code: string; grantedUntil?: string | null; reason?: string | null }[];
+  permissions?: {
+    code: string;
+    grantedUntil?: string | null;
+    reason?: string | null;
+    fromRole?: boolean;
+  }[];
 }
 
 export default function EditarAccesoPage({
@@ -53,7 +58,8 @@ export default function EditarAccesoPage({
     isActive:      raw.isActive,
     user:          raw.userName ? { name: raw.userName, email: raw.userEmail ?? '' } : undefined,
     activeRoles:   raw.roles ?? [],
-    activePermissions: (raw.permissions ?? []).map(p => p.code),
+    activePermissions:         (raw.permissions ?? []).map(p => p.code),
+    activePermissionsFromRole: (raw.permissions ?? []).filter(p => p.fromRole).map(p => p.code),
     // grantedUntil y reason son globales al set de permisos (todos comparten el mismo valor)
     grantedUntil:  raw.permissions?.[0]?.grantedUntil ?? null,
     reason:        raw.permissions?.[0]?.reason ?? null,

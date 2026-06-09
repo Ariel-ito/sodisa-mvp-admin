@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import useSWR from 'swr';
 import { swrFetcher } from '@/lib/api';
 import { LEGACY_ROLES, PERMISSION_LABEL_MAP } from '@/lib/permissions';
@@ -35,51 +35,54 @@ interface PendingToggle {
 interface Props {
   selected: string[];
   onChange: (roles: string[]) => void;
-  permissions: string[];
-  onPermissionsChange: (perms: string[]) => void;
+  /**
+   * Called whenever the set of permissions from currently-selected roles changes.
+   * Used by AccesoForm to show "pending" badges in PermisosGrid before saving.
+   */
+  onPendingRolePermissionsChange?: (perms: string[]) => void;
 }
 
-export function RolesSection({ selected, onChange, permissions, onPermissionsChange }: Props) {
+export function RolesSection({ selected, onChange, onPendingRolePermissionsChange }: Props) {
   const { data: apiRoles } = useSWR<ApiRole[]>('/portal/roles', swrFetcher);
   const [pending, setPending] = useState<PendingToggle | null>(null);
+
+  // Emit the union of all permissions from currently-selected roles for preview
+  useEffect(() => {
+    if (!onPendingRolePermissionsChange) return;
+    const perms = new Set<string>();
+    for (const roleName of selected) {
+      const role = apiRoles?.find(r => r.name === roleName);
+      if (role) role.permissions.forEach(p => perms.add(p));
+    }
+    onPendingRolePermissionsChange(Array.from(perms));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selected, apiRoles]);
 
   function handleToggle(roleName: string) {
     const adding = !selected.includes(roleName);
     const roleData = apiRoles?.find(r => r.name === roleName);
     const rolePerms = roleData?.permissions ?? [];
 
+    // Always show a confirmation when the role has permissions
     if (rolePerms.length > 0) {
       setPending({ roleName, adding, rolePerms });
     } else {
-      commitToggle(roleName, adding, false, []);
+      commitToggle(roleName, adding);
     }
   }
 
-  function commitToggle(roleName: string, adding: boolean, syncPerms: boolean, rolePerms: string[]) {
-    // Toggle the role
+  function commitToggle(roleName: string, adding: boolean) {
     if (adding) {
       onChange([...selected, roleName]);
     } else {
       onChange(selected.filter(r => r !== roleName));
     }
-
-    // Optionally sync permissions
-    if (syncPerms) {
-      if (adding) {
-        const toAdd = rolePerms.filter(p => !permissions.includes(p));
-        onPermissionsChange([...permissions, ...toAdd]);
-      } else {
-        onPermissionsChange(permissions.filter(p => !rolePerms.includes(p)));
-      }
-    }
-
     setPending(null);
   }
 
-  // Called when user dismisses dialog (Escape / backdrop) — treat as "No"
   function handleDialogClose() {
     if (!pending) return;
-    commitToggle(pending.roleName, pending.adding, false, pending.rolePerms);
+    commitToggle(pending.roleName, pending.adding);
   }
 
   return (
@@ -105,14 +108,22 @@ export function RolesSection({ selected, onChange, permissions, onPermissionsCha
             <>
               <DialogHeader>
                 <DialogTitle>
-                  {pending.adding ? 'Agregar permisos del rol' : 'Quitar permisos del rol'}
+                  {pending.adding ? 'Agregar rol' : 'Quitar rol'}
                 </DialogTitle>
                 <DialogDescription>
-                  El rol <strong className="text-foreground">{getRoleLabel(pending.roleName)}</strong>{' '}
-                  incluye {pending.rolePerms.length} permiso(s).{' '}
-                  {pending.adding
-                    ? '¿Deseas agregarlos también a los permisos directos del usuario?'
-                    : '¿Deseas quitarlos también de los permisos directos del usuario?'}
+                  {pending.adding ? (
+                    <>
+                      El rol <strong className="text-foreground">{getRoleLabel(pending.roleName)}</strong>{' '}
+                      incluye {pending.rolePerms.length} permiso(s) que se copiarán como
+                      permisos directos al guardar. Podrás quitarlos individualmente después.
+                    </>
+                  ) : (
+                    <>
+                      Al quitar el rol <strong className="text-foreground">{getRoleLabel(pending.roleName)}</strong>{' '}
+                      se eliminarán sus {pending.rolePerms.length} permiso(s) asociados que no
+                      hayan sido modificados manualmente.
+                    </>
+                  )}
                 </DialogDescription>
               </DialogHeader>
 
@@ -127,14 +138,14 @@ export function RolesSection({ selected, onChange, permissions, onPermissionsCha
               <DialogFooter>
                 <Button
                   variant="outline"
-                  onClick={() => commitToggle(pending.roleName, pending.adding, false, pending.rolePerms)}
+                  onClick={() => setPending(null)}
                 >
-                  No, solo el rol
+                  Cancelar
                 </Button>
                 <Button
-                  onClick={() => commitToggle(pending.roleName, pending.adding, true, pending.rolePerms)}
+                  onClick={() => commitToggle(pending.roleName, pending.adding)}
                 >
-                  Sí, {pending.adding ? 'agregar' : 'quitar'} permisos
+                  {pending.adding ? 'Sí, agregar rol' : 'Sí, quitar rol'}
                 </Button>
               </DialogFooter>
             </>

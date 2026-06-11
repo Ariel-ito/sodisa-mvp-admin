@@ -85,11 +85,11 @@ export function Sidebar({ isOpen = false, onClose }: Props) {
         {/* ── Logo ─────────────────────────────────────────────────── */}
         <div className="flex h-14 items-center px-4 border-b border-sidebar-border shrink-0">
           <Image
-            src="/logo-sodisa-blanco.png"
+            src="/logo-sodisa-isotipo-blanco.png"
             alt="SODISA"
-            width={130}
-            height={49}
-            className="h-7 w-auto select-none"
+            width={40}
+            height={40}
+            className="h-8 w-auto select-none"
             priority
           />
         </div>

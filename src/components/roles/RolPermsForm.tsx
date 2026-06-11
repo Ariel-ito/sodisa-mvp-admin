@@ -10,6 +10,7 @@ import { PermisosGrid } from '@/components/accesos/PermisosGrid';
 import { PERMISSION_LABEL_MAP } from '@/lib/permissions';
 import { adminFetch, ApiError } from '@/lib/api';
 import { toast } from 'sonner';
+import { Banner } from '@/components/ui/Banner';
 import { Loader2 } from 'lucide-react';
 import {
   Dialog,
@@ -47,12 +48,14 @@ export function RolPermsForm({ initial, mode }: Props) {
   const [description, setDescription] = useState(initial?.description ?? '');
   const [permissions, setPermissions] = useState<string[]>(initial?.permissions ?? []);
   const [saving, setSaving]           = useState(false);
+  const [formError, setFormError]     = useState<string | null>(null);
   const [propagating, setPropagating] = useState(false);
   const [propagateInfo, setPropagateInfo] = useState<PropagateInfo | null>(null);
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
+    setFormError(null);
     try {
       const payload = { name, description, permissions, type: 'company' };
 
@@ -87,7 +90,7 @@ export function RolPermsForm({ initial, mode }: Props) {
         router.push('/roles');
       }
     } catch (err) {
-      toast.error('Error al guardar', { description: err instanceof ApiError ? err.message : 'Error desconocido' });
+      setFormError(err instanceof ApiError ? err.message : 'Error desconocido');
     } finally {
       setSaving(false);
     }
@@ -126,6 +129,14 @@ export function RolPermsForm({ initial, mode }: Props) {
   return (
     <>
       <form onSubmit={handleSave} className="flex flex-col gap-5 max-w-4xl">
+        {formError && (
+          <Banner
+            variant="error"
+            title="Error al guardar"
+            message={formError}
+            onDismiss={() => setFormError(null)}
+          />
+        )}
         <div className="grid grid-cols-1 gap-4">
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="name">Nombre interno *</Label>

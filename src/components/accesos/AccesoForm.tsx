@@ -11,6 +11,7 @@ import { RolesSection } from './RolesSection';
 import { PermisosGrid } from './PermisosGrid';
 import { adminFetch, ApiError } from '@/lib/api';
 import { toast } from 'sonner';
+import { Banner } from '@/components/ui/Banner';
 import { Loader2, Search, KeyRound } from 'lucide-react';
 import { BicSearchModal } from './BicSearchModal';
 
@@ -65,12 +66,14 @@ export function AccesoForm({ initial, companyId, mode }: Props) {
   const [pendingRolePermissions, setPendingRolePermissions] = useState<string[]>([]);
 
   const [saving, setSaving]           = useState(false);
+  const [formError, setFormError]     = useState<string | null>(null);
   const [resettingPwd, setResettingPwd] = useState(false);
   const [bicModalOpen, setBicModalOpen] = useState(false);
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
+    setFormError(null);
     try {
       if (mode === 'create') {
         await adminFetch('/portal/access', {
@@ -122,7 +125,7 @@ export function AccesoForm({ initial, companyId, mode }: Props) {
         router.push(`/empresas/${companyId}/usuarios`);
       }
     } catch (err) {
-      toast.error('Error al guardar', { description: err instanceof ApiError ? err.message : 'Error desconocido' });
+      setFormError(err instanceof ApiError ? err.message : 'Error desconocido');
     } finally {
       setSaving(false);
     }
@@ -155,6 +158,14 @@ export function AccesoForm({ initial, companyId, mode }: Props) {
 
   return (
     <form onSubmit={handleSave} className="flex flex-col gap-6 max-w-4xl">
+      {formError && (
+        <Banner
+          variant="error"
+          title="Error al guardar"
+          message={formError}
+          onDismiss={() => setFormError(null)}
+        />
+      )}
       {/* Información del usuario */}
       <section className="flex flex-col gap-4">
         <h2 className="font-medium text-base border-b pb-2">Información del usuario</h2>

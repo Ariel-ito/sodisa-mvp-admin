@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { adminFetch, ApiError } from '@/lib/api';
 import { toast } from 'sonner';
+import { Banner } from '@/components/ui/Banner';
 import { Loader2, Wifi, RefreshCw } from 'lucide-react';
 
 /** Matches the Company entity: dbUsername / dbDatabase (not dbUser/dbName) */
@@ -44,18 +45,23 @@ export function EmpresaForm({ initial, mode }: Props) {
     }
   );
   const [saving, setSaving] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
   const [testing, setTesting] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [testResult, setTestResult] = useState<{ ok: boolean; message: string } | null>(null);
   const [syncResult, setSyncResult] = useState<string | null>(null);
+  const [syncError, setSyncError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Partial<Record<keyof CompanyData, string>>>({});
 
   function set<K extends keyof CompanyData>(key: K, value: CompanyData[K]) {
     setForm(prev => ({ ...prev, [key]: value }));
+    if (fieldErrors[key]) setFieldErrors(prev => ({ ...prev, [key]: undefined }));
   }
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
+    setFormError(null);
     try {
       const payload = { ...form };
       if (mode === 'edit' && !payload.dbPassword) {
@@ -71,7 +77,17 @@ export function EmpresaForm({ initial, mode }: Props) {
       }
       router.push('/empresas');
     } catch (err) {
-      toast.error('Error al guardar', { description: err instanceof ApiError ? err.message : 'Error desconocido' });
+      if (err instanceof ApiError && err.status === 409) {
+        const fields = (err.data?.fields as string[] | undefined) ?? [];
+        if (fields.length) {
+          const errs: Partial<Record<keyof CompanyData, string>> = {};
+          if (fields.includes('name')) errs.name = 'Ya existe una empresa con este nombre.';
+          if (fields.includes('slug')) errs.slug = 'Ya existe una empresa con este slug.';
+          setFieldErrors(errs);
+          return;
+        }
+      }
+      setFormError(err instanceof ApiError ? err.message : 'Error desconocido');
     } finally {
       setSaving(false);
     }
@@ -96,6 +112,7 @@ export function EmpresaForm({ initial, mode }: Props) {
   async function handleSync() {
     setSyncing(true);
     setSyncResult(null);
+    setSyncError(null);
     try {
       const result = await adminFetch<{ created: number; linked: number; skipped: number }>(
         `/portal/companies/${initial!.id}/sync-users`,
@@ -104,7 +121,7 @@ export function EmpresaForm({ initial, mode }: Props) {
       setSyncResult(`Creados: ${result.created} | Vinculados: ${result.linked} | Omitidos: ${result.skipped}`);
       toast.success('Sincronización completada');
     } catch (err) {
-      toast.error('Error en sincronización', { description: err instanceof ApiError ? err.message : 'Error desconocido' });
+      setSyncError(err instanceof ApiError ? err.message : 'Error desconocido');
     } finally {
       setSyncing(false);
     }
@@ -112,17 +129,39 @@ export function EmpresaForm({ initial, mode }: Props) {
 
   return (
     <form onSubmit={handleSave} className="flex flex-col gap-6 max-w-2xl">
+      {formError && (
+        <Banner
+          variant="error"
+          title="Error al guardar"
+          message={formError}
+          onDismiss={() => setFormError(null)}
+        />
+      )}
       {/* Información general */}
       <section className="flex flex-col gap-4">
         <h2 className="font-medium text-base border-b pb-2">Información general</h2>
         <div className="grid grid-cols-2 gap-4">
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="name">Nombre *</Label>
-            <Input id="name" value={form.name} onChange={e => set('name', e.target.value)} required />
+            <Input
+              id="name"
+              value={form.name}
+              onChange={e => set('name', e.target.value)}
+              required
+              className={fieldErrors.name ? 'border-destructive focus-visible:ring-destructive' : ''}
+            />
+            {fieldErrors.name && <p className="text-xs text-destructive">{fieldErrors.name}</p>}
           </div>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="slug">Slug</Label>
-            <Input id="slug" value={form.slug} onChange={e => set('slug', e.target.value)} placeholder="auto-generado si vacío" />
+            <Input
+              id="slug"
+              value={form.slug}
+              onChange={e => set('slug', e.target.value)}
+              placeholder="auto-generado si vacío"
+              className={fieldErrors.slug ? 'border-destructive focus-visible:ring-destructive' : ''}
+            />
+            {fieldErrors.slug && <p className="text-xs text-destructive">{fieldErrors.slug}</p>}
           </div>
           <div className="col-span-2 flex flex-col gap-1.5">
             <Label htmlFor="emailDomain">Dominio de email</Label>
@@ -215,6 +254,14 @@ export function EmpresaForm({ initial, mode }: Props) {
         <div className="rounded-md bg-blue-50 text-blue-700 px-3 py-2 text-sm">
           Sincronización completada — {syncResult}
         </div>
+      )}
+      {syncError && (
+        <Banner
+          variant="error"
+          title="Error en sincronización"
+          message={syncError}
+          onDismiss={() => setSyncError(null)}
+        />
       )}
     </form>
   );

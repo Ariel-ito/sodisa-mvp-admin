@@ -17,6 +17,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "SODISA Admin",
   description: "Panel de administración SODISA",
+  icons: {
+    icon: '/Logo-SODISA_favicon32x32.ico',
+  },
 };
 
 export default function RootLayout({

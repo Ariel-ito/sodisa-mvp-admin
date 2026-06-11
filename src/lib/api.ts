@@ -1,4 +1,4 @@
-import { getToken } from './auth';
+import { getToken, clearToken } from './auth';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
 
@@ -6,6 +6,7 @@ export class ApiError extends Error {
   constructor(
     public readonly status: number,
     message: string,
+    public readonly data?: Record<string, unknown>,
   ) {
     super(message);
     this.name = 'ApiError';
@@ -29,12 +30,20 @@ export async function adminFetch<T = unknown>(
   });
 
   if (!res.ok) {
+    if (res.status === 401) {
+      clearToken();
+      if (typeof window !== 'undefined') {
+        window.location.href = '/login';
+      }
+      throw new ApiError(401, 'Sesión expirada');
+    }
     let message = `Error ${res.status}`;
+    let data: Record<string, unknown> | undefined;
     try {
-      const body = await res.json();
-      message = body?.message ?? message;
+      data = await res.json();
+      message = (data?.message as string) ?? message;
     } catch { /* ignore */ }
-    throw new ApiError(res.status, message);
+    throw new ApiError(res.status, message, data);
   }
 
   // 204 No Content

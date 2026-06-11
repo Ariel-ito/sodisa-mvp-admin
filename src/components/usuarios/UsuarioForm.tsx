@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { adminFetch, ApiError } from '@/lib/api';
 import { toast } from 'sonner';
+import { Banner } from '@/components/ui/Banner';
 import { Loader2 } from 'lucide-react';
 import { UserEmpresasSection } from './UserEmpresasSection';
 
@@ -30,6 +31,7 @@ export function UsuarioForm({ initial, mode }: Props) {
     initial ?? { name: '', email: '', role: 'admin', isActive: true, password: '' }
   );
   const [saving, setSaving] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
 
   function set<K extends keyof PortalUserData>(key: K, value: PortalUserData[K]) {
     setForm(prev => ({ ...prev, [key]: value }));
@@ -38,6 +40,7 @@ export function UsuarioForm({ initial, mode }: Props) {
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
+    setFormError(null);
     try {
       const payload: Partial<PortalUserData> = { ...form };
       if (mode === 'edit' && !payload.password) delete payload.password;
@@ -51,7 +54,7 @@ export function UsuarioForm({ initial, mode }: Props) {
       }
       router.push('/usuarios');
     } catch (err) {
-      toast.error('Error al guardar', { description: err instanceof ApiError ? err.message : 'Error desconocido' });
+      setFormError(err instanceof ApiError ? err.message : 'Error desconocido');
     } finally {
       setSaving(false);
     }
@@ -59,6 +62,14 @@ export function UsuarioForm({ initial, mode }: Props) {
 
   return (
     <form onSubmit={handleSave} className="flex flex-col gap-5 max-w-2xl">
+      {formError && (
+        <Banner
+          variant="error"
+          title="Error al guardar"
+          message={formError}
+          onDismiss={() => setFormError(null)}
+        />
+      )}
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="name">Nombre completo *</Label>
         <Input id="name" value={form.name} onChange={e => set('name', e.target.value)} required />

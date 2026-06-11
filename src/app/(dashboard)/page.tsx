@@ -16,6 +16,7 @@ import { Sparkline, type SparkPoint } from '@/components/empresas/Sparkline';
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 interface HealthData {
+  version: string;
   status: 'ok' | 'degraded';
   uptime: number;
   database: { status: 'ok' | 'error'; latencyMs: number | null };
@@ -207,6 +208,9 @@ export default function DashboardPage() {
               <div className="flex items-center gap-2.5">
                 <div className={`size-2 rounded-full shrink-0 ${apiOk ? 'bg-green-500' : 'bg-red-500'}`} />
                 <span className="text-sm font-medium">API</span>
+                {health?.version && (
+                  <span className="text-xs text-muted-foreground">v{health.version}</span>
+                )}
               </div>
               <Badge variant={apiOk ? 'default' : 'destructive'} className="text-xs">
                 {health ? (apiOk ? 'Operativo' : 'Degradado') : '—'}

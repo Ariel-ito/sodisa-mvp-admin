@@ -1,33 +1,50 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { jwtVerify } from 'jose';
 
 const PUBLIC_PATHS = ['/login', '/api/auth'];
+const secret       = new TextEncoder().encode(process.env.JWT_SECRET ?? '');
 
-export function middleware(request: NextRequest) {
+function redirectToLogin(request: NextRequest, pathname: string) {
+  const url = new URL('/login', request.url);
+  url.searchParams.set('from', pathname);
+  return NextResponse.redirect(url);
+}
+
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Dejar pasar rutas públicas y assets
   if (
-    PUBLIC_PATHS.some((p) => pathname.startsWith(p)) ||
+    PUBLIC_PATHS.some(p => pathname.startsWith(p)) ||
     pathname.startsWith('/_next') ||
     pathname.startsWith('/favicon')
   ) {
     return NextResponse.next();
   }
 
-  // El refresh token se guarda como httpOnly cookie por el Route Handler /api/auth/login.
-  // El middleware puede leerlo (server-side) para decidir si dejar pasar o redirigir.
-  const token = request.cookies.get('admin_refresh')?.value;
+  const accessToken = request.cookies.get('admin_access')?.value;
 
-  if (!token) {
-    const loginUrl = new URL('/login', request.url);
-    loginUrl.searchParams.set('from', pathname);
-    return NextResponse.redirect(loginUrl);
+  if (!accessToken) {
+    return redirectToLogin(request, pathname);
+  }
+
+  try {
+    const { payload } = await jwtVerify(accessToken, secret);
+    if ((payload as { role?: string }).role !== 'admin') {
+      return redirectToLogin(request, pathname);
+    }
+  } catch (err: unknown) {
+    // ERR_JWT_EXPIRED: token expiró pero la firma es válida — dejar pasar,
+    // el layout llama hydrateToken() que lo renueva de forma transparente.
+    if ((err as { code?: string })?.code === 'ERR_JWT_EXPIRED') {
+      return NextResponse.next();
+    }
+    // Firma inválida, token manipulado, etc. — bloquear
+    return redirectToLogin(request, pathname);
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  // Excluir: assets de Next.js y archivos con extensión en public/ (imágenes, JSON, etc.)
   matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\..*).*)'],
 };

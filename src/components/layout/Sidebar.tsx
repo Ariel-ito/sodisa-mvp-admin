@@ -45,7 +45,8 @@ export function Sidebar({ isOpen = false, onClose }: Props) {
     .join('')
     .toUpperCase() ?? '?';
 
-  function handleLogout() {
+  async function handleLogout() {
+    try { await fetch('/api/auth/logout', { method: 'POST' }); } catch { /* ignore */ }
     clearToken();
     router.push('/login');
   }

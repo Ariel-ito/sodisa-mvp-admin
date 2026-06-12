@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const PUBLIC_PATHS = ['/login'];
+const PUBLIC_PATHS = ['/login', '/api/auth'];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -14,10 +14,9 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // El token se guarda en localStorage (client-side), así que no podemos leerlo
-  // en el middleware de servidor. Usamos una cookie "admin_token" que el cliente
-  // sincroniza al hacer login.
-  const token = request.cookies.get('admin_token')?.value;
+  // El refresh token se guarda como httpOnly cookie por el Route Handler /api/auth/login.
+  // El middleware puede leerlo (server-side) para decidir si dejar pasar o redirigir.
+  const token = request.cookies.get('admin_refresh')?.value;
 
   if (!token) {
     const loginUrl = new URL('/login', request.url);

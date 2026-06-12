@@ -6,8 +6,8 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { adminFetch, ApiError } from '@/lib/api';
-import { saveToken, saveUser, AdminUser } from '@/lib/auth';
+import { ApiError } from '@/lib/api';
+import { setToken, saveUser, AdminUser } from '@/lib/auth';
 import { Loader2, Lock } from 'lucide-react';
 
 interface LoginResponse {
@@ -30,11 +30,16 @@ function LoginForm() {
     setError('');
     setLoading(true);
     try {
-      const data = await adminFetch<LoginResponse>('/portal/auth/login', {
-        method: 'POST',
-        body: JSON.stringify({ email, password }),
+      const res = await fetch('/api/auth/login', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ email, password }),
       });
-      saveToken(data.accessToken);
+      const data: LoginResponse & { message?: string } = await res.json();
+      if (!res.ok) {
+        throw new ApiError(res.status, (data.message as string) ?? `Error ${res.status}`);
+      }
+      setToken(data.accessToken);
       saveUser(data.user);
       router.push(from);
     } catch (err) {

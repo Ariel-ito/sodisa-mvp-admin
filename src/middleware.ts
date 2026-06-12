@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { jwtVerify } from 'jose';
 
-const PUBLIC_PATHS = ['/login', '/api/auth'];
-const secret       = new TextEncoder().encode(process.env.JWT_SECRET ?? '');
+const secret = new TextEncoder().encode(process.env.JWT_SECRET ?? '');
 
 function redirectToLogin(request: NextRequest, pathname: string) {
   const url = new URL('/login', request.url);
@@ -13,15 +12,23 @@ function redirectToLogin(request: NextRequest, pathname: string) {
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  if (
-    PUBLIC_PATHS.some(p => pathname.startsWith(p)) ||
-    pathname.startsWith('/_next') ||
-    pathname.startsWith('/favicon')
-  ) {
+  if (pathname.startsWith('/_next') || pathname.startsWith('/favicon')) {
     return NextResponse.next();
   }
 
-  const accessToken = request.cookies.get('admin_access')?.value;
+  if (pathname.startsWith('/api/auth')) {
+    return NextResponse.next();
+  }
+
+  const hasSession   = !!request.cookies.get('admin_refresh')?.value;
+  const accessToken  = request.cookies.get('admin_access')?.value;
+
+  // Página de login: redirigir al admin ya autenticado
+  if (pathname === '/login') {
+    return hasSession
+      ? NextResponse.redirect(new URL('/', request.url))
+      : NextResponse.next();
+  }
 
   if (!accessToken) {
     return redirectToLogin(request, pathname);

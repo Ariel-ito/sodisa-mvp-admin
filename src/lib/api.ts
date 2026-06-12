@@ -72,4 +72,5 @@ export async function adminFetch<T = unknown>(
   return res.json() as Promise<T>;
 }
 
-export const swrFetcher = (path: string): Promise<unknown> => adminFetch(path);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const swrFetcher = (path: string): Promise<any> => adminFetch(path);

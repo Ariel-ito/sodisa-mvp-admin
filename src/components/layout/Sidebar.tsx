@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
-import { Building2, Users, Shield, LayoutDashboard, LogOut } from 'lucide-react';
+import { Building2, Users, Shield, LayoutDashboard, LogOut, UserCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getUser, clearToken } from '@/lib/auth';
 import { useEffect, useState } from 'react';
@@ -128,16 +128,25 @@ export function Sidebar({ isOpen = false, onClose }: Props) {
         {/* ── User footer ──────────────────────────────────────────── */}
         <div className="border-t border-sidebar-border p-3 shrink-0">
           <div className="flex items-center gap-2.5 rounded-lg px-2 py-2">
-            {/* Avatar */}
-            <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-sidebar-accent text-white text-xs font-semibold select-none">
+            {/* Avatar — click abre perfil */}
+            <Link
+              href="/perfil"
+              onClick={handleNavClick}
+              title="Mi perfil"
+              className="flex size-8 shrink-0 items-center justify-center rounded-full bg-sidebar-accent text-white text-xs font-semibold select-none hover:ring-2 hover:ring-accent/60 transition-all"
+            >
               {initials}
-            </div>
+            </Link>
 
             {/* Info */}
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-sidebar-foreground truncate leading-none mb-0.5">
+              <Link
+                href="/perfil"
+                onClick={handleNavClick}
+                className="block text-sm font-medium text-sidebar-foreground truncate leading-none mb-0.5 hover:text-white transition-colors"
+              >
                 {user?.name ?? '…'}
-              </p>
+              </Link>
               <span className={cn(
                 'inline-block text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded-full leading-none',
                 user?.role === 'admin'
@@ -147,6 +156,16 @@ export function Sidebar({ isOpen = false, onClose }: Props) {
                 {user ? (ROLE_LABEL[user.role] ?? user.role) : '…'}
               </span>
             </div>
+
+            {/* Perfil icon */}
+            <Link
+              href="/perfil"
+              onClick={handleNavClick}
+              title="Mi perfil"
+              className="shrink-0 flex size-7 items-center justify-center rounded-md text-sidebar-foreground/40 hover:text-accent hover:bg-accent/10 transition-colors"
+            >
+              <UserCircle className="size-3.5" />
+            </Link>
 
             {/* Logout */}
             <button

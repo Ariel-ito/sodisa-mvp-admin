@@ -13,7 +13,7 @@ interface ApiUca {
   companyId: number;
   userId?: number;
   externalId?: string | null;
-  supervisorPin?: string | null;
+  hasSupervisorPin?: boolean;
   isActive: boolean;
   userName?: string;
   userEmail?: string;
@@ -54,7 +54,7 @@ export default function EditarAccesoPage({
     companyId:     raw.companyId,
     userId:        raw.userId,
     externalId:    raw.externalId,
-    supervisorPin: raw.supervisorPin,
+    hasSupervisorPin: raw.hasSupervisorPin ?? false,
     isActive:      raw.isActive,
     user:          raw.userName ? { name: raw.userName, email: raw.userEmail ?? '' } : undefined,
     activeRoles:   raw.roles ?? [],

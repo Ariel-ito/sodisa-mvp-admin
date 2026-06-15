@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Plus, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { LockButton } from '@/components/ui/LockButton';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
@@ -16,10 +17,12 @@ interface PortalUser {
   email: string;
   role: string;
   isActive: boolean;
+  lockedUntil?: string | null;
+  failedLoginAttempts?: number;
 }
 
 export default function UsuariosPortalPage() {
-  const { data: users, isLoading } = useSWR<PortalUser[]>('/portal/users', swrFetcher);
+  const { data: users, isLoading, mutate } = useSWR<PortalUser[]>('/portal/users', swrFetcher);
 
   return (
     <div className="flex flex-col gap-6">
@@ -74,7 +77,13 @@ export default function UsuariosPortalPage() {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center justify-end">
+                      <div className="flex items-center justify-end gap-0.5">
+                        <LockButton
+                          userId={user.id}
+                          lockedUntil={user.lockedUntil}
+                          failedLoginAttempts={user.failedLoginAttempts}
+                          onSuccess={() => mutate()}
+                        />
                         <Button variant="ghost" size="icon-sm" title="Editar"
                           nativeButton={false} render={<Link href={`/usuarios/${user.id}`} />}>
                           <Pencil className="size-4" />
@@ -96,12 +105,9 @@ export default function UsuariosPortalPage() {
             )}
             {users?.map(user => (
               <div key={user.id} className="rounded-xl border bg-card shadow-sm p-4 flex items-center gap-3">
-                {/* Avatar inicial */}
                 <div className="size-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0 text-xs font-bold text-primary select-none">
                   {user.name.charAt(0).toUpperCase()}
                 </div>
-
-                {/* Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5 flex-wrap">
                     <p className="font-semibold text-sm leading-tight">{user.name}</p>
@@ -112,12 +118,18 @@ export default function UsuariosPortalPage() {
                   </div>
                   <p className="text-xs text-muted-foreground truncate mt-0.5">{user.email}</p>
                 </div>
-
-                {/* Editar */}
-                <Button variant="ghost" size="icon-sm" title="Editar" className="shrink-0"
-                  nativeButton={false} render={<Link href={`/usuarios/${user.id}`} />}>
-                  <Pencil className="size-4" />
-                </Button>
+                <div className="flex items-center gap-0.5 shrink-0">
+                  <LockButton
+                    userId={user.id}
+                    lockedUntil={user.lockedUntil}
+                    failedLoginAttempts={user.failedLoginAttempts}
+                    onSuccess={() => mutate()}
+                  />
+                  <Button variant="ghost" size="icon-sm" title="Editar" className="shrink-0"
+                    nativeButton={false} render={<Link href={`/usuarios/${user.id}`} />}>
+                    <Pencil className="size-4" />
+                  </Button>
+                </div>
               </div>
             ))}
           </div>

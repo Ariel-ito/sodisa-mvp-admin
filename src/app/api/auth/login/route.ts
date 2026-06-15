@@ -5,7 +5,7 @@ const COOKIE_MAX_AGE = 8 * 60 * 60;
 const IS_PROD        = process.env.NODE_ENV === 'production';
 
 function setCookies(response: ReturnType<typeof import('next/server').NextResponse.json>, refreshToken: string, accessToken: string) {
-  const opts = { httpOnly: true, secure: IS_PROD, sameSite: 'lax' as const, maxAge: COOKIE_MAX_AGE, path: '/' };
+  const opts = { httpOnly: true, secure: IS_PROD, sameSite: 'strict' as const, maxAge: COOKIE_MAX_AGE, path: '/' };
   response.cookies.set('admin_refresh', refreshToken, opts);
   response.cookies.set('admin_access',  accessToken,  opts);
 }

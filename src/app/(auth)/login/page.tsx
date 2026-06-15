@@ -44,9 +44,13 @@ function LoginForm() {
       router.push(from);
     } catch (err) {
       if (err instanceof ApiError) {
-        setError(err.status === 401 || err.status === 403
-          ? 'Credenciales inválidas o sin acceso de administrador.'
-          : err.message);
+        if (err.status === 429) {
+          setError('Demasiados intentos. Por favor espera un momento antes de volver a intentarlo.');
+        } else if (err.status === 401 || err.status === 403) {
+          setError(err.message ?? 'Credenciales inválidas o sin acceso de administrador.');
+        } else {
+          setError(err.message ?? `Error ${err.status}`);
+        }
       } else {
         setError('Error al conectar con el servidor.');
       }

@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
   const { accessToken, refreshToken: newToken, user } = await apiRes.json();
 
   const response = NextResponse.json({ accessToken, user });
-  const opts = { httpOnly: true, secure: IS_PROD, sameSite: 'lax' as const, maxAge: COOKIE_MAX_AGE, path: '/' };
+  const opts = { httpOnly: true, secure: IS_PROD, sameSite: 'strict' as const, maxAge: COOKIE_MAX_AGE, path: '/' };
   response.cookies.set('admin_refresh', newToken,      opts);
   response.cookies.set('admin_access',  accessToken,   opts);
 

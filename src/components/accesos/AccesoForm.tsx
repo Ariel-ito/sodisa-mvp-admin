@@ -20,7 +20,7 @@ export interface UcaData {
   companyId: number;
   userId?: number;
   externalId?: string | null;
-  supervisorPin?: string | null;
+  hasSupervisorPin?: boolean;
   isActive: boolean;
   user?: { name: string; email: string };
   activeRoles?: string[];
@@ -45,7 +45,8 @@ export function AccesoForm({ initial, companyId, mode }: Props) {
   const [name, setName]               = useState(initial?.user?.name ?? '');
   const [password, setPassword]       = useState('');
   const [externalId, setExternalId]   = useState(initial?.externalId ?? '');
-  const [supervisorPin, setSupervisorPin] = useState(initial?.supervisorPin ?? '');
+  const [pinEnabled, setPinEnabled] = useState(initial?.hasSupervisorPin ?? false);
+  const [pinValue, setPinValue]     = useState('');
   const [isActive, setIsActive]       = useState(initial?.isActive ?? true);
   const [roles, setRoles]             = useState<string[]>(initial?.activeRoles ?? []);
   const [permissions, setPermissions] = useState<string[]>(initial?.activePermissions ?? []);
@@ -76,27 +77,37 @@ export function AccesoForm({ initial, companyId, mode }: Props) {
     setFormError(null);
     try {
       if (mode === 'create') {
+        if (pinEnabled && !pinValue) {
+          setFormError('Ingresa el PIN de supervisor (4-8 dígitos) o desactiva la opción.');
+          return;
+        }
         await adminFetch('/portal/access', {
           method: 'POST',
           body: JSON.stringify({
             companyId,
             email,
-            name:     name || undefined,
-            password: password || undefined,
-            externalId:    externalId    || undefined,
-            supervisorPin: supervisorPin || undefined,
+            name:          name     || undefined,
+            password:      password || undefined,
+            externalId:    externalId || undefined,
+            supervisorPin: pinEnabled ? pinValue : undefined,
             isActive,
           }),
         });
         toast.success('Acceso creado correctamente');
         router.push(`/empresas/${companyId}/usuarios`);
       } else {
+        // Lógica del PIN:
+        // - toggle OFF       → null  (borra el PIN)
+        // - toggle ON + valor → valor (actualiza el PIN)
+        // - toggle ON + vacío → undefined (conserva el PIN actual)
+        const pinPayload = !pinEnabled ? null : (pinValue || undefined);
+
         // 1. Basic info
         await adminFetch(`/portal/access/${initial!.id}`, {
           method: 'PUT',
           body: JSON.stringify({
-            externalId:    externalId    || null,
-            supervisorPin: supervisorPin || null,
+            externalId:    externalId || null,
+            supervisorPin: pinPayload,
             isActive,
           }),
         });
@@ -245,14 +256,38 @@ export function AccesoForm({ initial, companyId, mode }: Props) {
             </p>
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="supervisorPin">PIN supervisor</Label>
-            <Input
-              id="supervisorPin"
-              value={supervisorPin}
-              onChange={e => setSupervisorPin(e.target.value)}
-              placeholder="PIN numérico"
-            />
+          <div className="col-span-2 flex flex-col gap-3">
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                role="switch"
+                aria-checked={pinEnabled}
+                onClick={() => { setPinEnabled(v => !v); setPinValue(''); }}
+                className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${pinEnabled ? 'bg-primary' : 'bg-input'}`}
+              >
+                <span className={`pointer-events-none inline-block size-4 rounded-full bg-background shadow-lg transition-transform ${pinEnabled ? 'translate-x-4' : 'translate-x-0'}`} />
+              </button>
+              <Label className="cursor-pointer" onClick={() => { setPinEnabled(v => !v); setPinValue(''); }}>
+                PIN de supervisor
+              </Label>
+              {initial?.hasSupervisorPin && pinEnabled && !pinValue && (
+                <span className="text-xs text-muted-foreground">(PIN activo — vacío conserva el actual)</span>
+              )}
+              {initial?.hasSupervisorPin && !pinEnabled && (
+                <span className="text-xs text-destructive">(se eliminará al guardar)</span>
+              )}
+            </div>
+            {pinEnabled && (
+              <Input
+                type="password"
+                inputMode="numeric"
+                value={pinValue}
+                onChange={e => setPinValue(e.target.value.replace(/\D/g, '').slice(0, 8))}
+                placeholder={initial?.hasSupervisorPin ? '••••  (vacío = conservar actual)' : '4-8 dígitos numéricos'}
+                className="max-w-[240px]"
+                maxLength={8}
+              />
+            )}
           </div>
 
           <div className="flex items-center gap-2 mt-5">

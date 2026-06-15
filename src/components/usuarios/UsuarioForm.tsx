@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { adminFetch, ApiError } from '@/lib/api';
 import { toast } from 'sonner';
 import { Banner } from '@/components/ui/Banner';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Lock, LockOpen } from 'lucide-react';
 import { UserEmpresasSection } from './UserEmpresasSection';
 
 export interface PortalUserData {
@@ -18,6 +18,8 @@ export interface PortalUserData {
   role: string;
   isActive: boolean;
   password?: string;
+  lockedUntil?: string | null;
+  failedLoginAttempts?: number;
 }
 
 interface Props {
@@ -30,8 +32,28 @@ export function UsuarioForm({ initial, mode }: Props) {
   const [form, setForm] = useState<PortalUserData>(
     initial ?? { name: '', email: '', role: 'admin', isActive: true, password: '' }
   );
-  const [saving, setSaving] = useState(false);
+  const [saving, setSaving]       = useState(false);
+  const [locking, setLocking]     = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+
+  const isLocked = initial?.lockedUntil ? new Date(initial.lockedUntil) > new Date() : false;
+
+  async function handleToggleLock() {
+    if (!initial?.id) return;
+    const action = isLocked ? 'unlock' : 'lock';
+    const label  = isLocked ? 'desbloquear' : 'bloquear';
+    if (!window.confirm(`¿Confirmas ${label} a ${initial.name}?`)) return;
+    setLocking(true);
+    try {
+      await adminFetch(`/portal/users/${initial.id}/${action}`, { method: 'POST' });
+      toast.success(isLocked ? 'Usuario desbloqueado' : 'Usuario bloqueado');
+      router.refresh();
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : 'Error al cambiar estado');
+    } finally {
+      setLocking(false);
+    }
+  }
 
   function set<K extends keyof PortalUserData>(key: K, value: PortalUserData[K]) {
     setForm(prev => ({ ...prev, [key]: value }));
@@ -113,15 +135,44 @@ export function UsuarioForm({ initial, mode }: Props) {
         />
         <Label htmlFor="isActive">Usuario activo</Label>
       </div>
-      <div className="flex items-center gap-3 mt-2">
-        <Button type="submit" disabled={saving}>
+      <div className="flex items-center gap-3 mt-2 flex-wrap">
+        <Button type="submit" disabled={saving || locking}>
           {saving && <Loader2 className="size-4 animate-spin" />}
           {saving ? 'Guardando…' : mode === 'create' ? 'Crear usuario' : 'Guardar cambios'}
         </Button>
-        <Button type="button" variant="outline" onClick={() => router.back()}>
+        <Button type="button" variant="outline" onClick={() => router.back()} disabled={saving || locking}>
           Cancelar
         </Button>
+
+        {mode === 'edit' && (
+          <Button
+            type="button"
+            variant={isLocked ? 'outline' : 'destructive'}
+            onClick={handleToggleLock}
+            disabled={locking || saving}
+            className="ml-auto"
+          >
+            {locking
+              ? <Loader2 className="size-4 animate-spin" />
+              : isLocked
+                ? <LockOpen className="size-4" />
+                : <Lock className="size-4" />
+            }
+            {locking ? 'Procesando…' : isLocked ? 'Desbloquear usuario' : 'Bloquear usuario'}
+          </Button>
+        )}
       </div>
+
+      {mode === 'edit' && isLocked && (
+        <p className="text-sm text-destructive flex items-center gap-1.5">
+          <Lock className="size-3.5" />
+          {initial?.lockedUntil && new Date(initial.lockedUntil).getFullYear() > 2100
+            ? 'Bloqueado manualmente por un administrador.'
+            : `Bloqueado automáticamente hasta las ${new Date(initial!.lockedUntil!).toLocaleTimeString('es-HN', { hour: '2-digit', minute: '2-digit' })}.`
+          }
+          {(initial?.failedLoginAttempts ?? 0) > 0 && ` (${initial!.failedLoginAttempts} intentos fallidos)`}
+        </p>
+      )}
 
       {/* Acceso a empresas — solo en modo edición */}
       {mode === 'edit' && initial?.id && (

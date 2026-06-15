@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { ChevronRight, Plus, Pencil, ShieldCheck, CheckCircle2, AlertCircle, XCircle, KeyRound } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { LockButton } from '@/components/ui/LockButton';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
@@ -21,6 +22,8 @@ interface UcaItem {
   roles: string[];
   permissionCount: number;
   passwordChangedAt: string | null;
+  lockedUntil?: string | null;
+  failedLoginAttempts?: number;
 }
 
 interface Company {
@@ -91,7 +94,7 @@ export default function UsuariosEmpresaPage({ params }: { params: Promise<{ id: 
   const { id } = use(params);
 
   const { data: company }  = useSWR<Company>(`/portal/companies/${id}`, swrFetcher);
-  const { data: accesos, isLoading } = useSWR<UcaItem[]>(`/portal/access?companyId=${id}`, swrFetcher);
+  const { data: accesos, isLoading, mutate } = useSWR<UcaItem[]>(`/portal/access?companyId=${id}`, swrFetcher);
 
   const { data: bicEmployees } = useSWR<BicEmployee[]>(
     `/portal/companies/${id}/bic-entities`,
@@ -204,7 +207,13 @@ export default function UsuariosEmpresaPage({ params }: { params: Promise<{ id: 
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center justify-end">
+                      <div className="flex items-center justify-end gap-0.5">
+                        <LockButton
+                          userId={uca.userId}
+                          lockedUntil={uca.lockedUntil}
+                          failedLoginAttempts={uca.failedLoginAttempts}
+                          onSuccess={() => mutate()}
+                        />
                         <Button variant="ghost" size="icon-sm" title="Editar acceso"
                           nativeButton={false} render={<Link href={`/empresas/${id}/usuarios/${uca.id}`} />}>
                           <Pencil className="size-4" />
@@ -233,10 +242,16 @@ export default function UsuariosEmpresaPage({ params }: { params: Promise<{ id: 
                     <p className="font-semibold text-sm leading-tight">{uca.userName}</p>
                     <p className="text-xs text-muted-foreground truncate mt-0.5">{uca.userEmail}</p>
                   </div>
-                  <div className="flex items-center gap-1.5 shrink-0">
+                  <div className="flex items-center gap-1 shrink-0">
                     <Badge variant={uca.isActive ? 'default' : 'secondary'} className="text-xs">
                       {uca.isActive ? 'Activo' : 'Inactivo'}
                     </Badge>
+                    <LockButton
+                      userId={uca.userId}
+                      lockedUntil={uca.lockedUntil}
+                      failedLoginAttempts={uca.failedLoginAttempts}
+                      onSuccess={() => mutate()}
+                    />
                     <Button variant="ghost" size="icon-sm" title="Editar acceso"
                       nativeButton={false} render={<Link href={`/empresas/${id}/usuarios/${uca.id}`} />}>
                       <Pencil className="size-4" />

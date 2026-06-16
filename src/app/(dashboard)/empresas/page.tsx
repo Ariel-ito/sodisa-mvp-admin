@@ -93,6 +93,11 @@ export default function EmpresasPage() {
     (pingHistory ?? []).map(e => [e.companyId, e.logs]),
   );
   const [refreshing, setRefreshing] = useState<Record<number, boolean>>({});
+  const [page, setPage] = useState(0);
+
+  const PAGE_SIZE = 20;
+  const totalPages    = Math.ceil((companies?.length ?? 0) / PAGE_SIZE);
+  const pageCompanies = companies?.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
 
   async function forceRefresh(id: number) {
     setRefreshing(prev => ({ ...prev, [id]: true }));
@@ -146,7 +151,7 @@ export default function EmpresasPage() {
                   </TableRow>
                 )}
 
-                {companies?.map(company => (
+                {pageCompanies?.map(company => (
                   <TableRow key={company.id}>
 
                     <TableCell>
@@ -210,7 +215,7 @@ export default function EmpresasPage() {
                 No hay empresas registradas.
               </p>
             )}
-            {companies?.map(company => (
+            {pageCompanies?.map(company => (
               <div key={company.id} className="rounded-xl border bg-card shadow-sm p-4 flex flex-col gap-3">
 
                 {/* Fila 1: nombre + badge estado */}
@@ -259,6 +264,29 @@ export default function EmpresasPage() {
               </div>
             ))}
           </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between text-sm text-muted-foreground">
+              <span>Página {page + 1} de {totalPages} · {companies?.length} empresas</span>
+              <div className="flex gap-2">
+                <button
+                  disabled={page === 0}
+                  onClick={() => setPage(p => p - 1)}
+                  className="px-3 py-1.5 rounded-md border text-sm disabled:opacity-40 hover:bg-muted transition-colors"
+                >
+                  Anterior
+                </button>
+                <button
+                  disabled={page + 1 >= totalPages}
+                  onClick={() => setPage(p => p + 1)}
+                  className="px-3 py-1.5 rounded-md border text-sm disabled:opacity-40 hover:bg-muted transition-colors"
+                >
+                  Siguiente
+                </button>
+              </div>
+            </div>
+          )}
         </>
       )}
     </div>

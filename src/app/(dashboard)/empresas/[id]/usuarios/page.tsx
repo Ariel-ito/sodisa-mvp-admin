@@ -1,6 +1,6 @@
 'use client';
 
-import { use } from 'react';
+import { use, useState } from 'react';
 import useSWR from 'swr';
 import Link from 'next/link';
 import { ChevronRight, Plus, Pencil, ShieldCheck, CheckCircle2, AlertCircle, XCircle, KeyRound } from 'lucide-react';
@@ -88,6 +88,8 @@ function PasswordBadge({ passwordChangedAt }: { passwordChangedAt: string | null
   );
 }
 
+const PAGE_SIZE = 25;
+
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function UsuariosEmpresaPage({ params }: { params: Promise<{ id: string }> }) {
@@ -95,6 +97,7 @@ export default function UsuariosEmpresaPage({ params }: { params: Promise<{ id: 
 
   const { data: company }  = useSWR<Company>(`/portal/companies/${id}`, swrFetcher);
   const { data: accesos, isLoading, mutate } = useSWR<UcaItem[]>(`/portal/access?companyId=${id}`, swrFetcher);
+  const [page, setPage] = useState(0);
 
   const { data: bicEmployees } = useSWR<BicEmployee[]>(
     `/portal/companies/${id}/bic-entities`,
@@ -105,6 +108,9 @@ export default function UsuariosEmpresaPage({ params }: { params: Promise<{ id: 
   const validBicCodes: Set<string> | null = bicEmployees
     ? new Set(bicEmployees.map(e => e.CODIGO_BIC?.trim()).filter(Boolean))
     : null;
+
+  const totalPages  = Math.ceil((accesos?.length ?? 0) / PAGE_SIZE);
+  const pageAccesos = accesos?.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
 
   return (
     <div className="flex flex-col gap-6">
@@ -169,7 +175,7 @@ export default function UsuariosEmpresaPage({ params }: { params: Promise<{ id: 
                   </TableRow>
                 )}
 
-                {accesos?.map(uca => (
+                {pageAccesos?.map(uca => (
                   <TableRow key={uca.id}>
                     <TableCell>
                       <p className="font-medium text-sm">{uca.userName}</p>
@@ -228,12 +234,12 @@ export default function UsuariosEmpresaPage({ params }: { params: Promise<{ id: 
 
           {/* ── Vista mobile: cards ───────────────────────────────── */}
           <div className="md:hidden flex flex-col gap-3">
-            {accesos?.length === 0 && (
+            {(accesos?.length ?? 0) === 0 && (
               <p className="text-center text-sm text-muted-foreground py-10">
                 No hay usuarios con acceso a esta empresa.
               </p>
             )}
-            {accesos?.map(uca => (
+            {pageAccesos?.map(uca => (
               <div key={uca.id} className="rounded-xl border bg-card shadow-sm p-4 flex flex-col gap-3">
 
                 {/* Fila 1: nombre + estado + editar */}
@@ -283,6 +289,29 @@ export default function UsuariosEmpresaPage({ params }: { params: Promise<{ id: 
               </div>
             ))}
           </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between text-sm text-muted-foreground">
+              <span>Página {page + 1} de {totalPages} · {accesos?.length} usuarios</span>
+              <div className="flex gap-2">
+                <button
+                  disabled={page === 0}
+                  onClick={() => setPage(p => p - 1)}
+                  className="px-3 py-1.5 rounded-md border text-sm disabled:opacity-40 hover:bg-muted transition-colors"
+                >
+                  Anterior
+                </button>
+                <button
+                  disabled={page + 1 >= totalPages}
+                  onClick={() => setPage(p => p + 1)}
+                  className="px-3 py-1.5 rounded-md border text-sm disabled:opacity-40 hover:bg-muted transition-colors"
+                >
+                  Siguiente
+                </button>
+              </div>
+            </div>
+          )}
         </>
       )}
 

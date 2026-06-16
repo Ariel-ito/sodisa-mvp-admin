@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
-import { Building2, Users, Shield, LayoutDashboard, LogOut, UserCircle } from 'lucide-react';
+import { Building2, Users, Shield, LayoutDashboard, LogOut, UserCircle, ClipboardList } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getUser, clearToken } from '@/lib/auth';
 import { useEffect, useState } from 'react';
@@ -13,7 +13,8 @@ const NAV_ITEMS = [
   { href: '/',         label: 'Dashboard', icon: LayoutDashboard, exact: true },
   { href: '/empresas', label: 'Empresas',  icon: Building2 },
   { href: '/usuarios', label: 'Usuarios',  icon: Users },
-  { href: '/roles',    label: 'Roles',     icon: Shield },
+  { href: '/roles',      label: 'Roles',      icon: Shield },
+  { href: '/auditoria', label: 'Auditoría',  icon: ClipboardList },
 ];
 
 const ROLE_LABEL: Record<string, string> = {

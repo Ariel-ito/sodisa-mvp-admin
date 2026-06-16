@@ -28,6 +28,7 @@ function usePageTitle(): string {
   if (pathname === '/roles')                    return 'Roles';
   if (pathname === '/roles/nuevo')              return 'Nuevo rol';
   if (/^\/roles\/\d+/.test(pathname))           return 'Editar rol';
+  if (pathname === '/auditoria')                 return 'Auditoría';
   if (pathname === '/perfil')                    return 'Mi perfil';
   return '';
 }

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
 import { EmpresaForm, CompanyData } from '@/components/empresas/EmpresaForm';
 import { PingHistoryChart } from '@/components/empresas/PingHistoryChart';
+import { CompanyConfigSection } from '@/components/empresas/CompanyConfigSection';
 import { swrFetcher } from '@/lib/api';
 
 export default function EditarEmpresaPage({ params }: { params: Promise<{ id: string }> }) {
@@ -32,6 +33,11 @@ export default function EditarEmpresaPage({ params }: { params: Promise<{ id: st
       </div>
 
       <EmpresaForm mode="edit" initial={company} />
+
+      {/* Módulos y tabs */}
+      {company.id !== undefined && (
+        <CompanyConfigSection companyId={company.id} />
+      )}
 
       {/* Historial de pings */}
       {company.id !== undefined && (

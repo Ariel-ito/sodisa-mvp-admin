@@ -36,9 +36,11 @@ interface Props {
   initial?: UcaData;
   companyId: number;
   mode: 'create' | 'edit';
+  /** Active module keys for this company — filters which permission groups are shown */
+  companyModules?: string[];
 }
 
-export function AccesoForm({ initial, companyId, mode }: Props) {
+export function AccesoForm({ initial, companyId, mode, companyModules }: Props) {
   const router = useRouter();
 
   const [email, setEmail]             = useState(initial?.user?.email ?? '');
@@ -60,11 +62,23 @@ export function AccesoForm({ initial, companyId, mode }: Props) {
   const [fromRolePermissions] = useState<string[]>(initial?.activePermissionsFromRole ?? []);
 
   /**
-   * Codes that will be added as direct permissions when saved
-   * (from roles added in THIS editing session, not yet in the DB).
+   * Codes from currently-selected roles not yet stored as direct permissions.
    * Used for the "ROL +" preview badges in PermisosGrid.
    */
   const [pendingRolePermissions, setPendingRolePermissions] = useState<string[]>([]);
+
+  /**
+   * Subset of pendingRolePermissions the user explicitly unchecked.
+   * These are excluded from the effective permissions sent on save.
+   * Reset (filtered) whenever pendingRolePermissions changes.
+   */
+  const [excludedPendingPerms, setExcludedPendingPerms] = useState<string[]>([]);
+
+  function handlePendingRolePermissionsChange(pending: string[]) {
+    setPendingRolePermissions(pending);
+    // Drop exclusions for codes no longer in the pending list (role was removed)
+    setExcludedPendingPerms(prev => prev.filter(p => pending.includes(p)));
+  }
 
   const [saving, setSaving]           = useState(false);
   const [formError, setFormError]     = useState<string | null>(null);
@@ -116,11 +130,17 @@ export function AccesoForm({ initial, companyId, mode }: Props) {
           method: 'PUT',
           body: JSON.stringify({ roles }),
         });
-        // 3. Direct permission overrides (only the manually managed ones)
+        // 3. Direct permissions — merge pending role perms (minus excluded) so they land in DB
+        const effectivePermissions = [
+          ...new Set([
+            ...permissions,
+            ...pendingRolePermissions.filter(p => !excludedPendingPerms.includes(p)),
+          ]),
+        ];
         await adminFetch(`/portal/access/${initial!.id}/permissions`, {
           method: 'PUT',
           body: JSON.stringify({
-            permissions,
+            permissions: effectivePermissions,
             grantedUntil: grantedUntil || null,
             reason: reason || null,
           }),
@@ -310,7 +330,11 @@ export function AccesoForm({ initial, companyId, mode }: Props) {
           <RolesSection
             selected={roles}
             onChange={setRoles}
-            onPendingRolePermissionsChange={setPendingRolePermissions}
+            existingRoles={initial?.activeRoles ?? []}
+            onPendingRolePermissionsChange={handlePendingRolePermissionsChange}
+            onRoleRemoved={(exclusivePerms) =>
+              setPermissions(prev => prev.filter(p => !exclusivePerms.includes(p)))
+            }
           />
         </section>
       )}
@@ -324,6 +348,9 @@ export function AccesoForm({ initial, companyId, mode }: Props) {
             onChange={setPermissions}
             fromRolePermissions={fromRolePermissions}
             pendingRolePermissions={pendingRolePermissions}
+            excludedPendingPerms={excludedPendingPerms}
+            onExcludedChange={setExcludedPendingPerms}
+            companyModules={companyModules}
           />
         </section>
       )}

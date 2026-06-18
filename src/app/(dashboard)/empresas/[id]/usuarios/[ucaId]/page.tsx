@@ -7,6 +7,11 @@ import { ChevronRight } from 'lucide-react';
 import { AccesoForm, UcaData } from '@/components/accesos/AccesoForm';
 import { swrFetcher } from '@/lib/api';
 
+interface CompanyConfig {
+  modules: string[];
+  statTabs: string[];
+}
+
 /** Shape devuelta por GET /portal/access/:id */
 interface ApiUca {
   id: number;
@@ -38,6 +43,11 @@ export default function EditarAccesoPage({
     `/portal/access/${ucaId}`,
     swrFetcher,
     { revalidateOnMount: true, dedupingInterval: 0 },
+  );
+
+  const { data: config } = useSWR<CompanyConfig>(
+    `/portal/companies/${companyId}/config`,
+    swrFetcher,
   );
 
   if (isLoading || isValidating) {
@@ -77,7 +87,7 @@ export default function EditarAccesoPage({
         </nav>
         <h1 className="text-2xl font-semibold">Editar acceso</h1>
       </div>
-      <AccesoForm mode="edit" companyId={companyId} initial={uca} />
+      <AccesoForm mode="edit" companyId={companyId} initial={uca} companyModules={config?.modules} />
     </div>
   );
 }

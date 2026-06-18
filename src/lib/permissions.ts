@@ -117,3 +117,16 @@ export const LEGACY_ROLES = [
 export const PERMISSION_LABEL_MAP: Record<string, string> = Object.fromEntries(
   Object.values(PERMISSIONS).flatMap(m => m.perms.map(p => [p.code, p.label]))
 );
+
+/**
+ * Mapeo de módulos de empresa (company_modules) → prefijos de módulos de permisos.
+ * Si una empresa tiene un módulo activo, se muestran solo los grupos de permisos
+ * correspondientes en el grid de edición de usuario.
+ * Si la empresa no tiene módulos configurados → se muestran todos.
+ */
+export const COMPANY_MODULE_MAP: Record<string, string[]> = {
+  billing:    ['billing'],
+  pos:        ['pos', 'cashbox'],
+  stats:      ['statistics'],
+  scheduling: ['scheduling'],
+};

@@ -36,27 +36,43 @@ interface Props {
   selected: string[];
   onChange: (roles: string[]) => void;
   /**
-   * Called whenever the set of permissions from currently-selected roles changes.
-   * Used by AccesoForm to show "pending" badges in PermisosGrid before saving.
+   * Roles that were already active when the form was loaded.
+   * Permissions from these roles are NOT emitted as pending — the admin already
+   * decided their permission set when saving previously.
+   */
+  existingRoles?: string[];
+  /**
+   * Called whenever the set of pending permissions changes.
+   * Only includes permissions from roles NEWLY added in this editing session.
    */
   onPendingRolePermissionsChange?: (perms: string[]) => void;
+  /**
+   * Called when a role is removed. Receives the permission codes that belong
+   * exclusively to that role (not shared by any remaining active role),
+   * so AccesoForm can uncheck them immediately.
+   */
+  onRoleRemoved?: (exclusivePerms: string[]) => void;
 }
 
-export function RolesSection({ selected, onChange, onPendingRolePermissionsChange }: Props) {
+export function RolesSection({ selected, onChange, existingRoles = [], onPendingRolePermissionsChange, onRoleRemoved }: Props) {
   const { data: apiRoles } = useSWR<ApiRole[]>('/portal/roles', swrFetcher);
   const [pending, setPending] = useState<PendingToggle | null>(null);
+  // Roles explicitly removed in this editing session — if re-added, treat as new
+  const [removedThisSession, setRemovedThisSession] = useState<Set<string>>(new Set());
 
-  // Emit the union of all permissions from currently-selected roles for preview
+  // Emit permissions only from roles NEW in this session (never had, or removed+re-added)
   useEffect(() => {
     if (!onPendingRolePermissionsChange) return;
     const perms = new Set<string>();
     for (const roleName of selected) {
+      const isNew = !existingRoles.includes(roleName) || removedThisSession.has(roleName);
+      if (!isNew) continue;
       const role = apiRoles?.find(r => r.name === roleName);
       if (role) role.permissions.forEach(p => perms.add(p));
     }
     onPendingRolePermissionsChange(Array.from(perms));
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selected, apiRoles]);
+  }, [selected, apiRoles, removedThisSession]);
 
   function handleToggle(roleName: string) {
     const adding = !selected.includes(roleName);
@@ -75,7 +91,22 @@ export function RolesSection({ selected, onChange, onPendingRolePermissionsChang
     if (adding) {
       onChange([...selected, roleName]);
     } else {
-      onChange(selected.filter(r => r !== roleName));
+      const newSelected = selected.filter(r => r !== roleName);
+      onChange(newSelected);
+      setRemovedThisSession(prev => new Set([...prev, roleName]));
+
+      // Notify AccesoForm which permissions to uncheck: the removed role's perms
+      // that are NOT covered by any of the remaining active roles.
+      if (onRoleRemoved && apiRoles) {
+        const removedRole = apiRoles.find(r => r.name === roleName);
+        if (removedRole) {
+          const otherPerms = new Set(
+            newSelected.flatMap(r => apiRoles.find(ar => ar.name === r)?.permissions ?? []),
+          );
+          const exclusive = removedRole.permissions.filter(p => !otherPerms.has(p));
+          if (exclusive.length > 0) onRoleRemoved(exclusive);
+        }
+      }
     }
     setPending(null);
   }

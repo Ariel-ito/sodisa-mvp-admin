@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
-import { Building2, Users, Shield, LayoutDashboard, LogOut, UserCircle, ClipboardList } from 'lucide-react';
+import { Building2, Users, Shield, LayoutDashboard, LogOut, ClipboardList } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getUser, clearToken } from '@/lib/auth';
 import { useEffect, useState } from 'react';
@@ -157,16 +157,6 @@ export function Sidebar({ isOpen = false, onClose }: Props) {
                 {user ? (ROLE_LABEL[user.role] ?? user.role) : '…'}
               </span>
             </div>
-
-            {/* Perfil icon */}
-            <Link
-              href="/perfil"
-              onClick={handleNavClick}
-              title="Mi perfil"
-              className="shrink-0 flex size-7 items-center justify-center rounded-md text-sidebar-foreground/40 hover:text-accent hover:bg-accent/10 transition-colors"
-            >
-              <UserCircle className="size-3.5" />
-            </Link>
 
             {/* Logout */}
             <button

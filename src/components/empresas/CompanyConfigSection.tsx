@@ -14,6 +14,7 @@ const MODULES = [
   { id: 'billing',    label: 'Facturación',       description: 'Creación y gestión de facturas' },
   { id: 'pos',        label: 'Punto de Venta',     description: 'Operaciones de caja y ventas' },
   { id: 'stats',      label: 'Insights / Stats',   description: 'Análisis y reportes de ventas' },
+  { id: 'accounting', label: 'Contabilidad',       description: 'Períodos contables y configuración contable' },
   { id: 'scheduling', label: 'Horarios Escolares', description: 'Generación de horarios de clases' },
 ];
 

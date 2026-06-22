@@ -83,6 +83,16 @@ export const PERMISSIONS = {
       { code: 'staff.manage', label: 'Gestionar personal' },
     ],
   },
+  // Contabilidad
+  accounting: {
+    label: '📒 Contabilidad',
+    perms: [
+      { code: 'accounting.periods',        label: 'Ver periodos contables' },
+      { code: 'accounting.periods.create', label: 'Crear periodo' },
+      { code: 'accounting.periods.edit',   label: 'Editar periodo' },
+      { code: 'accounting.periods.delete', label: 'Eliminar periodo' },
+    ],
+  },
   // Horarios Escolares
   scheduling: {
     label: '🏫 Horarios Escolares',
@@ -129,4 +139,5 @@ export const COMPANY_MODULE_MAP: Record<string, string[]> = {
   pos:        ['pos', 'cashbox'],
   stats:      ['statistics'],
   scheduling: ['scheduling'],
+  accounting: ['accounting'],
 };

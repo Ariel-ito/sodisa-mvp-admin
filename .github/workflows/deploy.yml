@@ -2,7 +2,7 @@ name: Deploy Admin — Azure App Service
 
 on:
   push:
-    branches: [main]
+    branches: [main, qa, staging]
   workflow_dispatch:
 
 jobs:
@@ -19,13 +19,24 @@ jobs:
           node-version: '22.x'
           cache: 'npm'
 
+      - name: Set API URL
+        id: api_url
+        run: |
+          if [ "${{ github.ref_name }}" = "main" ]; then
+            echo "url=https://app-sodisa-mvp-api.azurewebsites.net" >> $GITHUB_OUTPUT
+          elif [ "${{ github.ref_name }}" = "qa" ]; then
+            echo "url=https://app-sodisa-mvp-api-qa.azurewebsites.net" >> $GITHUB_OUTPUT
+          else
+            echo "url=https://app-sodisa-mvp-api-stg.azurewebsites.net" >> $GITHUB_OUTPUT
+          fi
+
       - name: Install dependencies
         run: npm ci
 
       - name: Build
         run: npm run build
         env:
-          NEXT_PUBLIC_API_URL: https://app-sodisa-mvp-api.azurewebsites.net
+          NEXT_PUBLIC_API_URL: ${{ steps.api_url.outputs.url }}
 
       - name: Prepare standalone package
         run: |
@@ -42,9 +53,26 @@ jobs:
             fs.writeFileSync(path, JSON.stringify(pkg, null, 2));
           "
 
-      - name: Deploy to Azure Web App
+      - name: Deploy to Prod
+        if: github.ref_name == 'main'
         uses: azure/webapps-deploy@v3
         with:
           app-name: app-sodisa-mvp-admin
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: .next/standalone
+
+      - name: Deploy to QA
+        if: github.ref_name == 'qa'
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: app-sodisa-mvp-admin-qa
+          publish-profile: ${{ secrets.AZURE_ADMIN_PUBLISH_PROFILE_QA }}
+          package: .next/standalone
+
+      - name: Deploy to STG
+        if: github.ref_name == 'staging'
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: app-sodisa-mvp-admin-stg
+          publish-profile: ${{ secrets.AZURE_ADMIN_PUBLISH_PROFILE_STG }}
           package: .next/standalone

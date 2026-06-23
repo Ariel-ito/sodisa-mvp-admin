@@ -30,6 +30,8 @@ steps:
       displayName: Build (PR check)
       env:
         NEXT_PUBLIC_API_URL: https://app-sodisa-mvp-api.azurewebsites.net
+        NEXT_PUBLIC_BUILD_NUMBER: $(Build.BuildNumber)
+        NEXT_PUBLIC_BRANCH: $(Build.SourceBranchName)
 
   - ${{ if ne(variables['Build.Reason'], 'PullRequest') }}:
     - bash: |
@@ -50,6 +52,8 @@ steps:
       displayName: Build
       env:
         NEXT_PUBLIC_API_URL: $(apiUrl)
+        NEXT_PUBLIC_BUILD_NUMBER: $(Build.BuildNumber)
+        NEXT_PUBLIC_BRANCH: $(Build.SourceBranchName)
 
     - script: |
         cp -r public .next/standalone/public

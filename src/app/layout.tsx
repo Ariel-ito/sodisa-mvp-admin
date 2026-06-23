@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
+import BuildBadge from "@/components/BuildBadge";
 
 const jakartaSans = Plus_Jakarta_Sans({
   variable: "--font-sans",
@@ -35,6 +36,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         {children}
         <Toaster />
+        <BuildBadge />
       </body>
     </html>
   );

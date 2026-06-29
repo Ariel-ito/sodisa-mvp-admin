@@ -12,7 +12,7 @@ import { PermisosGrid } from './PermisosGrid';
 import { adminFetch, ApiError } from '@/lib/api';
 import { toast } from 'sonner';
 import { Banner } from '@/components/ui/Banner';
-import { Loader2, Search, KeyRound } from 'lucide-react';
+import { Loader2, Search, KeyRound, Eye, EyeOff, Copy, Check } from 'lucide-react';
 import { BicSearchModal } from './BicSearchModal';
 
 export interface UcaData {
@@ -46,6 +46,8 @@ export function AccesoForm({ initial, companyId, mode, companyModules }: Props) 
   const [email, setEmail]             = useState(initial?.user?.email ?? '');
   const [name, setName]               = useState(initial?.user?.name ?? '');
   const [password, setPassword]       = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [copiedPassword, setCopiedPassword] = useState(false);
   const [externalId, setExternalId]   = useState(initial?.externalId ?? '');
   const [pinEnabled, setPinEnabled] = useState(initial?.hasSupervisorPin ?? false);
   const [pinValue, setPinValue]     = useState('');
@@ -84,6 +86,13 @@ export function AccesoForm({ initial, companyId, mode, companyModules }: Props) 
   const [formError, setFormError]     = useState<string | null>(null);
   const [resettingPwd, setResettingPwd] = useState(false);
   const [bicModalOpen, setBicModalOpen] = useState(false);
+
+  async function copyPassword() {
+    if (!password.trim()) return;
+    await navigator.clipboard.writeText(password.trim());
+    setCopiedPassword(true);
+    setTimeout(() => setCopiedPassword(false), 2000);
+  }
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
@@ -169,7 +178,7 @@ export function AccesoForm({ initial, companyId, mode, companyModules }: Props) 
 
   async function handleResetPassword() {
     if (!password) {
-      toast.error('Ingresa una nueva contraseña antes de resetear.');
+      toast.error('Ingresa una nueva contraseña antes de restablecer.');
       return;
     }
     setResettingPwd(true);
@@ -240,16 +249,43 @@ export function AccesoForm({ initial, companyId, mode, companyModules }: Props) 
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="password">
               {mode === 'create' ? 'Contraseña' : 'Nueva contraseña'}{' '}
-              <span className="text-muted-foreground">(vacío = sin cambios)</span>
+              {mode === 'edit' && (
+                <span className="text-muted-foreground">(vacío = sin cambios)</span>
+              )}
             </Label>
-            <Input
-              id="password"
-              type="password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              placeholder="••••••••"
-              required={mode === 'create' && !initial?.userId}
-            />
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <Input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="pr-9"
+                  required={mode === 'create' && !initial?.userId}
+                  autoComplete="new-password"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(s => !s)}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  tabIndex={-1}
+                  aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                >
+                  {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                </button>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={copyPassword}
+                disabled={!password.trim()}
+                title="Copiar contraseña"
+              >
+                {copiedPassword ? <Check className="size-4 text-green-600" /> : <Copy className="size-4" />}
+              </Button>
+            </div>
           </div>
 
           <div className="flex flex-col gap-1.5">
@@ -401,7 +437,7 @@ export function AccesoForm({ initial, companyId, mode, companyModules }: Props) 
             onClick={handleResetPassword}
           >
             {resettingPwd ? <Loader2 className="size-4 animate-spin" /> : <KeyRound className="size-4" />}
-            Reset contraseña
+            Restablecer contraseña
           </Button>
         )}
       </div>

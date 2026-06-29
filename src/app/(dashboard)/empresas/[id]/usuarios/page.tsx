@@ -3,7 +3,7 @@
 import { use, useState } from 'react';
 import useSWR from 'swr';
 import Link from 'next/link';
-import { ChevronRight, Plus, Pencil, ShieldCheck, CheckCircle2, AlertCircle, XCircle, KeyRound } from 'lucide-react';
+import { ChevronRight, Plus, Pencil, ShieldCheck, CheckCircle2, AlertCircle, XCircle, KeyRound, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { LockButton } from '@/components/ui/LockButton';
@@ -11,6 +11,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { swrFetcher } from '@/lib/api';
+import { UserInfoDialog } from '@/components/accesos/UserInfoDialog';
 
 interface UcaItem {
   id: number;
@@ -111,6 +112,8 @@ export default function UsuariosEmpresaPage({ params }: { params: Promise<{ id: 
 
   const totalPages  = Math.ceil((accesos?.length ?? 0) / PAGE_SIZE);
   const pageAccesos = accesos?.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+
+  const [previewUcaId, setPreviewUcaId] = useState<number | null>(null);
 
   return (
     <div className="flex flex-col gap-6">
@@ -220,6 +223,13 @@ export default function UsuariosEmpresaPage({ params }: { params: Promise<{ id: 
                           failedLoginAttempts={uca.failedLoginAttempts}
                           onSuccess={() => mutate()}
                         />
+                        <Button
+                          variant="ghost" size="icon-sm"
+                          title="Ver detalles del usuario"
+                          onClick={() => setPreviewUcaId(uca.id)}
+                        >
+                          <Eye className="size-4" />
+                        </Button>
                         <Button variant="ghost" size="icon-sm" title="Editar acceso"
                           nativeButton={false} render={<Link href={`/empresas/${id}/usuarios/${uca.id}`} />}>
                           <Pencil className="size-4" />
@@ -242,7 +252,7 @@ export default function UsuariosEmpresaPage({ params }: { params: Promise<{ id: 
             {pageAccesos?.map(uca => (
               <div key={uca.id} className="rounded-xl border bg-card shadow-sm p-4 flex flex-col gap-3">
 
-                {/* Fila 1: nombre + estado + editar */}
+                {/* Fila 1: nombre + estado + acciones */}
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
                     <p className="font-semibold text-sm leading-tight">{uca.userName}</p>
@@ -258,6 +268,13 @@ export default function UsuariosEmpresaPage({ params }: { params: Promise<{ id: 
                       failedLoginAttempts={uca.failedLoginAttempts}
                       onSuccess={() => mutate()}
                     />
+                    <Button
+                      variant="ghost" size="icon-sm"
+                      title="Ver detalles del usuario"
+                      onClick={() => setPreviewUcaId(uca.id)}
+                    >
+                      <Eye className="size-4" />
+                    </Button>
                     <Button variant="ghost" size="icon-sm" title="Editar acceso"
                       nativeButton={false} render={<Link href={`/empresas/${id}/usuarios/${uca.id}`} />}>
                       <Pencil className="size-4" />
@@ -326,6 +343,11 @@ export default function UsuariosEmpresaPage({ params }: { params: Promise<{ id: 
           </span>
         </div>
       )}
+
+      <UserInfoDialog
+        ucaId={previewUcaId}
+        onClose={() => setPreviewUcaId(null)}
+      />
 
     </div>
   );

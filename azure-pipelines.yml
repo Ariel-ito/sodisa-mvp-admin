@@ -26,6 +26,9 @@ steps:
     displayName: Install dependencies
 
   - ${{ if eq(variables['Build.Reason'], 'PullRequest') }}:
+    - script: npm run lint
+      displayName: Lint (PR check)
+
     - script: npm run build
       displayName: Build (PR check)
       env:

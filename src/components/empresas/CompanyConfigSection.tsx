@@ -15,6 +15,7 @@ const MODULES = [
   { id: 'pos',        label: 'Punto de Venta',     description: 'Operaciones de caja y ventas' },
   { id: 'stats',      label: 'Insights / Stats',   description: 'Análisis y reportes de ventas' },
   { id: 'accounting', label: 'Contabilidad',       description: 'Períodos contables y configuración contable' },
+  { id: 'inventory',  label: 'Inventario',         description: 'Bodegas, catálogos y gestión de inventario' },
   { id: 'scheduling', label: 'Horarios Escolares', description: 'Generación de horarios de clases' },
 ];
 

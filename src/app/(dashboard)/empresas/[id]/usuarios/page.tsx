@@ -1,9 +1,9 @@
 'use client';
 
-import { use, useState } from 'react';
+import { use, useMemo, useState } from 'react';
 import useSWR from 'swr';
 import Link from 'next/link';
-import { ChevronRight, Plus, Pencil, ShieldCheck, CheckCircle2, AlertCircle, XCircle, KeyRound, Eye } from 'lucide-react';
+import { ChevronRight, Plus, Pencil, ShieldCheck, CheckCircle2, AlertCircle, XCircle, KeyRound, Eye, Search, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { LockButton } from '@/components/ui/LockButton';
@@ -110,8 +110,46 @@ export default function UsuariosEmpresaPage({ params }: { params: Promise<{ id: 
     ? new Set(bicEmployees.map(e => e.CODIGO_BIC?.trim()).filter(Boolean))
     : null;
 
-  const totalPages  = Math.ceil((accesos?.length ?? 0) / PAGE_SIZE);
-  const pageAccesos = accesos?.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+  // ── Filters ─────────────────────────────────────────────────────────────────
+  const [search,       setSearch]       = useState('');
+  const [filterEstado, setFilterEstado] = useState<'todos' | 'activo' | 'inactivo'>('todos');
+  const [filterRol,    setFilterRol]    = useState('');
+
+  const availableRoles = useMemo(() => {
+    if (!accesos) return [];
+    const set = new Set<string>();
+    accesos.forEach(u => u.roles.forEach(r => set.add(r)));
+    return Array.from(set).sort();
+  }, [accesos]);
+
+  const filtered = useMemo(() => {
+    if (!accesos) return [];
+    const q = search.trim().toLowerCase();
+    return accesos.filter(u => {
+      if (q && !u.userName.toLowerCase().includes(q) && !u.userEmail.toLowerCase().includes(q)) return false;
+      if (filterEstado === 'activo'   && !u.isActive) return false;
+      if (filterEstado === 'inactivo' &&  u.isActive) return false;
+      if (filterRol && !u.roles.includes(filterRol)) return false;
+      return true;
+    });
+  }, [accesos, search, filterEstado, filterRol]);
+
+  const hasFilters = search !== '' || filterEstado !== 'todos' || filterRol !== '';
+
+  function clearFilters() {
+    setSearch('');
+    setFilterEstado('todos');
+    setFilterRol('');
+    setPage(0);
+  }
+
+  function updateFilter<T>(setter: (v: T) => void, value: T) {
+    setter(value);
+    setPage(0);
+  }
+
+  const totalPages  = Math.ceil(filtered.length / PAGE_SIZE);
+  const pageAccesos = filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
 
   const [previewUcaId, setPreviewUcaId] = useState<number | null>(null);
 
@@ -139,6 +177,67 @@ export default function UsuariosEmpresaPage({ params }: { params: Promise<{ id: 
             <span className="sm:hidden">Nuevo</span>
           </Button>
         </div>
+      </div>
+
+      {/* ── Search & Filters ─────────────────────────────────────────────────── */}
+      <div className="flex flex-wrap items-center gap-2">
+        {/* Search */}
+        <div className="relative flex-1 min-w-48">
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground pointer-events-none" />
+          <input
+            type="text"
+            placeholder="Buscar por nombre o email…"
+            value={search}
+            onChange={e => updateFilter(setSearch, e.target.value)}
+            className="w-full pl-8 pr-3 py-1.5 text-sm border rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+          />
+        </div>
+
+        {/* Estado */}
+        <select
+          value={filterEstado}
+          onChange={e => updateFilter(setFilterEstado, e.target.value as typeof filterEstado)}
+          className="text-sm border rounded-md px-2.5 py-1.5 bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+        >
+          <option value="todos">Todos los estados</option>
+          <option value="activo">Activo</option>
+          <option value="inactivo">Inactivo</option>
+        </select>
+
+        {/* Rol */}
+        {availableRoles.length > 0 && (
+          <select
+            value={filterRol}
+            onChange={e => updateFilter(setFilterRol, e.target.value)}
+            className="text-sm border rounded-md px-2.5 py-1.5 bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+          >
+            <option value="">Todos los roles</option>
+            {availableRoles.map(r => (
+              <option key={r} value={r}>{r}</option>
+            ))}
+          </select>
+        )}
+
+        {/* Clear */}
+        {hasFilters && (
+          <button
+            onClick={clearFilters}
+            className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <X className="size-3.5" />
+            Limpiar
+          </button>
+        )}
+
+        {/* Conteo */}
+        {accesos && (
+          <span className="ml-auto text-xs text-muted-foreground whitespace-nowrap">
+            {hasFilters
+              ? `${filtered.length} de ${accesos.length} usuarios`
+              : `${accesos.length} usuarios`
+            }
+          </span>
+        )}
       </div>
 
       {isLoading ? (
@@ -170,10 +269,10 @@ export default function UsuariosEmpresaPage({ params }: { params: Promise<{ id: 
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {accesos?.length === 0 && (
+                {filtered.length === 0 && (
                   <TableRow>
                     <TableCell colSpan={7} className="text-center text-muted-foreground py-10">
-                      No hay usuarios con acceso a esta empresa.
+                      {hasFilters ? 'Sin resultados para los filtros aplicados.' : 'No hay usuarios con acceso a esta empresa.'}
                     </TableCell>
                   </TableRow>
                 )}
@@ -244,9 +343,9 @@ export default function UsuariosEmpresaPage({ params }: { params: Promise<{ id: 
 
           {/* ── Vista mobile: cards ───────────────────────────────── */}
           <div className="md:hidden flex flex-col gap-3">
-            {(accesos?.length ?? 0) === 0 && (
+            {filtered.length === 0 && (
               <p className="text-center text-sm text-muted-foreground py-10">
-                No hay usuarios con acceso a esta empresa.
+                {hasFilters ? 'Sin resultados para los filtros aplicados.' : 'No hay usuarios con acceso a esta empresa.'}
               </p>
             )}
             {pageAccesos?.map(uca => (
@@ -310,7 +409,7 @@ export default function UsuariosEmpresaPage({ params }: { params: Promise<{ id: 
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex items-center justify-between text-sm text-muted-foreground">
-              <span>Página {page + 1} de {totalPages} · {accesos?.length} usuarios</span>
+              <span>Página {page + 1} de {totalPages} · {filtered.length} usuarios</span>
               <div className="flex gap-2">
                 <button
                   disabled={page === 0}

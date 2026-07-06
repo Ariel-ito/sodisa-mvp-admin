@@ -65,13 +65,51 @@ export const PERMISSIONS = {
       { code: 'customers.edit',   label: 'Editar clientes' },
     ],
   },
-  // Bodegas
-  warehouses: {
+  // Inventario
+  inventory: {
+    label: '📦 Inventario',
+    perms: [
+      { code: 'inventory.access', label: 'Acceso al módulo' },
+    ],
+  },
+  inventory_warehouses: {
     label: '🏢 Bodegas',
     perms: [
-      { code: 'warehouses.access', label: 'Acceso al módulo' },
-      { code: 'warehouses.view',   label: 'Ver bodegas' },
-      { code: 'warehouses.manage', label: 'Gestionar bodegas' },
+      { code: 'inventory.warehouses.create', label: 'Crear bodegas' },
+      { code: 'inventory.warehouses.edit',   label: 'Editar bodegas' },
+      { code: 'inventory.warehouses.delete', label: 'Eliminar bodegas' },
+    ],
+  },
+  inventory_types: {
+    label: '📋 Tipos de inventario',
+    perms: [
+      { code: 'inventory.types.create', label: 'Crear tipos de inventario' },
+      { code: 'inventory.types.edit',   label: 'Editar tipos de inventario' },
+      { code: 'inventory.types.delete', label: 'Eliminar tipos de inventario' },
+    ],
+  },
+  inventory_packages: {
+    label: '📦 Empaques',
+    perms: [
+      { code: 'inventory.packages.create', label: 'Crear empaques' },
+      { code: 'inventory.packages.edit',   label: 'Editar empaques' },
+      { code: 'inventory.packages.delete', label: 'Eliminar empaques' },
+    ],
+  },
+  inventory_units: {
+    label: '📐 Unidades de medida',
+    perms: [
+      { code: 'inventory.units.create', label: 'Crear unidades de medida' },
+      { code: 'inventory.units.edit',   label: 'Editar unidades de medida' },
+      { code: 'inventory.units.delete', label: 'Eliminar unidades de medida' },
+    ],
+  },
+  inventory_articles: {
+    label: '🗂️ Artículos de inventario',
+    perms: [
+      { code: 'inventory.articles.create', label: 'Crear artículos' },
+      { code: 'inventory.articles.edit',   label: 'Editar artículos' },
+      { code: 'inventory.articles.delete', label: 'Desactivar artículos' },
     ],
   },
   // Personal
@@ -140,4 +178,5 @@ export const COMPANY_MODULE_MAP: Record<string, string[]> = {
   stats:      ['statistics'],
   scheduling: ['scheduling'],
   accounting: ['accounting'],
+  inventory:  ['inventory'],
 };

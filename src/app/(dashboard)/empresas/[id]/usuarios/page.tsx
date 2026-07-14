@@ -3,14 +3,15 @@
 import { use, useMemo, useState } from 'react';
 import useSWR from 'swr';
 import Link from 'next/link';
-import { ChevronRight, Plus, Pencil, ShieldCheck, CheckCircle2, AlertCircle, XCircle, KeyRound, Eye, Search, X } from 'lucide-react';
+import { ChevronRight, Plus, Pencil, ShieldCheck, CheckCircle2, AlertCircle, XCircle, KeyRound, Eye, Search, X, Trash2, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { LockButton } from '@/components/ui/LockButton';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { swrFetcher } from '@/lib/api';
+import { adminFetch, ApiError, swrFetcher } from '@/lib/api';
+import { toast } from 'sonner';
 import { UserInfoDialog } from '@/components/accesos/UserInfoDialog';
 
 interface UcaItem {
@@ -152,6 +153,26 @@ export default function UsuariosEmpresaPage({ params }: { params: Promise<{ id: 
   const pageAccesos = filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
 
   const [previewUcaId, setPreviewUcaId] = useState<number | null>(null);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
+
+  async function handleDeleteAccess(uca: UcaItem) {
+    const confirmed = window.confirm(
+      `¿Eliminar el acceso de "${uca.userName}" (${uca.userEmail}) a esta empresa?\n\n` +
+      `Esto no se puede deshacer. El usuario perderá roles y permisos asignados aquí — si tiene acceso a otras empresas, esos no se ven afectados.`
+    );
+    if (!confirmed) return;
+
+    setDeletingId(uca.id);
+    try {
+      await adminFetch(`/portal/access/${uca.id}`, { method: 'DELETE' });
+      toast.success('Acceso eliminado correctamente');
+      await mutate();
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : 'Error al eliminar el acceso');
+    } finally {
+      setDeletingId(null);
+    }
+  }
 
   return (
     <div className="flex flex-col gap-6">
@@ -333,6 +354,15 @@ export default function UsuariosEmpresaPage({ params }: { params: Promise<{ id: 
                           nativeButton={false} render={<Link href={`/empresas/${id}/usuarios/${uca.id}`} />}>
                           <Pencil className="size-4" />
                         </Button>
+                        <Button
+                          variant="ghost" size="icon-sm"
+                          title="Eliminar acceso"
+                          disabled={deletingId === uca.id}
+                          onClick={() => handleDeleteAccess(uca)}
+                          className="text-destructive/70 hover:text-destructive hover:bg-destructive/10"
+                        >
+                          {deletingId === uca.id ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-4" />}
+                        </Button>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -377,6 +407,15 @@ export default function UsuariosEmpresaPage({ params }: { params: Promise<{ id: 
                     <Button variant="ghost" size="icon-sm" title="Editar acceso"
                       nativeButton={false} render={<Link href={`/empresas/${id}/usuarios/${uca.id}`} />}>
                       <Pencil className="size-4" />
+                    </Button>
+                    <Button
+                      variant="ghost" size="icon-sm"
+                      title="Eliminar acceso"
+                      disabled={deletingId === uca.id}
+                      onClick={() => handleDeleteAccess(uca)}
+                      className="text-destructive/70 hover:text-destructive hover:bg-destructive/10"
+                    >
+                      {deletingId === uca.id ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-4" />}
                     </Button>
                   </div>
                 </div>

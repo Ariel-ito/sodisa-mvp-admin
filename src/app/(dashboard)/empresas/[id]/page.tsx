@@ -1,17 +1,45 @@
 'use client';
 
-import { use } from 'react';
+import { use, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import useSWR from 'swr';
 import Link from 'next/link';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, Loader2, Trash2 } from 'lucide-react';
 import { EmpresaForm, CompanyData } from '@/components/empresas/EmpresaForm';
 import { PingHistoryChart } from '@/components/empresas/PingHistoryChart';
 import { CompanyConfigSection } from '@/components/empresas/CompanyConfigSection';
-import { swrFetcher } from '@/lib/api';
+import { adminFetch, ApiError, swrFetcher } from '@/lib/api';
+import { toast } from 'sonner';
+
+// Producción (branch "main") nunca debe poder borrar una empresa: ahí la
+// política es bloquear usuarios + desactivar la empresa, no eliminarla.
+// Local (sin branch), QA y Staging sí lo permiten.
+const CAN_DELETE_COMPANY = process.env.NEXT_PUBLIC_BRANCH !== 'main';
 
 export default function EditarEmpresaPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
+  const router = useRouter();
   const { data: company, isLoading } = useSWR<CompanyData>(`/portal/companies/${id}`, swrFetcher);
+  const [deleting, setDeleting] = useState(false);
+
+  async function handleDelete() {
+    if (!company) return;
+    const confirmed = window.confirm(
+      `¿Eliminar la empresa "${company.name}"?\n\n` +
+      `Esto también eliminará TODOS los usuarios y accesos de esta empresa (roles y permisos incluidos). Esta acción no se puede deshacer.`
+    );
+    if (!confirmed) return;
+
+    setDeleting(true);
+    try {
+      await adminFetch(`/portal/companies/${id}`, { method: 'DELETE' });
+      toast.success('Empresa eliminada correctamente');
+      router.push('/empresas');
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : 'Error al eliminar la empresa');
+      setDeleting(false);
+    }
+  }
 
   if (isLoading) {
     return <div className="text-sm text-muted-foreground">Cargando empresa…</div>;
@@ -43,6 +71,27 @@ export default function EditarEmpresaPage({ params }: { params: Promise<{ id: st
       {company.id !== undefined && (
         <div className="rounded-xl border bg-card shadow-sm p-5">
           <PingHistoryChart companyId={company.id} />
+        </div>
+      )}
+
+      {/* Zona de peligro */}
+      {CAN_DELETE_COMPANY && (
+        <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-5 flex flex-col gap-3">
+          <div>
+            <h2 className="font-medium text-base text-destructive">Zona de peligro</h2>
+            <p className="text-sm text-muted-foreground mt-0.5">
+              Elimina permanentemente esta empresa y todos sus usuarios/accesos. No disponible en producción.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={handleDelete}
+            disabled={deleting}
+            className="inline-flex items-center gap-2 self-start rounded-md bg-destructive px-3 py-1.5 text-sm font-medium text-destructive-foreground hover:bg-destructive/90 disabled:opacity-50 transition-colors"
+          >
+            {deleting ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-4" />}
+            {deleting ? 'Eliminando…' : 'Eliminar empresa'}
+          </button>
         </div>
       )}
     </div>

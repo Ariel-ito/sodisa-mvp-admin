@@ -100,3 +100,16 @@ Antes de declarar una función de presentación local dentro de un `page.tsx` (c
 ## Estilo
 
 Tailwind v4 puro + variables CSS de shadcn (`bg-primary`, `text-muted-foreground`, `ring-destructive`). No uses `style={{ }}` con colores hardcodeados — para eso están las variables de tema. Breakpoint estándar `md:` para el cambio tabla↔cards.
+
+## Flujo de ramas / Deployment
+
+Cuatro ramas de larga vida, cada una desplegada a su propio Azure App Service (mismo esquema en `mvp_api`, `mvp_app` y `mvp_admin`):
+
+- **`develop`** — rama de integración. Todo trabajo nuevo (feature branches, fixes) se mergea aquí primero. No dispara un deploy a un ambiente compartido — es donde se prueba localmente (levantar el server, click-through real de la feature) antes de pasar a QA.
+- **`qa`** — ambiente de QA. Se llega solo vía PR desde `develop`, después de haber probado el merge localmente.
+- **`staging`** — ambiente de staging. Se promueve desde `qa` una vez validado ahí.
+- **`main`** — producción.
+
+Flujo esperado: rama de feature → merge a `develop` → probar localmente → PR de `develop` a `qa` → validar en QA → promover a `staging` → promover a `main`.
+
+No mergees directo a `qa`/`staging`/`main` sin pasar por `develop` primero, salvo un fix puntual ya validado que toca un solo archivo aislado (y aun así, refléjalo también en `develop` para que no diverja).

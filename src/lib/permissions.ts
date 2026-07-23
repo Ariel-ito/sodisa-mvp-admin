@@ -44,17 +44,6 @@ export const PERMISSIONS = {
       { code: 'pos.configure', label: 'Configurar PDV' },
     ],
   },
-  // Artículos
-  articles: {
-    label: '📦 Artículos',
-    perms: [
-      { code: 'articles.access', label: 'Acceso al módulo' },
-      { code: 'articles.view',   label: 'Ver artículos' },
-      { code: 'articles.create', label: 'Crear artículos' },
-      { code: 'articles.edit',   label: 'Editar artículos' },
-      { code: 'articles.delete', label: 'Eliminar artículos' },
-    ],
-  },
   // Clientes
   customers: {
     label: '👥 Clientes',

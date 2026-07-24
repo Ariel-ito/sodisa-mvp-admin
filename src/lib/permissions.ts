@@ -118,6 +118,10 @@ export const PERMISSIONS = {
       { code: 'accounting.periods.create', label: 'Crear periodo' },
       { code: 'accounting.periods.edit',   label: 'Editar periodo' },
       { code: 'accounting.periods.delete', label: 'Eliminar periodo' },
+      { code: 'accounting.cai.view',   label: 'Ver declaraciones CAI' },
+      { code: 'accounting.cai.create', label: 'Crear declaración/establecimiento/punto/documento CAI' },
+      { code: 'accounting.cai.edit',   label: 'Editar CAI y activar rangos' },
+      { code: 'accounting.cai.delete', label: 'Eliminar CAI' },
     ],
   },
   // Horarios Escolares

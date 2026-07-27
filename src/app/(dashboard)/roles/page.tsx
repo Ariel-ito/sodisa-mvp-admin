@@ -1,14 +1,16 @@
 'use client';
 
+import { useState } from 'react';
 import useSWR from 'swr';
 import Link from 'next/link';
-import { Plus, Pencil, ShieldCheck } from 'lucide-react';
+import { Plus, Pencil, ShieldCheck, Trash2, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { swrFetcher } from '@/lib/api';
+import { adminFetch, ApiError, swrFetcher } from '@/lib/api';
+import { toast } from 'sonner';
 
 interface Role {
   id: number;
@@ -19,7 +21,26 @@ interface Role {
 }
 
 export default function RolesPage() {
-  const { data: roles, isLoading } = useSWR<Role[]>('/portal/roles', swrFetcher);
+  const { data: roles, isLoading, mutate } = useSWR<Role[]>('/portal/roles', swrFetcher);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
+
+  async function handleDelete(role: Role) {
+    const confirmed = window.confirm(
+      `¿Eliminar el rol "${role.name}"?\n\nEsta acción no se puede deshacer. Los usuarios que tengan este rol asignado lo perderán (sus permisos directos ya copiados no se ven afectados).`
+    );
+    if (!confirmed) return;
+
+    setDeletingId(role.id);
+    try {
+      await adminFetch(`/portal/roles/${role.id}`, { method: 'DELETE' });
+      toast.success('Rol eliminado correctamente');
+      await mutate();
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : 'Error al eliminar el rol');
+    } finally {
+      setDeletingId(null);
+    }
+  }
 
   return (
     <div className="flex flex-col gap-6">
@@ -75,11 +96,22 @@ export default function RolesPage() {
                       }
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center justify-end">
+                      <div className="flex items-center justify-end gap-0.5">
                         <Button variant="ghost" size="icon-sm" title="Editar"
                           nativeButton={false} render={<Link href={`/roles/${role.id}`} />}>
                           <Pencil className="size-4" />
                         </Button>
+                        {!role.isSystem && (
+                          <Button
+                            variant="ghost" size="icon-sm"
+                            title="Eliminar rol"
+                            disabled={deletingId === role.id}
+                            onClick={() => handleDelete(role)}
+                            className="text-destructive/70 hover:text-destructive hover:bg-destructive/10"
+                          >
+                            {deletingId === role.id ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-4" />}
+                          </Button>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>
@@ -107,10 +139,23 @@ export default function RolesPage() {
                       : <Badge className="text-xs shrink-0">Personalizado</Badge>
                     }
                   </div>
-                  <Button variant="ghost" size="icon-sm" title="Editar" className="shrink-0"
-                    nativeButton={false} render={<Link href={`/roles/${role.id}`} />}>
-                    <Pencil className="size-4" />
-                  </Button>
+                  <div className="flex items-center gap-0.5 shrink-0">
+                    <Button variant="ghost" size="icon-sm" title="Editar"
+                      nativeButton={false} render={<Link href={`/roles/${role.id}`} />}>
+                      <Pencil className="size-4" />
+                    </Button>
+                    {!role.isSystem && (
+                      <Button
+                        variant="ghost" size="icon-sm"
+                        title="Eliminar rol"
+                        disabled={deletingId === role.id}
+                        onClick={() => handleDelete(role)}
+                        className="text-destructive/70 hover:text-destructive hover:bg-destructive/10"
+                      >
+                        {deletingId === role.id ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-4" />}
+                      </Button>
+                    )}
+                  </div>
                 </div>
 
                 {/* Descripción */}

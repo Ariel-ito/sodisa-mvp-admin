@@ -113,3 +113,22 @@ Cuatro ramas de larga vida, cada una desplegada a su propio Azure App Service (m
 Flujo esperado: rama de feature → merge a `develop` → probar localmente → PR de `develop` a `qa` → validar en QA → promover a `staging` → promover a `main`.
 
 No mergees directo a `qa`/`staging`/`main` sin pasar por `develop` primero, salvo un fix puntual ya validado que toca un solo archivo aislado (y aun así, refléjalo también en `develop` para que no diverja).
+
+## Testing E2E (Playwright)
+
+`e2e/` — tests organizados por flujo/feature (`dashboard.spec.ts`, etc.), no un archivo por cada `page.tsx`. Correr con `npm run test:e2e` (o `test:e2e:ui` para el modo visual, `test:e2e:report` para ver el último reporte HTML).
+
+- `e2e/auth.setup.ts` hace login real por UI con la cuenta de QA (`.env.test` → `QA_ADMIN_EMAIL`/`QA_ADMIN_PASSWORD`, no commiteado) y guarda la sesión en `e2e/.auth/admin.json`.
+
+**⚠️ Regla crítica: nunca cargues `e2e/.auth/admin.json` en un browser context nuevo por archivo de test.** El layout de `(dashboard)/layout.tsx` llama `hydrateToken()` (rota el refresh token) en cada montaje de página. Si un segundo archivo de test abriera su propio context desde ese mismo archivo estático, recibiría un refresh token ya revocado por el primero y caería a `/login` con un fallo silencioso y confuso (parece que "no hay sesión" cuando en realidad el token ya rotó).
+
+Por eso todo test nuevo debe importar `test`/`expect` desde [`e2e/fixtures.ts`](e2e/fixtures.ts) (no desde `@playwright/test` directo) y usar el fixture `authedPage` en vez de `page`:
+```typescript
+import { test, expect } from './fixtures';
+
+test('mi caso', async ({ authedPage: page }) => {
+  await page.goto('/empresas');
+  // ...
+});
+```
+`authedPage` se crea una sola vez por worker (scope `'worker'`) y se comparte entre todos los archivos que lo usen — la rotación de cookies fluye en vivo dentro de ese único context durante toda la corrida. `playwright.config.ts` fuerza `workers: 1` / `fullyParallel: false` para garantizar que solo exista un worker (y por tanto un único context vivo) en esta etapa temprana del setup.

@@ -1,15 +1,18 @@
 'use client';
 
+import { useState } from 'react';
 import useSWR from 'swr';
 import Link from 'next/link';
-import { Plus, Pencil } from 'lucide-react';
+import { Plus, Pencil, Trash2, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { LockButton } from '@/components/ui/LockButton';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { swrFetcher } from '@/lib/api';
+import { adminFetch, ApiError, swrFetcher } from '@/lib/api';
+import { getUser } from '@/lib/auth';
+import { toast } from 'sonner';
 
 interface PortalUser {
   id: number;
@@ -23,6 +26,26 @@ interface PortalUser {
 
 export default function UsuariosPortalPage() {
   const { data: users, isLoading, mutate } = useSWR<PortalUser[]>('/portal/users', swrFetcher);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
+  const currentUserId = getUser()?.id;
+
+  async function handleDelete(user: PortalUser) {
+    const confirmed = window.confirm(
+      `¿Eliminar al usuario "${user.name}" (${user.email})?\n\nEsta acción no se puede deshacer.`
+    );
+    if (!confirmed) return;
+
+    setDeletingId(user.id);
+    try {
+      await adminFetch(`/portal/users/${user.id}`, { method: 'DELETE' });
+      toast.success('Usuario eliminado correctamente');
+      await mutate();
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : 'Error al eliminar el usuario');
+    } finally {
+      setDeletingId(null);
+    }
+  }
 
   return (
     <div className="flex flex-col gap-6">
@@ -88,6 +111,17 @@ export default function UsuariosPortalPage() {
                           nativeButton={false} render={<Link href={`/usuarios/${user.id}`} />}>
                           <Pencil className="size-4" />
                         </Button>
+                        {user.id !== currentUserId && (
+                          <Button
+                            variant="ghost" size="icon-sm"
+                            title="Eliminar usuario"
+                            disabled={deletingId === user.id}
+                            onClick={() => handleDelete(user)}
+                            className="text-destructive/70 hover:text-destructive hover:bg-destructive/10"
+                          >
+                            {deletingId === user.id ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-4" />}
+                          </Button>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>
@@ -129,6 +163,17 @@ export default function UsuariosPortalPage() {
                     nativeButton={false} render={<Link href={`/usuarios/${user.id}`} />}>
                     <Pencil className="size-4" />
                   </Button>
+                  {user.id !== currentUserId && (
+                    <Button
+                      variant="ghost" size="icon-sm"
+                      title="Eliminar usuario"
+                      disabled={deletingId === user.id}
+                      onClick={() => handleDelete(user)}
+                      className="text-destructive/70 hover:text-destructive hover:bg-destructive/10"
+                    >
+                      {deletingId === user.id ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-4" />}
+                    </Button>
+                  )}
                 </div>
               </div>
             ))}

@@ -42,6 +42,14 @@ export const PERMISSIONS = {
       { code: 'pos.access',    label: 'Acceso al módulo' },
       { code: 'pos.sell',      label: 'Realizar ventas' },
       { code: 'pos.configure', label: 'Configurar PDV' },
+      { code: 'pos.catalog.view',   label: 'Ver catálogo de puntos de venta' },
+      { code: 'pos.catalog.create', label: 'Crear punto de venta' },
+      { code: 'pos.catalog.edit',   label: 'Editar punto de venta' },
+      { code: 'pos.catalog.delete', label: 'Eliminar punto de venta' },
+      { code: 'cashbox.catalog.view',   label: 'Ver catálogo de cajas' },
+      { code: 'cashbox.catalog.create', label: 'Crear caja' },
+      { code: 'cashbox.catalog.edit',   label: 'Editar caja' },
+      { code: 'cashbox.catalog.delete', label: 'Eliminar caja' },
     ],
   },
   // Clientes
@@ -99,6 +107,14 @@ export const PERMISSIONS = {
       { code: 'inventory.articles.create', label: 'Crear artículos' },
       { code: 'inventory.articles.edit',   label: 'Editar artículos' },
       { code: 'inventory.articles.delete', label: 'Desactivar artículos' },
+    ],
+  },
+  inventory_groupings: {
+    label: '🏷️ Agrupaciones de artículo',
+    perms: [
+      { code: 'inventory.groupings.create', label: 'Crear agrupaciones y opciones' },
+      { code: 'inventory.groupings.edit',   label: 'Editar agrupaciones y opciones' },
+      { code: 'inventory.groupings.delete', label: 'Eliminar agrupaciones y opciones' },
     ],
   },
   // Personal

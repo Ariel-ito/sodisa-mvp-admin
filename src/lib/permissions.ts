@@ -42,17 +42,14 @@ export const PERMISSIONS = {
       { code: 'pos.access',    label: 'Acceso al módulo' },
       { code: 'pos.sell',      label: 'Realizar ventas' },
       { code: 'pos.configure', label: 'Configurar PDV' },
-    ],
-  },
-  // Artículos
-  articles: {
-    label: '📦 Artículos',
-    perms: [
-      { code: 'articles.access', label: 'Acceso al módulo' },
-      { code: 'articles.view',   label: 'Ver artículos' },
-      { code: 'articles.create', label: 'Crear artículos' },
-      { code: 'articles.edit',   label: 'Editar artículos' },
-      { code: 'articles.delete', label: 'Eliminar artículos' },
+      { code: 'pos.catalog.view',   label: 'Ver catálogo de puntos de venta' },
+      { code: 'pos.catalog.create', label: 'Crear punto de venta' },
+      { code: 'pos.catalog.edit',   label: 'Editar punto de venta' },
+      { code: 'pos.catalog.delete', label: 'Eliminar punto de venta' },
+      { code: 'cashbox.catalog.view',   label: 'Ver catálogo de cajas' },
+      { code: 'cashbox.catalog.create', label: 'Crear caja' },
+      { code: 'cashbox.catalog.edit',   label: 'Editar caja' },
+      { code: 'cashbox.catalog.delete', label: 'Eliminar caja' },
     ],
   },
   // Clientes
@@ -112,6 +109,14 @@ export const PERMISSIONS = {
       { code: 'inventory.articles.delete', label: 'Desactivar artículos' },
     ],
   },
+  inventory_groupings: {
+    label: '🏷️ Agrupaciones de artículo',
+    perms: [
+      { code: 'inventory.groupings.create', label: 'Crear agrupaciones y opciones' },
+      { code: 'inventory.groupings.edit',   label: 'Editar agrupaciones y opciones' },
+      { code: 'inventory.groupings.delete', label: 'Eliminar agrupaciones y opciones' },
+    ],
+  },
   // Personal
   staff: {
     label: '👔 Personal',
@@ -129,6 +134,10 @@ export const PERMISSIONS = {
       { code: 'accounting.periods.create', label: 'Crear periodo' },
       { code: 'accounting.periods.edit',   label: 'Editar periodo' },
       { code: 'accounting.periods.delete', label: 'Eliminar periodo' },
+      { code: 'accounting.cai.view',   label: 'Ver declaraciones CAI' },
+      { code: 'accounting.cai.create', label: 'Crear declaración/establecimiento/punto/documento CAI' },
+      { code: 'accounting.cai.edit',   label: 'Editar CAI y activar rangos' },
+      { code: 'accounting.cai.delete', label: 'Eliminar CAI' },
     ],
   },
   // Horarios Escolares

@@ -126,8 +126,9 @@ export default function AuditoriaPage() {
       {/* Filters */}
       <div className="rounded-xl border bg-card p-4 flex flex-wrap gap-3 items-end">
         <div className="flex flex-col gap-1 flex-1 min-w-[140px]">
-          <label className="text-xs font-medium text-muted-foreground">Evento</label>
+          <label htmlFor="filtro-evento" className="text-xs font-medium text-muted-foreground">Evento</label>
           <select
+            id="filtro-evento"
             value={action}
             onChange={e => setAction(e.target.value)}
             className="h-9 rounded-md border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
@@ -139,8 +140,9 @@ export default function AuditoriaPage() {
         </div>
 
         <div className="flex flex-col gap-1 flex-1 min-w-[180px]">
-          <label className="text-xs font-medium text-muted-foreground">Email (operador u objetivo)</label>
+          <label htmlFor="filtro-email" className="text-xs font-medium text-muted-foreground">Email (operador u objetivo)</label>
           <input
+            id="filtro-email"
             type="text"
             placeholder="ejemplo@correo.com"
             value={email}
@@ -151,8 +153,9 @@ export default function AuditoriaPage() {
         </div>
 
         <div className="flex flex-col gap-1">
-          <label className="text-xs font-medium text-muted-foreground">Desde</label>
+          <label htmlFor="filtro-desde" className="text-xs font-medium text-muted-foreground">Desde</label>
           <input
+            id="filtro-desde"
             type="date"
             value={fromDate}
             onChange={e => setFromDate(e.target.value)}
@@ -161,8 +164,9 @@ export default function AuditoriaPage() {
         </div>
 
         <div className="flex flex-col gap-1">
-          <label className="text-xs font-medium text-muted-foreground">Hasta</label>
+          <label htmlFor="filtro-hasta" className="text-xs font-medium text-muted-foreground">Hasta</label>
           <input
+            id="filtro-hasta"
             type="date"
             value={toDate}
             onChange={e => setToDate(e.target.value)}

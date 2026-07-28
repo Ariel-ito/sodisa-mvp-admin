@@ -20,6 +20,7 @@ interface BicEntity {
   PDV_NOMBRE: string | null;
   RELACION: string | null;
   ROL_BIC: 'vendedor' | 'cajero' | 'cobrador';
+  CAJAS_ASIGNADAS: number;
 }
 
 type BicRole = 'vendedor' | 'cajero' | 'cobrador';
@@ -191,6 +192,7 @@ export function BicSearchModal({ companyId, open, onClose, onSelect, currentExte
                   <th className="text-left px-4 py-3 font-semibold whitespace-nowrap w-24">Rol BIC</th>
                   <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">Punto de Venta</th>
                   <th className="text-left px-4 py-3 font-semibold whitespace-nowrap w-28">Relación PdV</th>
+                  <th className="text-left px-4 py-3 font-semibold whitespace-nowrap w-24">Cajas</th>
                   <th className="px-4 py-3 w-28" />
                 </tr>
               </thead>
@@ -262,6 +264,18 @@ export function BicSearchModal({ companyId, open, onClose, onSelect, currentExte
                           </Badge>
                         ) : (
                           <span className="text-muted-foreground">—</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap">
+                        {entity.ROL_BIC === 'cajero' && entity.CAJAS_ASIGNADAS === 0 ? (
+                          <span
+                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-xs font-medium bg-red-50 text-red-700 border-red-200"
+                            title="Este cajero no tiene ninguna caja asignada — no podrá usar Punto de Venta."
+                          >
+                            ⚠ 0
+                          </span>
+                        ) : (
+                          <span className="text-foreground">{entity.CAJAS_ASIGNADAS}</span>
                         )}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap">

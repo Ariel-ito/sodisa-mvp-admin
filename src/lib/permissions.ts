@@ -118,7 +118,7 @@ export const PERMISSIONS = {
     ],
   },
   inventory_transfers: {
-    label: '🔄 Transferencias',
+    label: '🔄 Transferencias de Inventario',
     perms: [
       { code: 'inventory.transfers.create',  label: 'Crear transferencias' },
       { code: 'inventory.transfers.edit',    label: 'Editar transferencias' },

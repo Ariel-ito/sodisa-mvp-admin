@@ -117,6 +117,16 @@ export const PERMISSIONS = {
       { code: 'inventory.groupings.delete', label: 'Eliminar agrupaciones y opciones' },
     ],
   },
+  inventory_transfers: {
+    label: '🔄 Transferencias',
+    perms: [
+      { code: 'inventory.transfers.create',  label: 'Crear transferencias' },
+      { code: 'inventory.transfers.edit',    label: 'Editar transferencias' },
+      { code: 'inventory.transfers.delete',  label: 'Eliminar transferencias' },
+      { code: 'inventory.transfers.approve', label: 'Aprobar transferencias' },
+      { code: 'inventory.transfers.receive', label: 'Recibir transferencias' },
+    ],
+  },
   // Personal
   staff: {
     label: '👔 Personal',

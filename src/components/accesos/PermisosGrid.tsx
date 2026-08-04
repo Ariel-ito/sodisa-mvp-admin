@@ -1,8 +1,25 @@
 'use client';
 
-import { PERMISSION_MODULES, COMPANY_MODULE_MAP } from '@/lib/permissions';
+import { useState } from 'react';
+import {
+  FileText, Monitor, Package, BookOpen, Users, BarChart3, GraduationCap, type LucideIcon,
+} from 'lucide-react';
+import { PERMISSION_MODULE_ENTRIES, PERMISSION_CATEGORIES, COMPANY_MODULE_MAP } from '@/lib/permissions';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+
+const MODULE_BY_KEY = Object.fromEntries(PERMISSION_MODULE_ENTRIES);
+
+const CATEGORY_ICONS: Record<string, LucideIcon> = {
+  facturacion: FileText,
+  ventas: Monitor,
+  inventario: Package,
+  contabilidad: BookOpen,
+  personal: Users,
+  reportes: BarChart3,
+  escuela: GraduationCap,
+};
 
 interface Props {
   selected: string[];
@@ -55,6 +72,20 @@ export function PermisosGrid({
 }: Props) {
   const activePrefixes = resolveActivePrefixes(companyModules);
 
+  // Aterriza en la categoría que ya tenga algo marcado (ej. al editar un rol/usuario
+  // existente), en vez de siempre la primera -- evita el "¿dónde quedaron mis permisos?".
+  const [activeCategory, setActiveCategory] = useState<string>(() => {
+    const withSelection = PERMISSION_CATEGORIES.find(cat =>
+      cat.modules.some(key =>
+        MODULE_BY_KEY[key]?.perms.some(p =>
+          selected.includes(p.code) ||
+          (pendingRolePermissions.includes(p.code) && !excludedPendingPerms.includes(p.code))
+        )
+      )
+    );
+    return withSelection?.key ?? PERMISSION_CATEGORIES[0].key;
+  });
+
   function toggle(code: string) {
     // Pending perm not yet in selected: toggle its exclusion instead of adding to selected
     if (pendingRolePermissions.includes(code) && !selected.includes(code)) {
@@ -96,98 +127,128 @@ export function PermisosGrid({
     }
   }
 
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      {PERMISSION_MODULES.map(module => {
-        const prefix = module.perms[0]?.code.split('.')[0] ?? '';
+  function renderModuleCard(module: (typeof MODULE_BY_KEY)[string]) {
+    const prefix = module.perms[0]?.code.split('.')[0] ?? '';
 
-        // Locked when company has modules configured and this group's prefix is
-        // controlled (mapped to a company module) but that module is not active.
-        const isLocked = activePrefixes !== null
-          && CONTROLLED_PREFIXES.has(prefix)
-          && !activePrefixes.has(prefix);
+    // Locked when company has modules configured and this group's prefix is
+    // controlled (mapped to a company module) but that module is not active.
+    const isLocked = activePrefixes !== null
+      && CONTROLLED_PREFIXES.has(prefix)
+      && !activePrefixes.has(prefix);
 
-        const codes = module.perms.map(p => p.code);
+    const codes = module.perms.map(p => p.code);
 
-        const someChecked      = codes.some(c => isVisuallyChecked(c));
-        const allVisuallyChecked = codes.every(c => isVisuallyChecked(c));
+    const someChecked      = codes.some(c => isVisuallyChecked(c));
+    const allVisuallyChecked = codes.every(c => isVisuallyChecked(c));
 
-        return (
-          <div
-            key={module.label}
-            className={`rounded-lg border p-3 flex flex-col gap-2 transition-opacity ${isLocked ? 'opacity-40' : ''}`}
-            title={isLocked ? 'Este módulo no está habilitado para esta empresa' : undefined}
+    return (
+      <div
+        key={module.label}
+        className={`rounded-lg border p-3 flex flex-col gap-2 transition-opacity ${isLocked ? 'opacity-40' : ''}`}
+        title={isLocked ? 'Este módulo no está habilitado para esta empresa' : undefined}
+      >
+        {/* Module header */}
+        <div className="flex items-center gap-2 border-b pb-2">
+          <Checkbox
+            id={`module-${module.label}`}
+            checked={allVisuallyChecked}
+            indeterminate={someChecked && !allVisuallyChecked}
+            disabled={isLocked}
+            onCheckedChange={() => toggleModule(codes, allVisuallyChecked)}
+          />
+          <Label
+            htmlFor={`module-${module.label}`}
+            className="font-semibold text-xs uppercase tracking-wide flex-1"
           >
-            {/* Module header */}
-            <div className="flex items-center gap-2 border-b pb-2">
-              <Checkbox
-                id={`module-${module.label}`}
-                checked={allVisuallyChecked}
-                indeterminate={someChecked && !allVisuallyChecked}
-                disabled={isLocked}
-                onCheckedChange={() => toggleModule(codes, allVisuallyChecked)}
-              />
-              <Label
-                htmlFor={`module-${module.label}`}
-                className="font-semibold text-xs uppercase tracking-wide flex-1"
-              >
-                {module.label}
-              </Label>
-              {isLocked && (
-                <span className="text-[9px] font-medium text-muted-foreground border rounded px-1 py-px shrink-0">
-                  No activo
-                </span>
-              )}
-            </div>
+            {module.label}
+          </Label>
+          {isLocked && (
+            <span className="text-[9px] font-medium text-muted-foreground border rounded px-1 py-px shrink-0">
+              No activo
+            </span>
+          )}
+        </div>
 
-            {/* Individual permissions */}
-            <div className="flex flex-col gap-1.5">
-              {module.perms.map(perm => {
-                const isDirect   = selected.includes(perm.code);
-                const isFromRole = fromRolePermissions.includes(perm.code);
-                const isPending  = pendingRolePermissions.includes(perm.code) && !isDirect;
-                const isChecked  = isVisuallyChecked(perm.code);
-                const isDisabled = isLocked;
+        {/* Individual permissions */}
+        <div className="flex flex-col gap-1.5">
+          {module.perms.map(perm => {
+            const isDirect   = selected.includes(perm.code);
+            const isFromRole = fromRolePermissions.includes(perm.code);
+            const isPending  = pendingRolePermissions.includes(perm.code) && !isDirect;
+            const isChecked  = isVisuallyChecked(perm.code);
+            const isDisabled = isLocked;
 
-                return (
-                  <div key={perm.code} className="flex items-center gap-2">
-                    <Checkbox
-                      id={`perm-${perm.code}`}
-                      checked={isChecked}
-                      disabled={isDisabled}
-                      onCheckedChange={() => toggle(perm.code)}
-                    />
-                    <Label
-                      htmlFor={`perm-${perm.code}`}
-                      className={`font-normal text-xs ${isPending ? 'text-muted-foreground select-none' : ''}`}
+            return (
+              <div key={perm.code} className="flex items-center gap-2">
+                <Checkbox
+                  id={`perm-${perm.code}`}
+                  checked={isChecked}
+                  disabled={isDisabled}
+                  onCheckedChange={() => toggle(perm.code)}
+                />
+                <Label
+                  htmlFor={`perm-${perm.code}`}
+                  className={`font-normal text-xs ${isPending ? 'text-muted-foreground select-none' : ''}`}
+                >
+                  {perm.label}
+                  {/* Post-save: came from a role, fully editable */}
+                  {isFromRole && !isPending && !isLocked && (
+                    <span
+                      className="ml-1.5 inline-block text-[9px] font-semibold tracking-wide text-blue-600 bg-blue-50 border border-blue-200 rounded px-1 py-px cursor-pointer"
+                      title="Vino de un rol — puedes desmarcarlo para quitarlo manualmente."
                     >
-                      {perm.label}
-                      {/* Post-save: came from a role, fully editable */}
-                      {isFromRole && !isPending && !isLocked && (
-                        <span
-                          className="ml-1.5 inline-block text-[9px] font-semibold tracking-wide text-blue-600 bg-blue-50 border border-blue-200 rounded px-1 py-px cursor-pointer"
-                          title="Vino de un rol — puedes desmarcarlo para quitarlo manualmente."
-                        >
-                          ROL ×
-                        </span>
-                      )}
-                      {/* Pre-save: pending from newly-assigned role */}
-                      {isPending && (
-                        <span
-                          className="ml-1.5 inline-block text-[9px] font-semibold tracking-wide text-amber-600 bg-amber-50 border border-amber-200 rounded px-1 py-px"
-                          title="Se agregará al guardar (viene del rol que acabas de asignar)."
-                        >
-                          ROL +
-                        </span>
-                      )}
-                    </Label>
-                  </div>
-                );
-              })}
+                      ROL ×
+                    </span>
+                  )}
+                  {/* Pre-save: pending from newly-assigned role */}
+                  {isPending && (
+                    <span
+                      className="ml-1.5 inline-block text-[9px] font-semibold tracking-wide text-amber-600 bg-amber-50 border border-amber-200 rounded px-1 py-px"
+                      title="Se agregará al guardar (viene del rol que acabas de asignar)."
+                    >
+                      ROL +
+                    </span>
+                  )}
+                </Label>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <Tabs
+      orientation="vertical"
+      value={activeCategory}
+      onValueChange={(v) => setActiveCategory(v as string)}
+      className="items-start gap-0"
+    >
+      <TabsList className="w-52 shrink-0 items-stretch gap-1 h-fit p-1.5 pr-4 mr-4 border-r bg-muted/60">
+        {PERMISSION_CATEGORIES.map(cat => {
+          const Icon = CATEGORY_ICONS[cat.key];
+          return (
+            <TabsTrigger
+              key={cat.key}
+              value={cat.key}
+              className="justify-start gap-2.5 px-3 py-2 rounded-lg text-sm font-normal text-muted-foreground data-active:font-medium data-active:text-foreground"
+            >
+              <Icon className="size-4 shrink-0" aria-hidden="true" />
+              {cat.label}
+            </TabsTrigger>
+          );
+        })}
+      </TabsList>
+      <div className="flex-1 min-w-0">
+        {PERMISSION_CATEGORIES.map(cat => (
+          <TabsContent key={cat.key} value={cat.key}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {cat.modules.map(key => renderModuleCard(MODULE_BY_KEY[key]))}
             </div>
-          </div>
-        );
-      })}
-    </div>
+          </TabsContent>
+        ))}
+      </div>
+    </Tabs>
   );
 }

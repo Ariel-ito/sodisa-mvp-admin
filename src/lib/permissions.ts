@@ -144,6 +144,14 @@ export const PERMISSIONS = {
       { code: 'accounting.periods.create', label: 'Crear periodo' },
       { code: 'accounting.periods.edit',   label: 'Editar periodo' },
       { code: 'accounting.periods.delete', label: 'Eliminar periodo' },
+    ],
+  },
+  // CAI -- códigos de permiso siguen bajo el prefijo "accounting." (no se tocan), pero
+  // visualmente vive con Facturación (ver PERMISSION_CATEGORIES): es configuración fiscal
+  // de facturación, no contabilidad del día a día.
+  cai: {
+    label: '🧾 CAI',
+    perms: [
       { code: 'accounting.cai.view',   label: 'Ver declaraciones CAI' },
       { code: 'accounting.cai.create', label: 'Crear declaración/establecimiento/punto/documento CAI' },
       { code: 'accounting.cai.edit',   label: 'Editar CAI y activar rangos' },
@@ -169,6 +177,27 @@ export type PermissionCode = string;
 
 /** Array plano de todos los módulos para iterar en el grid */
 export const PERMISSION_MODULES = Object.values(PERMISSIONS);
+
+/** [clave, módulo] para poder ir de categoría → módulo sin perder la clave del objeto */
+export const PERMISSION_MODULE_ENTRIES = Object.entries(PERMISSIONS);
+
+/**
+ * Agrupación puramente visual de los módulos en categorías, para no mostrar las
+ * ~17 tarjetas de módulo todas a la vez (ver PermisosGrid). No afecta los permission
+ * codes ni cómo se guardan -- solo cómo se organizan en la UI de asignación.
+ */
+export const PERMISSION_CATEGORIES = [
+  { key: 'facturacion',   label: 'Facturación',         modules: ['billing', 'cai'] },
+  { key: 'ventas',        label: 'Ventas y caja',       modules: ['pos', 'cashbox'] },
+  { key: 'inventario',    label: 'Inventario', modules: [
+    'inventory', 'inventory_warehouses', 'inventory_types', 'inventory_packages',
+    'inventory_units', 'inventory_articles', 'inventory_groupings', 'inventory_transfers',
+  ] },
+  { key: 'contabilidad',  label: 'Contabilidad',         modules: ['accounting'] },
+  { key: 'personal',      label: 'Personal y clientes', modules: ['staff', 'customers'] },
+  { key: 'reportes',      label: 'Reportes',             modules: ['statistics'] },
+  { key: 'escuela',       label: 'Horarios escolares',   modules: ['scheduling'] },
+] as const;
 
 /** Roles legacy del sistema */
 export const LEGACY_ROLES = [

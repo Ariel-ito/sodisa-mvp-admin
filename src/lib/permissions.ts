@@ -25,9 +25,10 @@ export const PERMISSIONS = {
       { code: 'statistics.articles',  label: 'Ver por artículos' },
     ],
   },
-  // Cajas
+  // Cajas -- operación diaria del cajero (abrir/cerrar SU caja), no el catálogo de cajas
+  // que existen ni quién puede usarlas (ver cashbox_config).
   cashbox: {
-    label: '🧾 Cajas',
+    label: '🧾 Cajas (Cajero)',
     perms: [
       { code: 'cashbox.access', label: 'Acceso al módulo' },
       { code: 'cashbox.open',   label: 'Abrir caja' },
@@ -35,21 +36,43 @@ export const PERMISSIONS = {
       { code: 'cashbox.audit',  label: 'Auditar cierre' },
     ],
   },
-  // Punto de Venta
-  pos: {
-    label: '🖥️ Punto de Venta',
+  // Cajas -- administración: qué cajas existen y qué empleados pueden operarlas.
+  // Es la contraparte de "Cajas (Cajero)" -- alguien de administración configura esto,
+  // el cajero solo abre/cierra la caja que ya le asignaron aquí.
+  cashbox_config: {
+    label: '⚙️ Cajas (Configuración)',
     perms: [
-      { code: 'pos.access',    label: 'Acceso al módulo' },
-      { code: 'pos.sell',      label: 'Realizar ventas' },
-      { code: 'pos.configure', label: 'Configurar PDV' },
-      { code: 'pos.catalog.view',   label: 'Ver catálogo de puntos de venta' },
-      { code: 'pos.catalog.create', label: 'Crear punto de venta' },
-      { code: 'pos.catalog.edit',   label: 'Editar punto de venta' },
-      { code: 'pos.catalog.delete', label: 'Eliminar punto de venta' },
       { code: 'cashbox.catalog.view',   label: 'Ver catálogo de cajas' },
       { code: 'cashbox.catalog.create', label: 'Crear caja' },
       { code: 'cashbox.catalog.edit',   label: 'Editar caja' },
       { code: 'cashbox.catalog.delete', label: 'Eliminar caja' },
+      { code: 'cashbox.users.view',    label: 'Ver empleados asignados a cajas' },
+      { code: 'cashbox.users.assign',  label: 'Asignar empleado a una caja' },
+      { code: 'cashbox.users.remove',  label: 'Quitar empleado de una caja' },
+    ],
+  },
+  // Punto de Venta -- operación diaria del cajero/vendedor (vender, usar el PDV que
+  // ya le asignaron), no el catálogo de puntos de venta (ver pos_config).
+  pos: {
+    label: '🖥️ Punto de Venta (Cajero)',
+    perms: [
+      { code: 'pos.access',    label: 'Acceso al módulo' },
+      { code: 'pos.sell',      label: 'Realizar ventas' },
+      { code: 'pos.configure', label: 'Configurar PDV' },
+    ],
+  },
+  // Punto de Venta -- administración: qué puntos de venta existen y qué empleados
+  // pueden facturar/vender desde cada uno.
+  pos_config: {
+    label: '⚙️ Punto de Venta (Configuración)',
+    perms: [
+      { code: 'pos.catalog.view',   label: 'Ver catálogo de puntos de venta' },
+      { code: 'pos.catalog.create', label: 'Crear punto de venta' },
+      { code: 'pos.catalog.edit',   label: 'Editar punto de venta' },
+      { code: 'pos.catalog.delete', label: 'Eliminar punto de venta' },
+      { code: 'pos.users.view',    label: 'Ver empleados asignados a puntos de venta' },
+      { code: 'pos.users.assign',  label: 'Asignar empleado a un punto de venta' },
+      { code: 'pos.users.remove',  label: 'Quitar empleado de un punto de venta' },
     ],
   },
   // Clientes
@@ -188,7 +211,7 @@ export const PERMISSION_MODULE_ENTRIES = Object.entries(PERMISSIONS);
  */
 export const PERMISSION_CATEGORIES = [
   { key: 'facturacion',   label: 'Facturación',         modules: ['billing', 'cai'] },
-  { key: 'ventas',        label: 'Ventas y caja',       modules: ['pos', 'cashbox'] },
+  { key: 'ventas',        label: 'Ventas y caja',       modules: ['pos_config', 'pos', 'cashbox_config', 'cashbox'] },
   { key: 'inventario',    label: 'Inventario', modules: [
     'inventory', 'inventory_warehouses', 'inventory_types', 'inventory_packages',
     'inventory_units', 'inventory_articles', 'inventory_groupings', 'inventory_transfers',

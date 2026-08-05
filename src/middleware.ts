@@ -3,6 +3,23 @@ import { jwtVerify } from 'jose';
 
 const secret = new TextEncoder().encode(process.env.JWT_SECRET ?? '');
 
+/** Roles que pueden entrar al panel. Debe reflejar PANEL_ROLES de mvp_api/user.entity.ts. */
+const PANEL_ROLES = ['admin', 'support', 'qa'];
+
+/**
+ * Rutas admin-only aunque el rol ya haya pasado el gate de login (SUPPORT/QA no
+ * gestionan staff, plantillas de rol globales, auditoría ni la config/conexión de
+ * una empresa). Ojo: el patrón de empresas NO debe matchear /empresas/[id]/usuarios/**,
+ * eso sí lo pueden usar SUPPORT/QA.
+ */
+const ADMIN_ONLY_PATTERNS = [
+  /^\/usuarios(\/.*)?$/,
+  /^\/roles(\/.*)?$/,
+  /^\/auditoria(\/.*)?$/,
+  /^\/empresas\/nueva$/,
+  /^\/empresas\/[^/]+$/,
+];
+
 function redirectToLogin(request: NextRequest, pathname: string) {
   const url = new URL('/login', request.url);
   url.searchParams.set('from', pathname);
@@ -36,8 +53,12 @@ export async function middleware(request: NextRequest) {
 
   try {
     const { payload } = await jwtVerify(accessToken, secret);
-    if ((payload as { role?: string }).role !== 'admin') {
+    const role = (payload as { role?: string }).role ?? '';
+    if (!PANEL_ROLES.includes(role)) {
       return redirectToLogin(request, pathname);
+    }
+    if (role !== 'admin' && ADMIN_ONLY_PATTERNS.some((re) => re.test(pathname))) {
+      return NextResponse.redirect(new URL('/', request.url));
     }
   } catch (err: unknown) {
     // ERR_JWT_EXPIRED: token expiró pero la firma es válida — dejar pasar,

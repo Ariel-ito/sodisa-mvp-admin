@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { Banner } from '@/components/ui/Banner';
 import { Loader2, Lock, LockOpen } from 'lucide-react';
 import { UserEmpresasSection } from './UserEmpresasSection';
+import { SupportCompanyScopeSection } from './SupportCompanyScopeSection';
 
 export interface PortalUserData {
   id?: number;
@@ -123,6 +124,7 @@ export function UsuarioForm({ initial, mode }: Props) {
         >
           <option value="admin">Administrador</option>
           <option value="support">Soporte</option>
+          <option value="qa">QA</option>
         </select>
       </div>
       <div className="flex items-center gap-2">
@@ -172,6 +174,13 @@ export function UsuarioForm({ initial, mode }: Props) {
           }
           {(initial?.failedLoginAttempts ?? 0) > 0 && ` (${initial!.failedLoginAttempts} intentos fallidos)`}
         </p>
+      )}
+
+      {/* Empresas que puede administrar — solo Soporte, modo edición */}
+      {mode === 'edit' && initial?.id && initial.role === 'support' && (
+        <div className="mt-4 border-t pt-6">
+          <SupportCompanyScopeSection userId={initial.id} />
+        </div>
       )}
 
       {/* Acceso a empresas — solo en modo edición */}

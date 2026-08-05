@@ -62,15 +62,19 @@ function greeting() {
 
 export default function DashboardPage() {
   const [userName, setUserName] = useState('');
+  const [isAdmin, setIsAdmin]   = useState(false);
 
   useEffect(() => {
     const u = getUser();
     if (u) setUserName(u.name.split(' ')[0]);
+    setIsAdmin(u?.role === 'admin');
   }, []);
 
   const { data: companies }   = useSWR<Company[]>('/portal/companies', swrFetcher);
-  const { data: users }       = useSWR<unknown[]>('/portal/users',     swrFetcher);
-  const { data: roles }       = useSWR<unknown[]>('/portal/roles',     swrFetcher);
+  // /portal/users y /portal/roles son Admin-only -- SUPPORT/QA no gestionan
+  // staff ni plantillas de rol globales, así que ni se piden para esos roles.
+  const { data: users }       = useSWR<unknown[]>(isAdmin ? '/portal/users' : null, swrFetcher);
+  const { data: roles }       = useSWR<unknown[]>(isAdmin ? '/portal/roles' : null, swrFetcher);
   const { data: accesses }    = useSWR<UcaRow[]>('/portal/access',     swrFetcher);
   const { data: health }      = useSWR<HealthData>('/health',          swrFetcher, { refreshInterval: 30_000 });
   const { data: pingHistory } = useSWR<PingHistoryEntry[]>(
@@ -106,7 +110,7 @@ export default function DashboardPage() {
       bg:    'bg-blue-50',
       ring:  'ring-blue-100',
     },
-    {
+    ...(isAdmin ? [{
       label: 'Usuarios SODISA',
       value: users?.length ?? '—',
       sub:   'Admins y soporte',
@@ -115,7 +119,7 @@ export default function DashboardPage() {
       color: 'text-violet-600',
       bg:    'bg-violet-50',
       ring:  'ring-violet-100',
-    },
+    }] : []),
     {
       label: 'Accesos activos',
       value: accesses?.length ?? '—',
@@ -126,7 +130,7 @@ export default function DashboardPage() {
       bg:    'bg-emerald-50',
       ring:  'ring-emerald-100',
     },
-    {
+    ...(isAdmin ? [{
       label: 'Roles',
       value: roles?.length ?? '—',
       sub:   'Configurados',
@@ -135,7 +139,7 @@ export default function DashboardPage() {
       color: 'text-amber-600',
       bg:    'bg-amber-50',
       ring:  'ring-amber-100',
-    },
+    }] : []),
   ];
 
   const dbOk  = health?.database?.status === 'ok';
@@ -154,21 +158,23 @@ export default function DashboardPage() {
           </p>
         </div>
 
-        {/* Quick actions — iconos solos en mobile, texto en sm+ */}
-        <div className="flex items-center gap-2 flex-wrap justify-end shrink-0">
-          <Button variant="outline" size="sm" nativeButton={false} render={<Link href="/empresas/nueva" />}>
-            <Plus className="size-3.5" />
-            <span className="hidden sm:inline">Empresa</span>
-          </Button>
-          <Button variant="outline" size="sm" nativeButton={false} render={<Link href="/usuarios/nuevo" />}>
-            <Plus className="size-3.5" />
-            <span className="hidden sm:inline">Usuario</span>
-          </Button>
-          <Button size="sm" nativeButton={false} render={<Link href="/roles/nuevo" />}>
-            <Plus className="size-3.5" />
-            <span className="hidden sm:inline">Rol</span>
-          </Button>
-        </div>
+        {/* Quick actions — iconos solos en mobile, texto en sm+ (todas Admin-only) */}
+        {isAdmin && (
+          <div className="flex items-center gap-2 flex-wrap justify-end shrink-0">
+            <Button variant="outline" size="sm" nativeButton={false} render={<Link href="/empresas/nueva" />}>
+              <Plus className="size-3.5" />
+              <span className="hidden sm:inline">Empresa</span>
+            </Button>
+            <Button variant="outline" size="sm" nativeButton={false} render={<Link href="/usuarios/nuevo" />}>
+              <Plus className="size-3.5" />
+              <span className="hidden sm:inline">Usuario</span>
+            </Button>
+            <Button size="sm" nativeButton={false} render={<Link href="/roles/nuevo" />}>
+              <Plus className="size-3.5" />
+              <span className="hidden sm:inline">Rol</span>
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* ── Stats ───────────────────────────────────────────────────── */}

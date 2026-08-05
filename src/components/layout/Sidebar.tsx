@@ -6,20 +6,23 @@ import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import { Building2, Users, Shield, LayoutDashboard, LogOut, ClipboardList } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { getUser, clearToken } from '@/lib/auth';
+import { getUser, clearToken, AdminRole } from '@/lib/auth';
 import { useEffect, useState } from 'react';
 
-const NAV_ITEMS = [
-  { href: '/',         label: 'Dashboard', icon: LayoutDashboard, exact: true },
-  { href: '/empresas', label: 'Empresas',  icon: Building2 },
-  { href: '/usuarios', label: 'Usuarios',  icon: Users },
-  { href: '/roles',      label: 'Roles',      icon: Shield },
-  { href: '/auditoria', label: 'Auditoría',  icon: ClipboardList },
+// SUPPORT/QA solo gestionan usuarios de las empresas a las que tienen acceso,
+// nunca configuración/conexión ni plantillas de rol globales ni auditoría.
+const NAV_ITEMS: { href: string; label: string; icon: typeof LayoutDashboard; exact?: boolean; roles: AdminRole[] }[] = [
+  { href: '/',          label: 'Dashboard', icon: LayoutDashboard, exact: true, roles: ['admin', 'support', 'qa'] },
+  { href: '/empresas',  label: 'Empresas',  icon: Building2,       roles: ['admin', 'support', 'qa'] },
+  { href: '/usuarios',  label: 'Usuarios',  icon: Users,           roles: ['admin'] },
+  { href: '/roles',     label: 'Roles',     icon: Shield,          roles: ['admin'] },
+  { href: '/auditoria', label: 'Auditoría', icon: ClipboardList,   roles: ['admin'] },
 ];
 
 const ROLE_LABEL: Record<string, string> = {
   admin:   'Administrador',
   support: 'Soporte',
+  qa:      'QA',
 };
 
 interface Props {
@@ -32,7 +35,7 @@ interface Props {
 export function Sidebar({ isOpen = false, onClose }: Props) {
   const pathname = usePathname();
   const router   = useRouter();
-  const [user, setUser] = useState<{ name: string; email: string; role: string } | null>(null);
+  const [user, setUser] = useState<{ name: string; email: string; role: AdminRole } | null>(null);
 
   useEffect(() => {
     const u = getUser();
@@ -101,7 +104,7 @@ export function Sidebar({ isOpen = false, onClose }: Props) {
           <p className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-sidebar-foreground/40">
             Gestión
           </p>
-          {NAV_ITEMS.map(({ href, label, icon: Icon, exact }) => {
+          {NAV_ITEMS.filter(({ roles }) => !user || roles.includes(user.role)).map(({ href, label, icon: Icon, exact }) => {
             const active = exact ? pathname === href : pathname.startsWith(href);
             return (
               <Link

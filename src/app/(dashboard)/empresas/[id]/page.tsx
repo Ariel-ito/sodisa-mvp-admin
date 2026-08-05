@@ -1,6 +1,6 @@
 'use client';
 
-import { use, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import useSWR from 'swr';
 import Link from 'next/link';
@@ -9,6 +9,7 @@ import { EmpresaForm, CompanyData } from '@/components/empresas/EmpresaForm';
 import { PingHistoryChart } from '@/components/empresas/PingHistoryChart';
 import { CompanyConfigSection } from '@/components/empresas/CompanyConfigSection';
 import { adminFetch, ApiError, swrFetcher } from '@/lib/api';
+import { getUser } from '@/lib/auth';
 import { toast } from 'sonner';
 
 // Producción (branch "main") nunca debe poder borrar una empresa: ahí la
@@ -21,6 +22,12 @@ export default function EditarEmpresaPage({ params }: { params: Promise<{ id: st
   const router = useRouter();
   const { data: company, isLoading } = useSWR<CompanyData>(`/portal/companies/${id}`, swrFetcher);
   const [deleting, setDeleting] = useState(false);
+
+  // Defensa en profundidad -- el middleware ya bloquea esta ruta para no-admin,
+  // esto cubre el caso de que llegue por navegación cliente sin recarga.
+  useEffect(() => {
+    if (getUser()?.role !== 'admin') router.replace('/empresas');
+  }, [router]);
 
   async function handleDelete() {
     if (!company) return;

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import useSWR from 'swr';
 import Link from 'next/link';
 import { Plus, RotateCw, Users, Pencil } from 'lucide-react';
@@ -10,6 +10,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { swrFetcher, adminFetch } from '@/lib/api';
+import { getUser } from '@/lib/auth';
 import { Sparkline, type SparkPoint } from '@/components/empresas/Sparkline';
 import { PingStatus } from '@/components/ui/PingStatus';
 
@@ -45,6 +46,11 @@ export default function EmpresasPage() {
   );
   const [refreshing, setRefreshing] = useState<Record<number, boolean>>({});
   const [page, setPage] = useState(0);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    setIsAdmin(getUser()?.role === 'admin');
+  }, []);
 
   const PAGE_SIZE = 20;
   const totalPages    = Math.ceil((companies?.length ?? 0) / PAGE_SIZE);
@@ -66,11 +72,13 @@ export default function EmpresasPage() {
       {/* Header */}
       <div className="flex items-center justify-between gap-3">
         <p className="text-sm text-muted-foreground">Gestiona las empresas del sistema</p>
-        <Button nativeButton={false} render={<Link href="/empresas/nueva" />}>
-          <Plus className="size-4" />
-          <span className="hidden sm:inline">Nueva empresa</span>
-          <span className="sm:hidden">Nueva</span>
-        </Button>
+        {isAdmin && (
+          <Button nativeButton={false} render={<Link href="/empresas/nueva" />}>
+            <Plus className="size-4" />
+            <span className="hidden sm:inline">Nueva empresa</span>
+            <span className="sm:hidden">Nueva</span>
+          </Button>
+        )}
       </div>
 
       {isLoading ? (
@@ -146,10 +154,12 @@ export default function EmpresasPage() {
                           nativeButton={false} render={<Link href={`/empresas/${company.id}/usuarios`} />}>
                           <Users className="size-4" />
                         </Button>
-                        <Button variant="ghost" size="icon-sm" title="Editar"
-                          nativeButton={false} render={<Link href={`/empresas/${company.id}`} />}>
-                          <Pencil className="size-4" />
-                        </Button>
+                        {isAdmin && (
+                          <Button variant="ghost" size="icon-sm" title="Editar"
+                            nativeButton={false} render={<Link href={`/empresas/${company.id}`} />}>
+                            <Pencil className="size-4" />
+                          </Button>
+                        )}
                       </div>
                     </TableCell>
 
@@ -205,10 +215,12 @@ export default function EmpresasPage() {
                       nativeButton={false} render={<Link href={`/empresas/${company.id}/usuarios`} />}>
                       <Users className="size-4" />
                     </Button>
-                    <Button variant="ghost" size="icon-sm" title="Editar"
-                      nativeButton={false} render={<Link href={`/empresas/${company.id}`} />}>
-                      <Pencil className="size-4" />
-                    </Button>
+                    {isAdmin && (
+                      <Button variant="ghost" size="icon-sm" title="Editar"
+                        nativeButton={false} render={<Link href={`/empresas/${company.id}`} />}>
+                        <Pencil className="size-4" />
+                      </Button>
+                    )}
                   </div>
                 </div>
 

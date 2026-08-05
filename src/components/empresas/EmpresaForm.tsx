@@ -22,6 +22,7 @@ export interface CompanyData {
   dbPassword?: string;
   dbDatabase: string;
   isActive: boolean;
+  isDemo: boolean;
 }
 
 interface Props {
@@ -42,6 +43,7 @@ export function EmpresaForm({ initial, mode }: Props) {
       dbPassword: '',
       dbDatabase: '',
       isActive: true,
+      isDemo: false,
     }
   );
   const [saving, setSaving] = useState(false);
@@ -182,6 +184,16 @@ export function EmpresaForm({ initial, mode }: Props) {
             className="size-4"
           />
           <Label htmlFor="isActive">Empresa activa</Label>
+        </div>
+        <div className="flex items-center gap-2">
+          <input
+            id="isDemo"
+            type="checkbox"
+            checked={form.isDemo}
+            onChange={e => set('isDemo', e.target.checked)}
+            className="size-4"
+          />
+          <Label htmlFor="isDemo">Empresa de Demo/Testing (visible para el rol QA)</Label>
         </div>
       </section>
 

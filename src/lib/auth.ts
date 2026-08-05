@@ -1,10 +1,12 @@
 const USER_KEY = 'admin_user';
 
+export type AdminRole = 'admin' | 'support' | 'qa';
+
 export interface AdminUser {
   id: number;
   email: string;
   name: string;
-  role: string;
+  role: AdminRole;
 }
 
 // Access token lives only in memory — cleared on page reload, re-hydrated via /api/auth/refresh

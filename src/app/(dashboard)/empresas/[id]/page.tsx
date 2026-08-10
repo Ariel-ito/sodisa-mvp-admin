@@ -8,6 +8,7 @@ import { ChevronRight, Loader2, Trash2 } from 'lucide-react';
 import { EmpresaForm, CompanyData } from '@/components/empresas/EmpresaForm';
 import { PingHistoryChart } from '@/components/empresas/PingHistoryChart';
 import { CompanyConfigSection } from '@/components/empresas/CompanyConfigSection';
+import { RemoteMigrationsSection } from '@/components/empresas/RemoteMigrationsSection';
 import { adminFetch, ApiError, swrFetcher } from '@/lib/api';
 import { getUser } from '@/lib/auth';
 import { toast } from 'sonner';
@@ -68,6 +69,11 @@ export default function EditarEmpresaPage({ params }: { params: Promise<{ id: st
       </div>
 
       <EmpresaForm mode="edit" initial={company} />
+
+      {/* Migraciones remotas -- correr antes de habilitar funcionalidad nueva en el portal Web */}
+      {company.id !== undefined && (
+        <RemoteMigrationsSection companyId={company.id} />
+      )}
 
       {/* Módulos y tabs */}
       {company.id !== undefined && (

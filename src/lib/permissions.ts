@@ -98,6 +98,9 @@ export const PERMISSIONS = {
       { code: 'inventory.warehouses.create', label: 'Crear bodegas' },
       { code: 'inventory.warehouses.edit',   label: 'Editar bodegas' },
       { code: 'inventory.warehouses.delete', label: 'Eliminar bodegas' },
+      { code: 'inventory.warehouses.users.view',   label: 'Ver empleados asignados a bodegas' },
+      { code: 'inventory.warehouses.users.assign', label: 'Asignar empleado a una bodega' },
+      { code: 'inventory.warehouses.users.remove', label: 'Quitar empleado de una bodega' },
     ],
   },
   inventory_types: {

@@ -160,6 +160,16 @@ export const PERMISSIONS = {
       { code: 'inventory.requisitions.receive', label: 'Recibir requisiciones' },
     ],
   },
+  inventory_purchases: {
+    label: '🛒 Compras',
+    perms: [
+      { code: 'inventory.purchases.create',  label: 'Crear compras' },
+      { code: 'inventory.purchases.edit',    label: 'Editar compras' },
+      { code: 'inventory.purchases.delete',  label: 'Eliminar compras' },
+      { code: 'inventory.purchases.approve', label: 'Aprobar compras' },
+      { code: 'inventory.purchases.receive', label: 'Recibir compras' },
+    ],
+  },
   // Personal
   staff: {
     label: '👔 Personal',
@@ -225,7 +235,7 @@ export const PERMISSION_CATEGORIES = [
   { key: 'inventario',    label: 'Inventario', modules: [
     'inventory', 'inventory_warehouses', 'inventory_types', 'inventory_packages',
     'inventory_units', 'inventory_articles', 'inventory_groupings', 'inventory_transfers',
-    'inventory_requisitions',
+    'inventory_requisitions', 'inventory_purchases',
   ] },
   { key: 'contabilidad',  label: 'Contabilidad',         modules: ['accounting'] },
   { key: 'personal',      label: 'Personal y clientes', modules: ['staff', 'customers'] },

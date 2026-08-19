@@ -14,6 +14,14 @@ export const PERMISSIONS = {
       { code: 'billing.reverse', label: 'Reversar facturas' },
     ],
   },
+  billing_facturadores: {
+    label: '🧑‍💼 Facturadores',
+    perms: [
+      { code: 'billing.facturadores.create', label: 'Crear perfil de facturador' },
+      { code: 'billing.facturadores.edit',   label: 'Editar perfil de facturador' },
+      { code: 'billing.facturadores.delete', label: 'Eliminar perfil de facturador' },
+    ],
+  },
   // Insights
   statistics: {
     label: '📊 Insights',
@@ -262,7 +270,7 @@ export const PERMISSION_MODULE_ENTRIES = Object.entries(PERMISSIONS);
  * codes ni cómo se guardan -- solo cómo se organizan en la UI de asignación.
  */
 export const PERMISSION_CATEGORIES = [
-  { key: 'facturacion',   label: 'Facturación',         modules: ['billing', 'cai'] },
+  { key: 'facturacion',   label: 'Facturación',         modules: ['billing', 'billing_facturadores', 'cai'] },
   { key: 'ventas',        label: 'Ventas y caja',       modules: ['pos_config', 'pos', 'cashbox_config', 'cashbox'] },
   { key: 'inventario',    label: 'Inventario', modules: [
     'inventory', 'inventory_warehouses', 'inventory_types', 'inventory_packages',

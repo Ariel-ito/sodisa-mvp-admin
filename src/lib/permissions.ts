@@ -173,6 +173,35 @@ export const PERMISSIONS = {
       { code: 'inventory.purchases.receive', label: 'Recibir compras' },
     ],
   },
+  // Catálogos Generales
+  general: {
+    label: '🗂️ Catálogos Generales',
+    perms: [
+      { code: 'general.access', label: 'Acceso al módulo' },
+    ],
+  },
+  general_branches: {
+    label: '🏬 Sucursales',
+    perms: [
+      { code: 'general.branches.create', label: 'Crear sucursales' },
+      { code: 'general.branches.edit',   label: 'Editar sucursales' },
+      { code: 'general.branches.delete', label: 'Eliminar sucursales' },
+      { code: 'general.branches.users.view',   label: 'Ver empleados asignados a sucursales' },
+      { code: 'general.branches.users.assign', label: 'Asignar empleado a una sucursal' },
+      { code: 'general.branches.users.remove', label: 'Quitar empleado de una sucursal' },
+    ],
+  },
+  general_departments: {
+    label: '🏢 Departamentos',
+    perms: [
+      { code: 'general.departments.create', label: 'Crear departamentos' },
+      { code: 'general.departments.edit',   label: 'Editar departamentos' },
+      { code: 'general.departments.delete', label: 'Eliminar departamentos' },
+      { code: 'general.departments.users.view',   label: 'Ver empleados asignados a departamentos' },
+      { code: 'general.departments.users.assign', label: 'Asignar empleado a un departamento' },
+      { code: 'general.departments.users.remove', label: 'Quitar empleado de un departamento' },
+    ],
+  },
   // Personal
   staff: {
     label: '👔 Personal',
@@ -242,6 +271,7 @@ export const PERMISSION_CATEGORIES = [
   ] },
   { key: 'contabilidad',  label: 'Contabilidad',         modules: ['accounting'] },
   { key: 'personal',      label: 'Personal y clientes', modules: ['staff', 'customers'] },
+  { key: 'generales',     label: 'Catálogos Generales', modules: ['general', 'general_branches', 'general_departments'] },
   { key: 'reportes',      label: 'Reportes',             modules: ['statistics'] },
   { key: 'escuela',       label: 'Horarios escolares',   modules: ['scheduling'] },
 ] as const;

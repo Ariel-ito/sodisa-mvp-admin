@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import {
-  FileText, Monitor, Package, BookOpen, Users, BarChart3, GraduationCap, type LucideIcon,
+  FileText, Monitor, Package, BookOpen, Users, BarChart3, GraduationCap, Building2, type LucideIcon,
 } from 'lucide-react';
 import { PERMISSION_MODULE_ENTRIES, PERMISSION_CATEGORIES, COMPANY_MODULE_MAP } from '@/lib/permissions';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -19,6 +19,7 @@ const CATEGORY_ICONS: Record<string, LucideIcon> = {
   personal: Users,
   reportes: BarChart3,
   escuela: GraduationCap,
+  generales: Building2,
 };
 
 interface Props {

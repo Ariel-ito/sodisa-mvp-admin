@@ -210,6 +210,70 @@ export const PERMISSIONS = {
       { code: 'general.departments.users.remove', label: 'Quitar empleado de un departamento' },
     ],
   },
+  general_countries: {
+    label: '🌎 Países',
+    perms: [
+      { code: 'general.countries.create', label: 'Crear países' },
+      { code: 'general.countries.edit',   label: 'Editar países' },
+      { code: 'general.countries.delete', label: 'Eliminar países' },
+    ],
+  },
+  general_cost_centers: {
+    label: '💰 Centros de Costo',
+    perms: [
+      { code: 'general.cost-centers.create', label: 'Crear centros de costo' },
+      { code: 'general.cost-centers.edit',   label: 'Editar centros de costo' },
+      { code: 'general.cost-centers.delete', label: 'Eliminar centros de costo' },
+    ],
+  },
+  general_currencies: {
+    label: '💵 Monedas',
+    perms: [
+      { code: 'general.currencies.create', label: 'Crear monedas' },
+      { code: 'general.currencies.edit',   label: 'Editar monedas' },
+      { code: 'general.currencies.delete', label: 'Eliminar monedas' },
+    ],
+  },
+  general_languages: {
+    label: '🌐 Idiomas',
+    perms: [
+      { code: 'general.languages.create', label: 'Crear idiomas' },
+      { code: 'general.languages.edit',   label: 'Editar idiomas' },
+      { code: 'general.languages.delete', label: 'Eliminar idiomas' },
+    ],
+  },
+  general_zones: {
+    label: '📍 Zonas',
+    perms: [
+      { code: 'general.zones.create', label: 'Crear zonas' },
+      { code: 'general.zones.edit',   label: 'Editar zonas' },
+      { code: 'general.zones.delete', label: 'Eliminar zonas' },
+    ],
+  },
+  general_professions: {
+    label: '🎓 Profesiones',
+    perms: [
+      { code: 'general.professions.create', label: 'Crear profesiones' },
+      { code: 'general.professions.edit',   label: 'Editar profesiones' },
+      { code: 'general.professions.delete', label: 'Eliminar profesiones' },
+    ],
+  },
+  general_education_levels: {
+    label: '📚 Niveles de Educación',
+    perms: [
+      { code: 'general.education-levels.create', label: 'Crear niveles de educación' },
+      { code: 'general.education-levels.edit',   label: 'Editar niveles de educación' },
+      { code: 'general.education-levels.delete', label: 'Eliminar niveles de educación' },
+    ],
+  },
+  general_trades: {
+    label: '🛠️ Oficios',
+    perms: [
+      { code: 'general.trades.create', label: 'Crear oficios' },
+      { code: 'general.trades.edit',   label: 'Editar oficios' },
+      { code: 'general.trades.delete', label: 'Eliminar oficios' },
+    ],
+  },
   // Personal
   staff: {
     label: '👔 Personal',
@@ -279,7 +343,7 @@ export const PERMISSION_CATEGORIES = [
   ] },
   { key: 'contabilidad',  label: 'Contabilidad',         modules: ['accounting'] },
   { key: 'personal',      label: 'Personal y clientes', modules: ['staff', 'customers'] },
-  { key: 'generales',     label: 'Catálogos Generales', modules: ['general', 'general_branches', 'general_departments'] },
+  { key: 'generales',     label: 'Catálogos Generales', modules: ['general', 'general_branches', 'general_departments', 'general_countries', 'general_cost_centers', 'general_currencies', 'general_languages', 'general_zones', 'general_professions', 'general_education_levels', 'general_trades'] },
   { key: 'reportes',      label: 'Reportes',             modules: ['statistics'] },
   { key: 'escuela',       label: 'Horarios escolares',   modules: ['scheduling'] },
 ] as const;

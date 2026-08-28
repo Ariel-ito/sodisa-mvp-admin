@@ -333,6 +333,22 @@ export const PERMISSIONS = {
       { code: 'general.routes.delete', label: 'Eliminar rutas' },
     ],
   },
+  general_cost_center_groups: {
+    label: '🗂️ Grupos de Centro de Costo',
+    perms: [
+      { code: 'general.cost-center-groups.create', label: 'Crear grupos de centro de costo' },
+      { code: 'general.cost-center-groups.edit',   label: 'Editar grupos de centro de costo' },
+      { code: 'general.cost-center-groups.delete', label: 'Eliminar grupos de centro de costo' },
+    ],
+  },
+  general_process_areas: {
+    label: '🧭 Área de Proceso Empleado',
+    perms: [
+      { code: 'general.process-areas.create', label: 'Crear áreas de proceso' },
+      { code: 'general.process-areas.edit',   label: 'Editar áreas de proceso' },
+      { code: 'general.process-areas.delete', label: 'Eliminar áreas de proceso' },
+    ],
+  },
   general_expense_types: {
     label: '🧾 Tipos de Gasto',
     perms: [
@@ -457,7 +473,7 @@ export const PERMISSION_CATEGORIES = [
   ] },
   { key: 'contabilidad',  label: 'Contabilidad',         modules: ['accounting'] },
   { key: 'personal',      label: 'Personal y clientes', modules: ['staff', 'customers'] },
-  { key: 'generales',     label: 'Catálogos Generales', modules: ['general', 'general_branches', 'general_departments', 'general_countries', 'general_cost_centers', 'general_currencies', 'general_languages', 'general_zones', 'general_professions', 'general_education_levels', 'general_trades', 'general_socioeconomic_sectors', 'general_brands', 'general_geo_locations', 'general_comm_equipment_params', 'general_shipping_methods', 'general_calendars', 'general_routes', 'general_expense_types', 'logistics', 'logistics_freight', 'logistics_trucks', 'logistics_carriers', 'logistics_origins', 'logistics_carrier_price_lists'] },
+  { key: 'generales',     label: 'Catálogos Generales', modules: ['general', 'general_branches', 'general_departments', 'general_countries', 'general_cost_centers', 'general_currencies', 'general_languages', 'general_zones', 'general_professions', 'general_education_levels', 'general_trades', 'general_socioeconomic_sectors', 'general_brands', 'general_geo_locations', 'general_comm_equipment_params', 'general_shipping_methods', 'general_calendars', 'general_routes', 'general_expense_types', 'general_cost_center_groups', 'general_process_areas', 'logistics', 'logistics_freight', 'logistics_trucks', 'logistics_carriers', 'logistics_origins', 'logistics_carrier_price_lists'] },
   { key: 'reportes',      label: 'Reportes',             modules: ['statistics'] },
   { key: 'escuela',       label: 'Horarios escolares',   modules: ['scheduling'] },
 ] as const;

@@ -17,6 +17,7 @@ const MODULES = [
   { id: 'accounting', label: 'Contabilidad',       description: 'Períodos contables y configuración contable' },
   { id: 'inventory',  label: 'Inventario',         description: 'Bodegas, catálogos y gestión de inventario' },
   { id: 'scheduling', label: 'Horarios Escolares', description: 'Generación de horarios de clases' },
+  { id: 'bic',        label: 'Base de Información Central', description: 'Identidad central (BIC) de personas y entidades' },
 ];
 
 const STAT_TABS = [

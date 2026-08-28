@@ -274,6 +274,120 @@ export const PERMISSIONS = {
       { code: 'general.trades.delete', label: 'Eliminar oficios' },
     ],
   },
+  general_socioeconomic_sectors: {
+    label: '📊 Sectores Socioeconómicos',
+    perms: [
+      { code: 'general.socioeconomic-sectors.create', label: 'Crear sectores socioeconómicos' },
+      { code: 'general.socioeconomic-sectors.edit',   label: 'Editar sectores socioeconómicos' },
+      { code: 'general.socioeconomic-sectors.delete', label: 'Eliminar sectores socioeconómicos' },
+    ],
+  },
+  general_brands: {
+    label: '🏷️ Marcas y Modelos',
+    perms: [
+      { code: 'general.brands.create',        label: 'Crear marcas' },
+      { code: 'general.brands.delete',        label: 'Eliminar marcas' },
+      { code: 'general.brands.models.create', label: 'Crear modelos' },
+      { code: 'general.brands.models.edit',   label: 'Editar (renombrar) modelos' },
+      { code: 'general.brands.models.delete', label: 'Eliminar modelos' },
+    ],
+  },
+  general_geo_locations: {
+    label: '🗺️ Ubicación Geográfica',
+    perms: [
+      { code: 'general.geo-locations.create',       label: 'Crear departamentos/municipios/ciudades' },
+      { code: 'general.geo-locations.edit',          label: 'Editar departamentos/municipios/ciudades' },
+      { code: 'general.geo-locations.delete',        label: 'Eliminar departamentos/municipios/ciudades' },
+      { code: 'general.geo-locations.labels.edit',   label: 'Cambiar nombre de los niveles de ubicación' },
+    ],
+  },
+  general_comm_equipment_params: {
+    label: '📡 Parámetros de Comunicación de Equipos',
+    perms: [
+      { code: 'general.comm-equipment-params.create', label: 'Crear parámetros de comunicación' },
+      { code: 'general.comm-equipment-params.edit',   label: 'Editar parámetros de comunicación' },
+      { code: 'general.comm-equipment-params.delete', label: 'Eliminar parámetros de comunicación' },
+    ],
+  },
+  general_shipping_methods: {
+    label: '🚢 Métodos de Embarque',
+    perms: [
+      { code: 'general.shipping-methods.create', label: 'Crear métodos de embarque' },
+      { code: 'general.shipping-methods.edit',   label: 'Editar métodos de embarque' },
+      { code: 'general.shipping-methods.delete', label: 'Eliminar métodos de embarque' },
+    ],
+  },
+  general_calendars: {
+    label: '📅 Calendarios',
+    perms: [
+      { code: 'general.calendars.create', label: 'Crear calendarios y sus fechas' },
+      { code: 'general.calendars.edit',   label: 'Editar calendarios y sus fechas' },
+      { code: 'general.calendars.delete', label: 'Eliminar calendarios y sus fechas' },
+    ],
+  },
+  general_routes: {
+    label: '🛣️ Rutas',
+    perms: [
+      { code: 'general.routes.create', label: 'Crear rutas' },
+      { code: 'general.routes.edit',   label: 'Editar rutas' },
+      { code: 'general.routes.delete', label: 'Eliminar rutas' },
+    ],
+  },
+  general_expense_types: {
+    label: '🧾 Tipos de Gasto',
+    perms: [
+      { code: 'general.expense-types.create', label: 'Crear tipos de gasto' },
+      { code: 'general.expense-types.edit',   label: 'Editar tipos de gasto' },
+      { code: 'general.expense-types.delete', label: 'Eliminar tipos de gasto' },
+    ],
+  },
+  // Logística y Despacho
+  logistics: {
+    label: '🚚 Logística y Despacho',
+    perms: [
+      { code: 'logistics.access', label: 'Acceso al módulo' },
+    ],
+  },
+  logistics_freight: {
+    label: '💰 Fletes',
+    perms: [
+      { code: 'logistics.freight.create', label: 'Crear fletes' },
+      { code: 'logistics.freight.edit',   label: 'Editar fletes' },
+      { code: 'logistics.freight.delete', label: 'Eliminar fletes' },
+    ],
+  },
+  logistics_trucks: {
+    label: '🚛 Camiones',
+    perms: [
+      { code: 'logistics.trucks.create', label: 'Crear camiones' },
+      { code: 'logistics.trucks.edit',   label: 'Editar camiones' },
+      { code: 'logistics.trucks.delete', label: 'Eliminar camiones' },
+    ],
+  },
+  logistics_carriers: {
+    label: '🧑‍✈️ Transportistas',
+    perms: [
+      { code: 'logistics.carriers.create', label: 'Crear transportistas' },
+      { code: 'logistics.carriers.edit',   label: 'Editar transportistas' },
+      { code: 'logistics.carriers.delete', label: 'Eliminar transportistas' },
+    ],
+  },
+  logistics_origins: {
+    label: '📍 Origen y Destinos',
+    perms: [
+      { code: 'logistics.origins.create', label: 'Crear orígenes y destinos' },
+      { code: 'logistics.origins.edit',   label: 'Editar orígenes y destinos' },
+      { code: 'logistics.origins.delete', label: 'Eliminar orígenes y destinos' },
+    ],
+  },
+  logistics_carrier_price_lists: {
+    label: '📋 Lista de Precios de Transportista',
+    perms: [
+      { code: 'logistics.carrier-price-lists.create', label: 'Crear listas de precios' },
+      { code: 'logistics.carrier-price-lists.edit',   label: 'Editar listas de precios' },
+      { code: 'logistics.carrier-price-lists.delete', label: 'Eliminar listas de precios' },
+    ],
+  },
   // Personal
   staff: {
     label: '👔 Personal',
@@ -343,7 +457,7 @@ export const PERMISSION_CATEGORIES = [
   ] },
   { key: 'contabilidad',  label: 'Contabilidad',         modules: ['accounting'] },
   { key: 'personal',      label: 'Personal y clientes', modules: ['staff', 'customers'] },
-  { key: 'generales',     label: 'Catálogos Generales', modules: ['general', 'general_branches', 'general_departments', 'general_countries', 'general_cost_centers', 'general_currencies', 'general_languages', 'general_zones', 'general_professions', 'general_education_levels', 'general_trades'] },
+  { key: 'generales',     label: 'Catálogos Generales', modules: ['general', 'general_branches', 'general_departments', 'general_countries', 'general_cost_centers', 'general_currencies', 'general_languages', 'general_zones', 'general_professions', 'general_education_levels', 'general_trades', 'general_socioeconomic_sectors', 'general_brands', 'general_geo_locations', 'general_comm_equipment_params', 'general_shipping_methods', 'general_calendars', 'general_routes', 'general_expense_types', 'logistics', 'logistics_freight', 'logistics_trucks', 'logistics_carriers', 'logistics_origins', 'logistics_carrier_price_lists'] },
   { key: 'reportes',      label: 'Reportes',             modules: ['statistics'] },
   { key: 'escuela',       label: 'Horarios escolares',   modules: ['scheduling'] },
 ] as const;

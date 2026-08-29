@@ -349,12 +349,44 @@ export const PERMISSIONS = {
       { code: 'general.process-areas.delete', label: 'Eliminar áreas de proceso' },
     ],
   },
+  general_destination_units: {
+    label: '📦 Unidad de Destino',
+    perms: [
+      { code: 'general.destination-units.create', label: 'Crear unidades de destino' },
+      { code: 'general.destination-units.edit',   label: 'Editar unidades de destino' },
+      { code: 'general.destination-units.delete', label: 'Eliminar unidades de destino' },
+    ],
+  },
   general_expense_types: {
     label: '🧾 Tipos de Gasto',
     perms: [
       { code: 'general.expense-types.create', label: 'Crear tipos de gasto' },
       { code: 'general.expense-types.edit',   label: 'Editar tipos de gasto' },
       { code: 'general.expense-types.delete', label: 'Eliminar tipos de gasto' },
+    ],
+  },
+  general_taxes: {
+    label: '💰 Impuestos',
+    perms: [
+      { code: 'general.taxes.create', label: 'Crear impuestos' },
+      { code: 'general.taxes.edit',   label: 'Editar impuestos' },
+      { code: 'general.taxes.delete', label: 'Eliminar impuestos' },
+    ],
+  },
+  general_tax_rates: {
+    label: '📐 Tarifas de Impuestos',
+    perms: [
+      { code: 'general.tax-rates.create', label: 'Crear tarifas de impuestos' },
+      { code: 'general.tax-rates.edit',   label: 'Editar tarifas de impuestos' },
+      { code: 'general.tax-rates.delete', label: 'Eliminar tarifas de impuestos' },
+    ],
+  },
+  general_tax_exemptions: {
+    label: '📄 Exoneraciones de Impuesto',
+    perms: [
+      { code: 'general.tax-exemptions.create', label: 'Crear exoneraciones de impuesto' },
+      { code: 'general.tax-exemptions.edit',   label: 'Editar exoneraciones de impuesto' },
+      { code: 'general.tax-exemptions.delete', label: 'Eliminar exoneraciones de impuesto' },
     ],
   },
   // Logística y Despacho
@@ -473,7 +505,7 @@ export const PERMISSION_CATEGORIES = [
   ] },
   { key: 'contabilidad',  label: 'Contabilidad',         modules: ['accounting'] },
   { key: 'personal',      label: 'Personal y clientes', modules: ['staff', 'customers'] },
-  { key: 'generales',     label: 'Catálogos Generales', modules: ['general', 'general_branches', 'general_departments', 'general_countries', 'general_cost_centers', 'general_currencies', 'general_languages', 'general_zones', 'general_professions', 'general_education_levels', 'general_trades', 'general_socioeconomic_sectors', 'general_brands', 'general_geo_locations', 'general_comm_equipment_params', 'general_shipping_methods', 'general_calendars', 'general_routes', 'general_expense_types', 'general_cost_center_groups', 'general_process_areas', 'logistics', 'logistics_freight', 'logistics_trucks', 'logistics_carriers', 'logistics_origins', 'logistics_carrier_price_lists'] },
+  { key: 'generales',     label: 'Catálogos Generales', modules: ['general', 'general_branches', 'general_departments', 'general_countries', 'general_cost_centers', 'general_currencies', 'general_languages', 'general_zones', 'general_professions', 'general_education_levels', 'general_trades', 'general_socioeconomic_sectors', 'general_brands', 'general_geo_locations', 'general_comm_equipment_params', 'general_shipping_methods', 'general_calendars', 'general_routes', 'general_expense_types', 'general_cost_center_groups', 'general_process_areas', 'general_destination_units', 'general_taxes', 'general_tax_rates', 'general_tax_exemptions', 'logistics', 'logistics_freight', 'logistics_trucks', 'logistics_carriers', 'logistics_origins', 'logistics_carrier_price_lists'] },
   { key: 'reportes',      label: 'Reportes',             modules: ['statistics'] },
   { key: 'escuela',       label: 'Horarios escolares',   modules: ['scheduling'] },
 ] as const;

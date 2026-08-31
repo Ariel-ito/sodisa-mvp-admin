@@ -467,6 +467,49 @@ export const PERMISSIONS = {
       { code: 'accounting.cai.delete', label: 'Eliminar CAI' },
     ],
   },
+  // BIC -- Base de Información Central: identidad base (persona/entidad) de la que
+  // luego se derivan Clientes, Vendedores, Cobradores, Cajeros, Proveedores, etc.
+  bic: {
+    label: '🪪 Base de Información Central',
+    perms: [
+      { code: 'bic.access', label: 'Acceso al módulo' },
+      { code: 'bic.view',   label: 'Ver base de información central' },
+      { code: 'bic.create', label: 'Crear BIC' },
+      { code: 'bic.edit',   label: 'Editar BIC' },
+    ],
+  },
+  // BIC -- Vendedores: extiende un BIC ya existente con el rol Vendedor (VENDEDOR_TABLA).
+  bic_vendedores: {
+    label: '🧑‍💼 BIC · Vendedores',
+    perms: [
+      { code: 'bic.vendedores.create', label: 'Registrar BIC como vendedor' },
+      { code: 'bic.vendedores.edit',   label: 'Editar datos de vendedor' },
+    ],
+  },
+  // BIC -- Cajeros: extiende un BIC ya existente con el rol Cajero (CAJERO_TABLA).
+  bic_cajeros: {
+    label: '🧾 BIC · Cajeros',
+    perms: [
+      { code: 'bic.cajeros.create', label: 'Registrar BIC como cajero' },
+      { code: 'bic.cajeros.edit',   label: 'Editar datos de cajero' },
+    ],
+  },
+  // BIC -- Cobradores: extiende un BIC ya existente con el rol Cobrador (COBRADOR_TABLA).
+  bic_cobradores: {
+    label: '💰 BIC · Cobradores',
+    perms: [
+      { code: 'bic.cobradores.create', label: 'Registrar BIC como cobrador' },
+      { code: 'bic.cobradores.edit',   label: 'Editar datos de cobrador' },
+    ],
+  },
+  // BIC -- Técnicos: extiende un BIC ya existente con el rol Técnico (TECNICO_TABLA).
+  bic_tecnicos: {
+    label: '🔧 BIC · Técnicos',
+    perms: [
+      { code: 'bic.tecnicos.create', label: 'Registrar BIC como técnico' },
+      { code: 'bic.tecnicos.edit',   label: 'Editar datos de técnico' },
+    ],
+  },
   // Horarios Escolares
   scheduling: {
     label: '🏫 Horarios Escolares',
@@ -506,6 +549,7 @@ export const PERMISSION_CATEGORIES = [
   { key: 'contabilidad',  label: 'Contabilidad',         modules: ['accounting'] },
   { key: 'personal',      label: 'Personal y clientes', modules: ['staff', 'customers'] },
   { key: 'generales',     label: 'Catálogos Generales', modules: ['general', 'general_branches', 'general_departments', 'general_countries', 'general_cost_centers', 'general_currencies', 'general_languages', 'general_zones', 'general_professions', 'general_education_levels', 'general_trades', 'general_socioeconomic_sectors', 'general_brands', 'general_geo_locations', 'general_comm_equipment_params', 'general_shipping_methods', 'general_calendars', 'general_routes', 'general_expense_types', 'general_cost_center_groups', 'general_process_areas', 'general_destination_units', 'general_taxes', 'general_tax_rates', 'general_tax_exemptions', 'logistics', 'logistics_freight', 'logistics_trucks', 'logistics_carriers', 'logistics_origins', 'logistics_carrier_price_lists'] },
+  { key: 'bic',           label: 'Base de Información Central', modules: ['bic', 'bic_vendedores', 'bic_cajeros', 'bic_cobradores', 'bic_tecnicos'] },
   { key: 'reportes',      label: 'Reportes',             modules: ['statistics'] },
   { key: 'escuela',       label: 'Horarios escolares',   modules: ['scheduling'] },
 ] as const;
@@ -538,4 +582,5 @@ export const COMPANY_MODULE_MAP: Record<string, string[]> = {
   scheduling: ['scheduling'],
   accounting: ['accounting'],
   inventory:  ['inventory'],
+  bic:        ['bic'],
 };

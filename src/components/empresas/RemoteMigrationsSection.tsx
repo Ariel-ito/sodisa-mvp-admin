@@ -5,6 +5,7 @@ import useSWR from 'swr';
 import { toast } from 'sonner';
 import { CheckCircle2, Circle, Loader2, PlayCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Banner } from '@/components/ui/Banner';
 import { adminFetch, ApiError, swrFetcher } from '@/lib/api';
 
 interface RemoteMigrationStatus {
@@ -28,7 +29,7 @@ interface RemoteMigrationRunResult {
  * momentos distintos mientras el sistema legacy sigue en uso en paralelo.
  */
 export function RemoteMigrationsSection({ companyId }: { companyId: number }) {
-  const { data, isLoading, mutate } = useSWR<RemoteMigrationStatus[]>(
+  const { data, error, isLoading, mutate } = useSWR<RemoteMigrationStatus[]>(
     `/portal/companies/${companyId}/remote-migrations`,
     swrFetcher,
   );
@@ -66,6 +67,23 @@ export function RemoteMigrationsSection({ companyId }: { companyId: number }) {
     return (
       <div className="rounded-xl border bg-card shadow-sm p-5">
         <p className="text-sm text-muted-foreground">Cargando migraciones remotas…</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-xl border bg-card shadow-sm p-5 flex flex-col gap-3">
+        <h2 className="text-base font-semibold">Migraciones remotas</h2>
+        <Banner
+          variant="error"
+          title="No se pudo consultar el estado de las migraciones"
+          message={error instanceof ApiError ? error.message : 'Error al conectar con la base de datos remota de esta empresa.'}
+          dismissible={false}
+        />
+        <Button onClick={() => mutate()} size="sm" variant="outline" className="self-start">
+          Reintentar
+        </Button>
       </div>
     );
   }

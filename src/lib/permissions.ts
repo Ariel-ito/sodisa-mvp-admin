@@ -210,6 +210,232 @@ export const PERMISSIONS = {
       { code: 'general.departments.users.remove', label: 'Quitar empleado de un departamento' },
     ],
   },
+  general_countries: {
+    label: '🌎 Países',
+    perms: [
+      { code: 'general.countries.create', label: 'Crear países' },
+      { code: 'general.countries.edit',   label: 'Editar países' },
+      { code: 'general.countries.delete', label: 'Eliminar países' },
+    ],
+  },
+  general_cost_centers: {
+    label: '💰 Centros de Costo',
+    perms: [
+      { code: 'general.cost-centers.create', label: 'Crear centros de costo' },
+      { code: 'general.cost-centers.edit',   label: 'Editar centros de costo' },
+      { code: 'general.cost-centers.delete', label: 'Eliminar centros de costo' },
+    ],
+  },
+  general_currencies: {
+    label: '💵 Monedas',
+    perms: [
+      { code: 'general.currencies.create', label: 'Crear monedas' },
+      { code: 'general.currencies.edit',   label: 'Editar monedas' },
+      { code: 'general.currencies.delete', label: 'Eliminar monedas' },
+    ],
+  },
+  general_languages: {
+    label: '🌐 Idiomas',
+    perms: [
+      { code: 'general.languages.create', label: 'Crear idiomas' },
+      { code: 'general.languages.edit',   label: 'Editar idiomas' },
+      { code: 'general.languages.delete', label: 'Eliminar idiomas' },
+    ],
+  },
+  general_zones: {
+    label: '📍 Zonas',
+    perms: [
+      { code: 'general.zones.create', label: 'Crear zonas' },
+      { code: 'general.zones.edit',   label: 'Editar zonas' },
+      { code: 'general.zones.delete', label: 'Eliminar zonas' },
+    ],
+  },
+  general_professions: {
+    label: '🎓 Profesiones',
+    perms: [
+      { code: 'general.professions.create', label: 'Crear profesiones' },
+      { code: 'general.professions.edit',   label: 'Editar profesiones' },
+      { code: 'general.professions.delete', label: 'Eliminar profesiones' },
+    ],
+  },
+  general_education_levels: {
+    label: '📚 Niveles de Educación',
+    perms: [
+      { code: 'general.education-levels.create', label: 'Crear niveles de educación' },
+      { code: 'general.education-levels.edit',   label: 'Editar niveles de educación' },
+      { code: 'general.education-levels.delete', label: 'Eliminar niveles de educación' },
+    ],
+  },
+  general_trades: {
+    label: '🛠️ Oficios',
+    perms: [
+      { code: 'general.trades.create', label: 'Crear oficios' },
+      { code: 'general.trades.edit',   label: 'Editar oficios' },
+      { code: 'general.trades.delete', label: 'Eliminar oficios' },
+    ],
+  },
+  general_socioeconomic_sectors: {
+    label: '📊 Sectores Socioeconómicos',
+    perms: [
+      { code: 'general.socioeconomic-sectors.create', label: 'Crear sectores socioeconómicos' },
+      { code: 'general.socioeconomic-sectors.edit',   label: 'Editar sectores socioeconómicos' },
+      { code: 'general.socioeconomic-sectors.delete', label: 'Eliminar sectores socioeconómicos' },
+    ],
+  },
+  general_brands: {
+    label: '🏷️ Marcas y Modelos',
+    perms: [
+      { code: 'general.brands.create',        label: 'Crear marcas' },
+      { code: 'general.brands.delete',        label: 'Eliminar marcas' },
+      { code: 'general.brands.models.create', label: 'Crear modelos' },
+      { code: 'general.brands.models.edit',   label: 'Editar (renombrar) modelos' },
+      { code: 'general.brands.models.delete', label: 'Eliminar modelos' },
+    ],
+  },
+  general_geo_locations: {
+    label: '🗺️ Ubicación Geográfica',
+    perms: [
+      { code: 'general.geo-locations.create',       label: 'Crear departamentos/municipios/ciudades' },
+      { code: 'general.geo-locations.edit',          label: 'Editar departamentos/municipios/ciudades' },
+      { code: 'general.geo-locations.delete',        label: 'Eliminar departamentos/municipios/ciudades' },
+      { code: 'general.geo-locations.labels.edit',   label: 'Cambiar nombre de los niveles de ubicación' },
+    ],
+  },
+  general_comm_equipment_params: {
+    label: '📡 Parámetros de Comunicación de Equipos',
+    perms: [
+      { code: 'general.comm-equipment-params.create', label: 'Crear parámetros de comunicación' },
+      { code: 'general.comm-equipment-params.edit',   label: 'Editar parámetros de comunicación' },
+      { code: 'general.comm-equipment-params.delete', label: 'Eliminar parámetros de comunicación' },
+    ],
+  },
+  general_shipping_methods: {
+    label: '🚢 Métodos de Embarque',
+    perms: [
+      { code: 'general.shipping-methods.create', label: 'Crear métodos de embarque' },
+      { code: 'general.shipping-methods.edit',   label: 'Editar métodos de embarque' },
+      { code: 'general.shipping-methods.delete', label: 'Eliminar métodos de embarque' },
+    ],
+  },
+  general_calendars: {
+    label: '📅 Calendarios',
+    perms: [
+      { code: 'general.calendars.create', label: 'Crear calendarios y sus fechas' },
+      { code: 'general.calendars.edit',   label: 'Editar calendarios y sus fechas' },
+      { code: 'general.calendars.delete', label: 'Eliminar calendarios y sus fechas' },
+    ],
+  },
+  general_routes: {
+    label: '🛣️ Rutas',
+    perms: [
+      { code: 'general.routes.create', label: 'Crear rutas' },
+      { code: 'general.routes.edit',   label: 'Editar rutas' },
+      { code: 'general.routes.delete', label: 'Eliminar rutas' },
+    ],
+  },
+  general_cost_center_groups: {
+    label: '🗂️ Grupos de Centro de Costo',
+    perms: [
+      { code: 'general.cost-center-groups.create', label: 'Crear grupos de centro de costo' },
+      { code: 'general.cost-center-groups.edit',   label: 'Editar grupos de centro de costo' },
+      { code: 'general.cost-center-groups.delete', label: 'Eliminar grupos de centro de costo' },
+    ],
+  },
+  general_process_areas: {
+    label: '🧭 Área de Proceso Empleado',
+    perms: [
+      { code: 'general.process-areas.create', label: 'Crear áreas de proceso' },
+      { code: 'general.process-areas.edit',   label: 'Editar áreas de proceso' },
+      { code: 'general.process-areas.delete', label: 'Eliminar áreas de proceso' },
+    ],
+  },
+  general_destination_units: {
+    label: '📦 Unidad de Destino',
+    perms: [
+      { code: 'general.destination-units.create', label: 'Crear unidades de destino' },
+      { code: 'general.destination-units.edit',   label: 'Editar unidades de destino' },
+      { code: 'general.destination-units.delete', label: 'Eliminar unidades de destino' },
+    ],
+  },
+  general_expense_types: {
+    label: '🧾 Tipos de Gasto',
+    perms: [
+      { code: 'general.expense-types.create', label: 'Crear tipos de gasto' },
+      { code: 'general.expense-types.edit',   label: 'Editar tipos de gasto' },
+      { code: 'general.expense-types.delete', label: 'Eliminar tipos de gasto' },
+    ],
+  },
+  general_taxes: {
+    label: '💰 Impuestos',
+    perms: [
+      { code: 'general.taxes.create', label: 'Crear impuestos' },
+      { code: 'general.taxes.edit',   label: 'Editar impuestos' },
+      { code: 'general.taxes.delete', label: 'Eliminar impuestos' },
+    ],
+  },
+  general_tax_rates: {
+    label: '📐 Tarifas de Impuestos',
+    perms: [
+      { code: 'general.tax-rates.create', label: 'Crear tarifas de impuestos' },
+      { code: 'general.tax-rates.edit',   label: 'Editar tarifas de impuestos' },
+      { code: 'general.tax-rates.delete', label: 'Eliminar tarifas de impuestos' },
+    ],
+  },
+  general_tax_exemptions: {
+    label: '📄 Exoneraciones de Impuesto',
+    perms: [
+      { code: 'general.tax-exemptions.create', label: 'Crear exoneraciones de impuesto' },
+      { code: 'general.tax-exemptions.edit',   label: 'Editar exoneraciones de impuesto' },
+      { code: 'general.tax-exemptions.delete', label: 'Eliminar exoneraciones de impuesto' },
+    ],
+  },
+  // Logística y Despacho
+  logistics: {
+    label: '🚚 Logística y Despacho',
+    perms: [
+      { code: 'logistics.access', label: 'Acceso al módulo' },
+    ],
+  },
+  logistics_freight: {
+    label: '💰 Fletes',
+    perms: [
+      { code: 'logistics.freight.create', label: 'Crear fletes' },
+      { code: 'logistics.freight.edit',   label: 'Editar fletes' },
+      { code: 'logistics.freight.delete', label: 'Eliminar fletes' },
+    ],
+  },
+  logistics_trucks: {
+    label: '🚛 Camiones',
+    perms: [
+      { code: 'logistics.trucks.create', label: 'Crear camiones' },
+      { code: 'logistics.trucks.edit',   label: 'Editar camiones' },
+      { code: 'logistics.trucks.delete', label: 'Eliminar camiones' },
+    ],
+  },
+  logistics_carriers: {
+    label: '🧑‍✈️ Transportistas',
+    perms: [
+      { code: 'logistics.carriers.create', label: 'Crear transportistas' },
+      { code: 'logistics.carriers.edit',   label: 'Editar transportistas' },
+      { code: 'logistics.carriers.delete', label: 'Eliminar transportistas' },
+    ],
+  },
+  logistics_origins: {
+    label: '📍 Origen y Destinos',
+    perms: [
+      { code: 'logistics.origins.create', label: 'Crear orígenes y destinos' },
+      { code: 'logistics.origins.edit',   label: 'Editar orígenes y destinos' },
+      { code: 'logistics.origins.delete', label: 'Eliminar orígenes y destinos' },
+    ],
+  },
+  logistics_carrier_price_lists: {
+    label: '📋 Lista de Precios de Transportista',
+    perms: [
+      { code: 'logistics.carrier-price-lists.create', label: 'Crear listas de precios' },
+      { code: 'logistics.carrier-price-lists.edit',   label: 'Editar listas de precios' },
+      { code: 'logistics.carrier-price-lists.delete', label: 'Eliminar listas de precios' },
+    ],
+  },
   // Personal
   staff: {
     label: '👔 Personal',
@@ -322,7 +548,7 @@ export const PERMISSION_CATEGORIES = [
   ] },
   { key: 'contabilidad',  label: 'Contabilidad',         modules: ['accounting'] },
   { key: 'personal',      label: 'Personal y clientes', modules: ['staff', 'customers'] },
-  { key: 'generales',     label: 'Catálogos Generales', modules: ['general', 'general_branches', 'general_departments'] },
+  { key: 'generales',     label: 'Catálogos Generales', modules: ['general', 'general_branches', 'general_departments', 'general_countries', 'general_cost_centers', 'general_currencies', 'general_languages', 'general_zones', 'general_professions', 'general_education_levels', 'general_trades', 'general_socioeconomic_sectors', 'general_brands', 'general_geo_locations', 'general_comm_equipment_params', 'general_shipping_methods', 'general_calendars', 'general_routes', 'general_expense_types', 'general_cost_center_groups', 'general_process_areas', 'general_destination_units', 'general_taxes', 'general_tax_rates', 'general_tax_exemptions', 'logistics', 'logistics_freight', 'logistics_trucks', 'logistics_carriers', 'logistics_origins', 'logistics_carrier_price_lists'] },
   { key: 'bic',           label: 'Base de Información Central', modules: ['bic', 'bic_vendedores', 'bic_cajeros', 'bic_cobradores', 'bic_tecnicos'] },
   { key: 'reportes',      label: 'Reportes',             modules: ['statistics'] },
   { key: 'escuela',       label: 'Horarios escolares',   modules: ['scheduling'] },

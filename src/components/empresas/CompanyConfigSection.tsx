@@ -26,6 +26,7 @@ const STAT_TABS = [
   { id: 'articulos',  label: 'Artículos' },
   { id: 'clientes',   label: 'Clientes' },
   { id: 'inventario', label: 'Inventario' },
+  { id: 'agro',       label: 'Agro' },
 ];
 
 export function CompanyConfigSection({ companyId }: { companyId: number }) {

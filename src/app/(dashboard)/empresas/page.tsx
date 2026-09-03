@@ -29,6 +29,17 @@ interface Company {
   lastPingAt: string | null;
   lastPingOk: boolean | null;
   lastPingMs: number | null;
+  userCount: number;
+}
+
+function UserCountBadge({ count }: { count: number }) {
+  if (count === 0) return <span className="text-xs text-muted-foreground/50">—</span>;
+  return (
+    <span className="inline-flex items-center gap-1 text-xs font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full ring-1 ring-blue-100">
+      <Users className="size-3" />
+      {count}
+    </span>
+  );
 }
 
 
@@ -98,13 +109,14 @@ export default function EmpresasPage() {
                     <span className="ml-1 text-[10px] font-normal text-muted-foreground/60">(auto · 5 min)</span>
                   </TableHead>
                   <TableHead className="text-muted-foreground/60 text-xs font-normal">Últimas 2h</TableHead>
+                  <TableHead>Usuarios</TableHead>
                   <TableHead className="text-right">Acciones</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {companies?.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center text-muted-foreground py-10">
+                    <TableCell colSpan={6} className="text-center text-muted-foreground py-10">
                       No hay empresas registradas.
                     </TableCell>
                   </TableRow>
@@ -146,6 +158,10 @@ export default function EmpresasPage() {
                     {/* Sparkline */}
                     <TableCell>
                       <Sparkline points={sparkMap.get(company.id) ?? []} />
+                    </TableCell>
+
+                    <TableCell>
+                      <UserCountBadge count={company.userCount} />
                     </TableCell>
 
                     <TableCell>
@@ -210,6 +226,7 @@ export default function EmpresasPage() {
                     </button>
                   </div>
                   <Sparkline points={sparkMap.get(company.id) ?? []} width={56} />
+                  <UserCountBadge count={company.userCount} />
                   <div className="flex items-center gap-1">
                     <Button variant="ghost" size="icon-sm" title="Gestionar usuarios"
                       nativeButton={false} render={<Link href={`/empresas/${company.id}/usuarios`} />}>

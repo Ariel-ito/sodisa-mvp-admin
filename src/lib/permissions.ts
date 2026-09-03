@@ -143,6 +143,15 @@ export const PERMISSIONS = {
       { code: 'inventory.articles.delete', label: 'Desactivar artículos' },
     ],
   },
+  inventory_price_lists: {
+    label: '💲 Listas de precios',
+    perms: [
+      { code: 'inventory.priceLists.view',   label: 'Ver listas de precios' },
+      { code: 'inventory.priceLists.create', label: 'Crear listas de precios' },
+      { code: 'inventory.priceLists.edit',   label: 'Editar listas de precios' },
+      { code: 'inventory.priceLists.delete', label: 'Eliminar listas de precios' },
+    ],
+  },
   inventory_groupings: {
     label: '🏷️ Agrupaciones de artículo',
     perms: [
@@ -543,7 +552,7 @@ export const PERMISSION_CATEGORIES = [
   { key: 'ventas',        label: 'Ventas y caja',       modules: ['pos_config', 'pos', 'cashbox_config', 'cashbox'] },
   { key: 'inventario',    label: 'Inventario', modules: [
     'inventory', 'inventory_warehouses', 'inventory_types', 'inventory_packages',
-    'inventory_units', 'inventory_articles', 'inventory_groupings', 'inventory_transfers',
+    'inventory_units', 'inventory_articles', 'inventory_price_lists', 'inventory_groupings', 'inventory_transfers',
     'inventory_requisitions', 'inventory_purchases',
   ] },
   { key: 'contabilidad',  label: 'Contabilidad',         modules: ['accounting'] },

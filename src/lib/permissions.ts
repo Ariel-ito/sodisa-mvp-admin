@@ -484,6 +484,7 @@ export const PERMISSIONS = {
     perms: [
       { code: 'bic.vendedores.create', label: 'Registrar BIC como vendedor' },
       { code: 'bic.vendedores.edit',   label: 'Editar datos de vendedor' },
+      { code: 'bic.vendedores.delete', label: 'Quitar rol de vendedor' },
     ],
   },
   // BIC -- Cajeros: extiende un BIC ya existente con el rol Cajero (CAJERO_TABLA).
@@ -492,6 +493,7 @@ export const PERMISSIONS = {
     perms: [
       { code: 'bic.cajeros.create', label: 'Registrar BIC como cajero' },
       { code: 'bic.cajeros.edit',   label: 'Editar datos de cajero' },
+      { code: 'bic.cajeros.delete', label: 'Quitar rol de cajero' },
     ],
   },
   // BIC -- Cobradores: extiende un BIC ya existente con el rol Cobrador (COBRADOR_TABLA).
@@ -500,6 +502,7 @@ export const PERMISSIONS = {
     perms: [
       { code: 'bic.cobradores.create', label: 'Registrar BIC como cobrador' },
       { code: 'bic.cobradores.edit',   label: 'Editar datos de cobrador' },
+      { code: 'bic.cobradores.delete', label: 'Quitar rol de cobrador' },
     ],
   },
   // BIC -- Técnicos: extiende un BIC ya existente con el rol Técnico (TECNICO_TABLA).
@@ -508,6 +511,61 @@ export const PERMISSIONS = {
     perms: [
       { code: 'bic.tecnicos.create', label: 'Registrar BIC como técnico' },
       { code: 'bic.tecnicos.edit',   label: 'Editar datos de técnico' },
+      { code: 'bic.tecnicos.delete', label: 'Quitar rol de técnico' },
+    ],
+  },
+  // BIC -- Gerentes de Ventas: extiende un BIC ya existente con el rol Gerente de Ventas (GERENTES_DE_VENTAS).
+  bic_gerentes_ventas: {
+    label: '📈 BIC · Gerentes de Ventas',
+    perms: [
+      { code: 'bic.gerentes-ventas.create', label: 'Registrar BIC como gerente de ventas' },
+      { code: 'bic.gerentes-ventas.edit',   label: 'Editar datos de gerente de ventas' },
+      { code: 'bic.gerentes-ventas.delete', label: 'Quitar rol de gerente de ventas' },
+    ],
+  },
+  // BIC -- Bancos: extiende un BIC ya existente con el rol Banco (BANCO_TABLA).
+  bic_bancos: {
+    label: '🏦 BIC · Bancos',
+    perms: [
+      { code: 'bic.bancos.create', label: 'Registrar BIC como banco' },
+      { code: 'bic.bancos.edit',   label: 'Editar datos de banco' },
+      { code: 'bic.bancos.delete', label: 'Quitar rol de banco' },
+    ],
+  },
+  // BIC -- Clientes: extiende un BIC ya existente con el rol Cliente (CLIENTE_TABLA).
+  bic_clientes: {
+    label: '🧑‍🤝‍🧑 BIC · Clientes',
+    perms: [
+      { code: 'bic.clientes.create', label: 'Registrar BIC como cliente' },
+      { code: 'bic.clientes.edit',   label: 'Editar datos de cliente' },
+      { code: 'bic.clientes.delete', label: 'Quitar rol de cliente' },
+    ],
+  },
+  // BIC -- Proveedores: extiende un BIC ya existente con el rol Proveedor (PROVEEDOR_TABLA).
+  bic_proveedores: {
+    label: '🚚 BIC · Proveedores',
+    perms: [
+      { code: 'bic.proveedores.create', label: 'Registrar BIC como proveedor' },
+      { code: 'bic.proveedores.edit',   label: 'Editar datos de proveedor' },
+      { code: 'bic.proveedores.delete', label: 'Quitar rol de proveedor' },
+    ],
+  },
+  // BIC -- Relaciones BIC: catálogo de tipos de relación entre dos BIC (ej. Cónyuge, Referencia).
+  bic_relaciones: {
+    label: '🔗 BIC · Relaciones BIC',
+    perms: [
+      { code: 'bic.relaciones-bic.create', label: 'Crear tipo de relación' },
+      { code: 'bic.relaciones-bic.edit',   label: 'Editar tipo de relación' },
+      { code: 'bic.relaciones-bic.delete', label: 'Eliminar tipo de relación' },
+    ],
+  },
+  // BIC -- Numeradores BIC: configura los correlativos de código por tipo de BIC.
+  bic_numeradores: {
+    label: '#️⃣ BIC · Numeradores BIC',
+    perms: [
+      { code: 'bic.numeradores-bic.create', label: 'Crear numerador' },
+      { code: 'bic.numeradores-bic.edit',   label: 'Editar numerador' },
+      { code: 'bic.numeradores-bic.delete', label: 'Eliminar numerador' },
     ],
   },
   // Horarios Escolares
@@ -549,7 +607,7 @@ export const PERMISSION_CATEGORIES = [
   { key: 'contabilidad',  label: 'Contabilidad',         modules: ['accounting'] },
   { key: 'personal',      label: 'Personal y clientes', modules: ['staff', 'customers'] },
   { key: 'generales',     label: 'Catálogos Generales', modules: ['general', 'general_branches', 'general_departments', 'general_countries', 'general_cost_centers', 'general_currencies', 'general_languages', 'general_zones', 'general_professions', 'general_education_levels', 'general_trades', 'general_socioeconomic_sectors', 'general_brands', 'general_geo_locations', 'general_comm_equipment_params', 'general_shipping_methods', 'general_calendars', 'general_routes', 'general_expense_types', 'general_cost_center_groups', 'general_process_areas', 'general_destination_units', 'general_taxes', 'general_tax_rates', 'general_tax_exemptions', 'logistics', 'logistics_freight', 'logistics_trucks', 'logistics_carriers', 'logistics_origins', 'logistics_carrier_price_lists'] },
-  { key: 'bic',           label: 'Base de Información Central', modules: ['bic', 'bic_vendedores', 'bic_cajeros', 'bic_cobradores', 'bic_tecnicos'] },
+  { key: 'bic',           label: 'Base de Información Central', modules: ['bic', 'bic_vendedores', 'bic_cajeros', 'bic_cobradores', 'bic_tecnicos', 'bic_gerentes_ventas', 'bic_bancos', 'bic_clientes', 'bic_proveedores', 'bic_relaciones', 'bic_numeradores'] },
   { key: 'reportes',      label: 'Reportes',             modules: ['statistics'] },
   { key: 'escuela',       label: 'Horarios escolares',   modules: ['scheduling'] },
 ] as const;

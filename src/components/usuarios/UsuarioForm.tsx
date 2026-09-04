@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { adminFetch, ApiError } from '@/lib/api';
 import { toast } from 'sonner';
 import { Banner } from '@/components/ui/Banner';
-import { Loader2, Lock, LockOpen } from 'lucide-react';
+import { Loader2, Lock, LockOpen, ShieldCheck, ShieldOff } from 'lucide-react';
 import { UserEmpresasSection } from './UserEmpresasSection';
 import { SupportCompanyScopeSection } from './SupportCompanyScopeSection';
 
@@ -21,6 +21,7 @@ export interface PortalUserData {
   password?: string;
   lockedUntil?: string | null;
   failedLoginAttempts?: number;
+  totpEnabled?: boolean;
 }
 
 interface Props {
@@ -36,8 +37,25 @@ export function UsuarioForm({ initial, mode }: Props) {
   const [saving, setSaving]       = useState(false);
   const [locking, setLocking]     = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [resettingTotp, setResettingTotp] = useState(false);
+  const [totpEnabled, setTotpEnabled]     = useState(initial?.totpEnabled ?? false);
 
   const isLocked = initial?.lockedUntil ? new Date(initial.lockedUntil) > new Date() : false;
+
+  async function handleResetTotp() {
+    if (!initial?.id) return;
+    if (!window.confirm(`¿Resetear el 2FA de ${initial.name}? Va a tener que configurarlo de nuevo la próxima vez que inicie sesión.`)) return;
+    setResettingTotp(true);
+    try {
+      await adminFetch(`/portal/users/${initial.id}/totp/reset`, { method: 'POST' });
+      setTotpEnabled(false);
+      toast.success('2FA reseteado correctamente');
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : 'Error al resetear 2FA');
+    } finally {
+      setResettingTotp(false);
+    }
+  }
 
   async function handleToggleLock() {
     if (!initial?.id) return;
@@ -174,6 +192,30 @@ export function UsuarioForm({ initial, mode }: Props) {
           }
           {(initial?.failedLoginAttempts ?? 0) > 0 && ` (${initial!.failedLoginAttempts} intentos fallidos)`}
         </p>
+      )}
+
+      {mode === 'edit' && initial?.id && (
+        <div className="flex items-center justify-between gap-3 rounded-lg border p-3">
+          <div className="flex items-center gap-2 text-sm">
+            {totpEnabled ? (
+              <>
+                <ShieldCheck className="size-4 text-green-600" />
+                <span>2FA activado</span>
+              </>
+            ) : (
+              <>
+                <ShieldOff className="size-4 text-muted-foreground" />
+                <span className="text-muted-foreground">2FA no configurado</span>
+              </>
+            )}
+          </div>
+          {totpEnabled && (
+            <Button type="button" variant="outline" size="sm" onClick={handleResetTotp} disabled={resettingTotp}>
+              {resettingTotp && <Loader2 className="size-3.5 animate-spin" />}
+              {resettingTotp ? 'Reseteando…' : 'Resetear 2FA'}
+            </Button>
+          )}
+        </div>
       )}
 
       {/* Empresas que puede administrar — solo Soporte, modo edición */}

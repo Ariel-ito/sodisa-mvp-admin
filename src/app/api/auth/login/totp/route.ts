@@ -13,7 +13,7 @@ function setCookies(response: ReturnType<typeof import('next/server').NextRespon
 export async function POST(request: NextRequest) {
   const body = await request.json();
 
-  const apiRes = await fetch(`${API_URL}/portal/auth/login`, {
+  const apiRes = await fetch(`${API_URL}/portal/auth/login/totp`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
@@ -23,12 +23,6 @@ export async function POST(request: NextRequest) {
 
   if (!apiRes.ok) {
     return NextResponse.json(data, { status: apiRes.status });
-  }
-
-  // 2FA activo: todavía no hay tokens de sesión, solo el tempToken que el
-  // frontend intercambia en /api/auth/login/totp por el código de 6 dígitos.
-  if (data.requiresTotp) {
-    return NextResponse.json({ requiresTotp: true, tempToken: data.tempToken });
   }
 
   const response = NextResponse.json({ accessToken: data.accessToken, user: data.user });

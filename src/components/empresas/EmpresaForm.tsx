@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { adminFetch, ApiError } from '@/lib/api';
 import { toast } from 'sonner';
 import { Banner } from '@/components/ui/Banner';
-import { Loader2, Wifi, RefreshCw } from 'lucide-react';
+import { Loader2, Wifi } from 'lucide-react';
 
 /** Matches the Company entity: dbUsername / dbDatabase (not dbUser/dbName) */
 export interface CompanyData {
@@ -49,10 +49,7 @@ export function EmpresaForm({ initial, mode }: Props) {
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [testing, setTesting] = useState(false);
-  const [syncing, setSyncing] = useState(false);
   const [testResult, setTestResult] = useState<{ ok: boolean; message: string } | null>(null);
-  const [syncResult, setSyncResult] = useState<string | null>(null);
-  const [syncError, setSyncError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<keyof CompanyData, string>>>({});
 
   function set<K extends keyof CompanyData>(key: K, value: CompanyData[K]) {
@@ -108,24 +105,6 @@ export function EmpresaForm({ initial, mode }: Props) {
       setTestResult({ ok: false, message: err instanceof ApiError ? err.message : 'Error desconocido' });
     } finally {
       setTesting(false);
-    }
-  }
-
-  async function handleSync() {
-    setSyncing(true);
-    setSyncResult(null);
-    setSyncError(null);
-    try {
-      const result = await adminFetch<{ created: number; linked: number; skipped: number }>(
-        `/portal/companies/${initial!.id}/sync-users`,
-        { method: 'POST' }
-      );
-      setSyncResult(`Creados: ${result.created} | Vinculados: ${result.linked} | Omitidos: ${result.skipped}`);
-      toast.success('Sincronización completada');
-    } catch (err) {
-      setSyncError(err instanceof ApiError ? err.message : 'Error desconocido');
-    } finally {
-      setSyncing(false);
     }
   }
 
@@ -249,10 +228,6 @@ export function EmpresaForm({ initial, mode }: Props) {
               {testing ? <Loader2 className="size-4 animate-spin" /> : <Wifi className="size-4" />}
               Test conexión
             </Button>
-            <Button type="button" variant="outline" disabled={syncing} onClick={handleSync}>
-              {syncing ? <Loader2 className="size-4 animate-spin" /> : <RefreshCw className="size-4" />}
-              Sync usuarios
-            </Button>
           </>
         )}
       </div>
@@ -261,19 +236,6 @@ export function EmpresaForm({ initial, mode }: Props) {
         <div className={`rounded-md px-3 py-2 text-sm ${testResult.ok ? 'bg-green-50 text-green-700' : 'bg-destructive/10 text-destructive'}`}>
           {testResult.ok ? '✅ ' : '❌ '}{testResult.message}
         </div>
-      )}
-      {syncResult && (
-        <div className="rounded-md bg-blue-50 text-blue-700 px-3 py-2 text-sm">
-          Sincronización completada — {syncResult}
-        </div>
-      )}
-      {syncError && (
-        <Banner
-          variant="error"
-          title="Error en sincronización"
-          message={syncError}
-          onDismiss={() => setSyncError(null)}
-        />
       )}
     </form>
   );

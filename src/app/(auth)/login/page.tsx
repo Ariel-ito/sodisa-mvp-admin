@@ -8,11 +8,16 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ApiError } from '@/lib/api';
 import { setToken, saveUser, AdminUser } from '@/lib/auth';
-import { Loader2, Lock } from 'lucide-react';
+import { Loader2, Lock, ShieldCheck } from 'lucide-react';
 
 interface LoginResponse {
   accessToken: string;
   user: AdminUser;
+}
+
+interface TotpRequiredResponse {
+  requiresTotp: true;
+  tempToken: string;
 }
 
 function LoginForm() {
@@ -25,6 +30,16 @@ function LoginForm() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // — Segundo paso: código de 2FA
+  const [tempToken, setTempToken] = useState<string | null>(null);
+  const [totpCode, setTotpCode] = useState('');
+
+  async function finishLogin(data: LoginResponse) {
+    setToken(data.accessToken);
+    saveUser(data.user);
+    router.push(from);
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError('');
@@ -35,13 +50,15 @@ function LoginForm() {
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({ email, password }),
       });
-      const data: LoginResponse & { message?: string } = await res.json();
+      const data: LoginResponse & TotpRequiredResponse & { message?: string } = await res.json();
       if (!res.ok) {
         throw new ApiError(res.status, (data.message as string) ?? `Error ${res.status}`);
       }
-      setToken(data.accessToken);
-      saveUser(data.user);
-      router.push(from);
+      if (data.requiresTotp) {
+        setTempToken(data.tempToken);
+        return;
+      }
+      await finishLogin(data);
     } catch (err) {
       if (err instanceof ApiError) {
         if (err.status === 429) {
@@ -51,6 +68,33 @@ function LoginForm() {
         } else {
           setError(err.message ?? `Error ${err.status}`);
         }
+      } else {
+        setError('Error al conectar con el servidor.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleSubmitTotp(e: React.FormEvent) {
+    e.preventDefault();
+    if (!tempToken) return;
+    setError('');
+    setLoading(true);
+    try {
+      const res = await fetch('/api/auth/login/totp', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ tempToken, code: totpCode }),
+      });
+      const data: LoginResponse & { message?: string } = await res.json();
+      if (!res.ok) {
+        throw new ApiError(res.status, (data.message as string) ?? `Error ${res.status}`);
+      }
+      await finishLogin(data);
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setError(err.message ?? 'Código inválido.');
       } else {
         setError('Error al conectar con el servidor.');
       }
@@ -103,58 +147,116 @@ function LoginForm() {
             />
           </div>
 
-          <div className="space-y-1">
-            <h2 className="text-2xl font-semibold tracking-tight">Iniciar sesión</h2>
-            <p className="text-sm text-muted-foreground">Ingresa tus credenciales de administrador</p>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-1.5">
-              <Label htmlFor="email">Correo electrónico</Label>
-              <Input
-                id="email"
-                type="email"
-                autoComplete="email"
-                placeholder="admin@sodisa.com"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                required
-                className="h-10"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="password">Contraseña</Label>
-              <Input
-                id="password"
-                type="password"
-                autoComplete="current-password"
-                placeholder="••••••••"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                required
-                className="h-10"
-              />
-            </div>
-
-            {error && (
-              <div className="flex items-start gap-2 rounded-lg bg-destructive/8 border border-destructive/20 px-3 py-2.5 text-sm text-destructive">
-                <Lock className="size-4 shrink-0 mt-0.5" />
-                <span>{error}</span>
+          {tempToken ? (
+            <>
+              <div className="space-y-1">
+                <h2 className="text-2xl font-semibold tracking-tight">Verificación en dos pasos</h2>
+                <p className="text-sm text-muted-foreground">Ingresa el código de 6 dígitos de tu app de autenticación</p>
               </div>
-            )}
 
-            <Button type="submit" className="w-full h-10 mt-2" disabled={loading}>
-              {loading ? (
-                <>
-                  <Loader2 className="size-4 animate-spin" />
-                  Iniciando sesión…
-                </>
-              ) : (
-                'Iniciar sesión'
-              )}
-            </Button>
-          </form>
+              <form onSubmit={handleSubmitTotp} className="space-y-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="totpCode">Código de verificación</Label>
+                  <Input
+                    id="totpCode"
+                    type="text"
+                    inputMode="numeric"
+                    autoComplete="one-time-code"
+                    placeholder="123456"
+                    maxLength={6}
+                    value={totpCode}
+                    onChange={e => setTotpCode(e.target.value.replace(/\D/g, ''))}
+                    required
+                    autoFocus
+                    className="h-10 text-center text-lg tracking-[0.3em]"
+                  />
+                </div>
+
+                {error && (
+                  <div className="flex items-start gap-2 rounded-lg bg-destructive/8 border border-destructive/20 px-3 py-2.5 text-sm text-destructive">
+                    <Lock className="size-4 shrink-0 mt-0.5" />
+                    <span>{error}</span>
+                  </div>
+                )}
+
+                <Button type="submit" className="w-full h-10 mt-2" disabled={loading || totpCode.length !== 6}>
+                  {loading ? (
+                    <>
+                      <Loader2 className="size-4 animate-spin" />
+                      Verificando…
+                    </>
+                  ) : (
+                    <>
+                      <ShieldCheck className="size-4" />
+                      Verificar
+                    </>
+                  )}
+                </Button>
+                <button
+                  type="button"
+                  onClick={() => { setTempToken(null); setTotpCode(''); setError(''); }}
+                  className="w-full text-center text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Volver
+                </button>
+              </form>
+            </>
+          ) : (
+            <>
+              <div className="space-y-1">
+                <h2 className="text-2xl font-semibold tracking-tight">Iniciar sesión</h2>
+                <p className="text-sm text-muted-foreground">Ingresa tus credenciales de administrador</p>
+              </div>
+
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="email">Correo electrónico</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    autoComplete="email"
+                    placeholder="admin@sodisa.com"
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    required
+                    className="h-10"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="password">Contraseña</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    autoComplete="current-password"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    required
+                    className="h-10"
+                  />
+                </div>
+
+                {error && (
+                  <div className="flex items-start gap-2 rounded-lg bg-destructive/8 border border-destructive/20 px-3 py-2.5 text-sm text-destructive">
+                    <Lock className="size-4 shrink-0 mt-0.5" />
+                    <span>{error}</span>
+                  </div>
+                )}
+
+                <Button type="submit" className="w-full h-10 mt-2" disabled={loading}>
+                  {loading ? (
+                    <>
+                      <Loader2 className="size-4 animate-spin" />
+                      Iniciando sesión…
+                    </>
+                  ) : (
+                    'Iniciar sesión'
+                  )}
+                </Button>
+              </form>
+            </>
+          )}
         </div>
       </div>
     </div>

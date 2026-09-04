@@ -10,6 +10,7 @@ import { EmpresaForm, CompanyData } from '@/components/empresas/EmpresaForm';
 import { PingHistoryChart } from '@/components/empresas/PingHistoryChart';
 import { CompanyConfigSection } from '@/components/empresas/CompanyConfigSection';
 import { RemoteMigrationsSection } from '@/components/empresas/RemoteMigrationsSection';
+import { QaCopyScriptSection } from '@/components/empresas/QaCopyScriptSection';
 import { adminFetch, ApiError, swrFetcher } from '@/lib/api';
 import { getUser } from '@/lib/auth';
 import { toast } from 'sonner';
@@ -87,6 +88,11 @@ export default function EditarEmpresaPage({ params }: { params: Promise<{ id: st
       {/* Módulos y tabs */}
       {company.id !== undefined && (
         <CompanyConfigSection companyId={company.id} />
+      )}
+
+      {/* Copia a QA -- genera el script de backup/restore + limpieza de OS12T */}
+      {company.id !== undefined && (
+        <QaCopyScriptSection companyId={company.id} sourceDatabase={company.dbDatabase} />
       )}
 
       {/* Historial de pings */}

@@ -3,7 +3,7 @@
 import { use, useMemo, useState } from 'react';
 import useSWR from 'swr';
 import Link from 'next/link';
-import { ChevronRight, Plus, Pencil, ShieldCheck, CheckCircle2, AlertCircle, XCircle, KeyRound, Eye, Search, X, Trash2, Loader2 } from 'lucide-react';
+import { ChevronRight, Plus, Pencil, ShieldCheck, CheckCircle2, AlertCircle, XCircle, KeyRound, Eye, Search, X, Trash2, Loader2, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { LockButton } from '@/components/ui/LockButton';
@@ -13,6 +13,7 @@ import {
 import { adminFetch, ApiError, swrFetcher } from '@/lib/api';
 import { toast } from 'sonner';
 import { UserInfoDialog } from '@/components/accesos/UserInfoDialog';
+import { SyncBicUsersDialog } from '@/components/empresas/SyncBicUsersDialog';
 
 interface UcaItem {
   id: number;
@@ -154,6 +155,7 @@ export default function UsuariosEmpresaPage({ params }: { params: Promise<{ id: 
 
   const [previewUcaId, setPreviewUcaId] = useState<number | null>(null);
   const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [syncOpen, setSyncOpen] = useState(false);
 
   async function handleDeleteAccess(uca: UcaItem) {
     const confirmed = window.confirm(
@@ -192,11 +194,18 @@ export default function UsuariosEmpresaPage({ params }: { params: Promise<{ id: 
           <h1 className="text-xl md:text-2xl font-semibold leading-tight">
             Usuarios de {company?.name}
           </h1>
-          <Button nativeButton={false} render={<Link href={`/empresas/${id}/usuarios/nuevo`} />} className="shrink-0">
-            <Plus className="size-4" />
-            <span className="hidden sm:inline">Nuevo acceso</span>
-            <span className="sm:hidden">Nuevo</span>
-          </Button>
+          <div className="flex items-center gap-2 shrink-0">
+            <Button type="button" variant="outline" onClick={() => setSyncOpen(true)}>
+              <RefreshCw className="size-4" />
+              <span className="hidden sm:inline">Sincronizar BIC</span>
+              <span className="sm:hidden">Sync</span>
+            </Button>
+            <Button nativeButton={false} render={<Link href={`/empresas/${id}/usuarios/nuevo`} />}>
+              <Plus className="size-4" />
+              <span className="hidden sm:inline">Nuevo acceso</span>
+              <span className="sm:hidden">Nuevo</span>
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -485,6 +494,14 @@ export default function UsuariosEmpresaPage({ params }: { params: Promise<{ id: 
       <UserInfoDialog
         ucaId={previewUcaId}
         onClose={() => setPreviewUcaId(null)}
+      />
+
+      <SyncBicUsersDialog
+        companyId={Number(id)}
+        companyName={company?.name}
+        open={syncOpen}
+        onClose={() => setSyncOpen(false)}
+        onSynced={() => mutate()}
       />
 
     </div>

@@ -42,9 +42,12 @@ const ACTION_CONFIG: Record<string, { label: string; cls: string }> = {
   'company.created':              { label: 'Empresa creada',              cls: 'bg-purple-50 text-purple-700 ring-purple-200' },
   'company.credentials_updated':  { label: 'Credenciales de BD editadas', cls: 'bg-orange-50 text-orange-700 ring-orange-200' },
   'company.deleted':              { label: 'Empresa eliminada',           cls: 'bg-red-50 text-red-700 ring-red-200' },
+  'company.activated':            { label: 'Empresa activada',            cls: 'bg-green-50 text-green-700 ring-green-200' },
+  'company.deactivated':          { label: 'Empresa desactivada',         cls: 'bg-orange-50 text-orange-700 ring-orange-200' },
   'permissions.synced':           { label: 'Permisos modificados',        cls: 'bg-blue-50 text-blue-700 ring-blue-200' },
   'roles.synced':                 { label: 'Roles modificados',           cls: 'bg-blue-50 text-blue-700 ring-blue-200' },
   'impersonation.session_viewed': { label: 'Impersonación',               cls: 'bg-orange-50 text-orange-700 ring-orange-200' },
+  'remote_migration.executed':    { label: 'Migración remota ejecutada',  cls: 'bg-purple-50 text-purple-700 ring-purple-200' },
 };
 
 const ACTION_OPTIONS = [

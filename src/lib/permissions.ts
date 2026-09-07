@@ -577,6 +577,15 @@ export const PERMISSIONS = {
       { code: 'bic.numeradores-bic.delete', label: 'Eliminar numerador' },
     ],
   },
+  // Usuarios de la empresa -- permiso que delega en un admin de la propia empresa
+  // la gestión de accesos (crear/editar/bloquear usuarios, asignar roles/permisos)
+  // que hoy solo hace el staff de SODISA desde este panel.
+  usuarios_empresa: {
+    label: '👤 Usuarios de la empresa',
+    perms: [
+      { code: 'usuarios.gestionar', label: 'Gestionar usuarios de la empresa' },
+    ],
+  },
   // Horarios Escolares
   scheduling: {
     label: '🏫 Horarios Escolares',
@@ -619,6 +628,7 @@ export const PERMISSION_CATEGORIES = [
   { key: 'bic',           label: 'Base de Información Central', modules: ['bic', 'bic_vendedores', 'bic_cajeros', 'bic_cobradores', 'bic_tecnicos', 'bic_gerentes_ventas', 'bic_bancos', 'bic_clientes', 'bic_proveedores', 'bic_relaciones', 'bic_numeradores'] },
   { key: 'reportes',      label: 'Reportes',             modules: ['statistics'] },
   { key: 'escuela',       label: 'Horarios escolares',   modules: ['scheduling'] },
+  { key: 'administracion', label: 'Administración',      modules: ['usuarios_empresa'] },
 ] as const;
 
 /** Roles legacy del sistema */

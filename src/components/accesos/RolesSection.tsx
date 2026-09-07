@@ -59,12 +59,19 @@ export function RolesSection({ selected, onChange, existingRoles = [], onPending
 
   // Los 6 roles originales tienen una etiqueta en español curada a mano
   // (LEGACY_ROLES) -- para cualquier rol creado después desde /roles (como uno
-  // nuevo "administrador"), usamos su description o, si no tiene, el name tal cual.
+  // nuevo "administrador"), usamos su description o, si no tiene, una versión
+  // "humanizada" del name (guiones bajos -> espacios, primera letra de cada
+  // palabra en mayúscula) para no mostrar el slug crudo en minúsculas al lado
+  // de etiquetas curadas como "Cajero"/"Cobrador".
+  function humanizeRoleName(name: string): string {
+    return name.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+  }
+
   function getRoleLabel(roleName: string): string {
     const legacy = LEGACY_ROLES.find(r => r.name === roleName)?.label;
     if (legacy) return legacy;
     const apiRole = apiRoles?.find(r => r.name === roleName);
-    return apiRole?.description?.trim() || roleName;
+    return apiRole?.description?.trim() || humanizeRoleName(roleName);
   }
 
   // Emit permissions only from roles NEW in this session (never had, or removed+re-added)

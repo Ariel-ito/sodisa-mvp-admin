@@ -21,6 +21,21 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 
+// Nombre interno: identificador técnico del rol (usado por código legacy y como
+// fallback de etiqueta) -- se normaliza a slug para que nunca lleve espacios,
+// mayúsculas o acentos, evitando la confusión con "Descripción" (el texto que sí
+// ve el usuario final).
+function slugify(input: string): string {
+  return input
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '_');
+}
+
+function trimSlug(input: string): string {
+  return input.replace(/^_+|_+$/g, '');
+}
+
 export interface RolData {
   id?: number;
   name: string;
@@ -56,8 +71,15 @@ export function RolPermsForm({ initial, mode }: Props) {
     e.preventDefault();
     setSaving(true);
     setFormError(null);
+    const finalName = trimSlug(name);
+    if (!finalName) {
+      setFormError('El nombre interno no puede quedar vacío después de normalizarlo.');
+      setSaving(false);
+      return;
+    }
+
     try {
-      const payload = { name, description, permissions, type: 'company' };
+      const payload = { name: finalName, description, permissions, type: 'company' };
 
       if (mode === 'create') {
         await adminFetch('/portal/roles', { method: 'POST', body: JSON.stringify(payload) });
@@ -143,11 +165,17 @@ export function RolPermsForm({ initial, mode }: Props) {
             <Input
               id="name"
               value={name}
-              onChange={e => setName(e.target.value)}
+              onChange={e => setName(slugify(e.target.value))}
+              onBlur={() => setName(n => trimSlug(n))}
               required
-              disabled={initial?.isSystem}
+              disabled={mode === 'edit'}
               placeholder="vendedor"
             />
+            <span className="text-xs text-muted-foreground">
+              {mode === 'edit'
+                ? 'El nombre interno no se puede modificar después de creado.'
+                : 'Solo minúsculas, números y guion bajo (_) — es el identificador interno del rol, no se muestra a los usuarios.'}
+            </span>
           </div>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="description">Descripción</Label>

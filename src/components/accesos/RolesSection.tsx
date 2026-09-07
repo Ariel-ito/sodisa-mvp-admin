@@ -19,11 +19,8 @@ import {
 interface ApiRole {
   id: number;
   name: string;
+  description?: string | null;
   permissions: string[];
-}
-
-function getRoleLabel(name: string): string {
-  return LEGACY_ROLES.find(r => r.name === name)?.label ?? name;
 }
 
 interface PendingToggle {
@@ -59,6 +56,16 @@ export function RolesSection({ selected, onChange, existingRoles = [], onPending
   const [pending, setPending] = useState<PendingToggle | null>(null);
   // Roles explicitly removed in this editing session — if re-added, treat as new
   const [removedThisSession, setRemovedThisSession] = useState<Set<string>>(new Set());
+
+  // Los 6 roles originales tienen una etiqueta en español curada a mano
+  // (LEGACY_ROLES) -- para cualquier rol creado después desde /roles (como uno
+  // nuevo "administrador"), usamos su description o, si no tiene, el name tal cual.
+  function getRoleLabel(roleName: string): string {
+    const legacy = LEGACY_ROLES.find(r => r.name === roleName)?.label;
+    if (legacy) return legacy;
+    const apiRole = apiRoles?.find(r => r.name === roleName);
+    return apiRole?.description?.trim() || roleName;
+  }
 
   // Emit permissions only from roles NEW in this session (never had, or removed+re-added)
   useEffect(() => {
@@ -119,7 +126,7 @@ export function RolesSection({ selected, onChange, existingRoles = [], onPending
   return (
     <>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-        {LEGACY_ROLES.map(role => (
+        {(apiRoles ?? []).map(role => (
           <div key={role.name} className="flex items-center gap-2">
             <Checkbox
               id={`role-${role.name}`}
@@ -127,7 +134,7 @@ export function RolesSection({ selected, onChange, existingRoles = [], onPending
               onCheckedChange={() => handleToggle(role.name)}
             />
             <Label htmlFor={`role-${role.name}`} className="font-normal">
-              {role.label}
+              {getRoleLabel(role.name)}
             </Label>
           </div>
         ))}

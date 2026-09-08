@@ -239,10 +239,14 @@ export function PermisosGrid({
             <TabsTrigger
               key={cat.key}
               value={cat.key}
-              className="justify-start gap-2.5 px-3 py-2 rounded-lg text-sm font-normal text-muted-foreground data-active:font-medium data-active:text-foreground"
+              // whitespace-normal/text-left sobreescriben el whitespace-nowrap/justify-center
+              // que trae TabsTrigger por defecto (pensado para tabs horizontales cortos) --
+              // sin esto, una categoría larga como "Base de Información Central" no puede
+              // envolver y se desborda del sidebar de 208px (w-52).
+              className="justify-start gap-2.5 px-3 py-2 rounded-lg text-sm font-normal text-muted-foreground data-active:font-medium data-active:text-foreground whitespace-normal text-left"
             >
               <Icon className="size-4 shrink-0" aria-hidden="true" />
-              {cat.label}
+              <span className="min-w-0 break-words">{cat.label}</span>
             </TabsTrigger>
           );
         })}

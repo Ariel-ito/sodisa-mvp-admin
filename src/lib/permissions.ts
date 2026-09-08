@@ -586,6 +586,15 @@ export const PERMISSIONS = {
       { code: 'usuarios.gestionar', label: 'Gestionar usuarios de la empresa' },
     ],
   },
+  // Registro de actividad (por ahora, solo login) de la empresa -- permiso
+  // separado de usuarios.gestionar a propósito: una empresa puede querer que
+  // alguien vea el historial de logins sin poder gestionar usuarios.
+  actividad_empresa: {
+    label: '📋 Actividad de la empresa',
+    perms: [
+      { code: 'actividad.ver', label: 'Ver registro de actividad' },
+    ],
+  },
   // Horarios Escolares
   scheduling: {
     label: '🏫 Horarios Escolares',
@@ -628,7 +637,7 @@ export const PERMISSION_CATEGORIES = [
   { key: 'bic',           label: 'Base de Información Central', modules: ['bic', 'bic_vendedores', 'bic_cajeros', 'bic_cobradores', 'bic_tecnicos', 'bic_gerentes_ventas', 'bic_bancos', 'bic_clientes', 'bic_proveedores', 'bic_relaciones', 'bic_numeradores'] },
   { key: 'reportes',      label: 'Reportes',             modules: ['statistics'] },
   { key: 'escuela',       label: 'Horarios escolares',   modules: ['scheduling'] },
-  { key: 'administracion', label: 'Administración',      modules: ['usuarios_empresa'] },
+  { key: 'administracion', label: 'Administración',      modules: ['usuarios_empresa', 'actividad_empresa'] },
 ] as const;
 
 /** Roles legacy del sistema */

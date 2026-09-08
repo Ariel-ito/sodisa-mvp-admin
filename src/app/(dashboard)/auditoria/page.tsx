@@ -27,6 +27,11 @@ interface AuditResponse {
   total: number;
 }
 
+interface CompanyOption {
+  id: number;
+  name: string;
+}
+
 const ACTION_CONFIG: Record<string, { label: string; cls: string }> = {
   'login.success':          { label: 'Login exitoso',       cls: 'bg-green-50 text-green-700 ring-green-200' },
   'login.fail':             { label: 'Login fallido',       cls: 'bg-red-50 text-red-700 ring-red-200' },
@@ -67,13 +72,14 @@ function ActionBadge({ action }: { action: string }) {
 }
 
 function buildUrl(params: {
-  action: string; email: string; from: string; to: string; offset: number;
+  action: string; email: string; from: string; to: string; companyId: string; offset: number;
 }): string {
   const q = new URLSearchParams();
-  if (params.action) q.set('action', params.action);
-  if (params.email)  q.set('email',  params.email);
-  if (params.from)   q.set('from',   new Date(params.from).toISOString());
-  if (params.to)     q.set('to',     new Date(params.to + 'T23:59:59').toISOString());
+  if (params.action)    q.set('action',    params.action);
+  if (params.email)     q.set('email',     params.email);
+  if (params.from)      q.set('from',      new Date(params.from).toISOString());
+  if (params.to)        q.set('to',        new Date(params.to + 'T23:59:59').toISOString());
+  if (params.companyId) q.set('companyId', params.companyId);
   q.set('limit',  String(PAGE_SIZE));
   q.set('offset', String(params.offset));
   return `/portal/audit?${q.toString()}`;
@@ -89,13 +95,16 @@ function getTodayKey() {
 // ── Page ───────────────────────────────────────────────────────────────────────
 
 export default function AuditoriaPage() {
-  const [action,   setAction]   = useState('');
-  const [email,    setEmail]    = useState('');
-  const [fromDate, setFromDate] = useState('');  // YYYY-MM-DD
-  const [toDate,   setToDate]   = useState('');  // YYYY-MM-DD
-  const [offset,   setOffset]   = useState(0);
+  const [action,    setAction]    = useState('');
+  const [email,     setEmail]     = useState('');
+  const [fromDate,  setFromDate]  = useState('');  // YYYY-MM-DD
+  const [toDate,    setToDate]    = useState('');  // YYYY-MM-DD
+  const [companyId, setCompanyId] = useState('');
+  const [offset,    setOffset]    = useState(0);
 
-  const url = buildUrl({ action, email, from: fromDate, to: toDate, offset });
+  const { data: companies } = useSWR<CompanyOption[]>('/portal/companies', swrFetcher);
+
+  const url = buildUrl({ action, email, from: fromDate, to: toDate, companyId, offset });
   const { data, isLoading } = useSWR<AuditResponse>(url, swrFetcher);
 
   const todayKey = getTodayKey();
@@ -112,7 +121,7 @@ export default function AuditoriaPage() {
   function applyFilters() { setOffset(0); }
 
   function clearFilters() {
-    setAction(''); setEmail(''); setFromDate(''); setToDate(''); setOffset(0);
+    setAction(''); setEmail(''); setFromDate(''); setToDate(''); setCompanyId(''); setOffset(0);
   }
 
   return (
@@ -144,6 +153,21 @@ export default function AuditoriaPage() {
           >
             {ACTION_OPTIONS.map(o => (
               <option key={o.value} value={o.value}>{o.label}</option>
+            ))}
+          </select>
+        </div>
+
+        <div className="flex flex-col gap-1 flex-1 min-w-[160px]">
+          <label htmlFor="filtro-empresa" className="text-xs font-medium text-muted-foreground">Empresa</label>
+          <select
+            id="filtro-empresa"
+            value={companyId}
+            onChange={e => setCompanyId(e.target.value)}
+            className="h-9 rounded-md border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+          >
+            <option value="">Todas las empresas</option>
+            {companies?.map(c => (
+              <option key={c.id} value={c.id}>{c.name}</option>
             ))}
           </select>
         </div>

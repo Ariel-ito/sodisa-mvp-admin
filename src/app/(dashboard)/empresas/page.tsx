@@ -26,10 +26,23 @@ interface Company {
   dbHost: string;
   dbDatabase: string;
   isActive: boolean;
+  isDemo: boolean;
   lastPingAt: string | null;
   lastPingOk: boolean | null;
   lastPingMs: number | null;
   userCount: number;
+}
+
+function TipoBadge({ isDemo }: { isDemo: boolean }) {
+  return isDemo ? (
+    <span className="inline-flex items-center text-xs font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full ring-1 ring-amber-200">
+      QA / Demo
+    </span>
+  ) : (
+    <span className="inline-flex items-center text-xs font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-full ring-1 ring-muted-foreground/20">
+      Producción
+    </span>
+  );
 }
 
 function UserCountBadge({ count }: { count: number }) {
@@ -102,6 +115,7 @@ export default function EmpresasPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Empresa</TableHead>
+                  <TableHead>Tipo</TableHead>
                   <TableHead>Host · Base de datos</TableHead>
                   <TableHead>Estado</TableHead>
                   <TableHead>
@@ -116,7 +130,7 @@ export default function EmpresasPage() {
               <TableBody>
                 {companies?.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center text-muted-foreground py-10">
+                    <TableCell colSpan={7} className="text-center text-muted-foreground py-10">
                       No hay empresas registradas.
                     </TableCell>
                   </TableRow>
@@ -128,6 +142,10 @@ export default function EmpresasPage() {
                     <TableCell>
                       <p className="font-medium text-sm">{company.name}</p>
                       <p className="text-xs text-muted-foreground font-mono">{company.slug}</p>
+                    </TableCell>
+
+                    <TableCell>
+                      <TipoBadge isDemo={company.isDemo} />
                     </TableCell>
 
                     <TableCell>
@@ -201,9 +219,12 @@ export default function EmpresasPage() {
                     <p className="font-semibold text-sm leading-tight">{company.name}</p>
                     <p className="text-xs text-muted-foreground font-mono mt-0.5">{company.slug}</p>
                   </div>
-                  <Badge variant={company.isActive ? 'default' : 'secondary'} className="shrink-0">
-                    {company.isActive ? 'Activo' : 'Inactivo'}
-                  </Badge>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <TipoBadge isDemo={company.isDemo} />
+                    <Badge variant={company.isActive ? 'default' : 'secondary'}>
+                      {company.isActive ? 'Activo' : 'Inactivo'}
+                    </Badge>
+                  </div>
                 </div>
 
                 {/* Fila 2: host / db */}

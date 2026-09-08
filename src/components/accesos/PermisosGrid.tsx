@@ -161,7 +161,7 @@ export function PermisosGrid({
           />
           <Label
             htmlFor={`module-${module.label}`}
-            className="font-semibold text-xs uppercase tracking-wide flex-1"
+            className="font-semibold text-xs uppercase tracking-wide flex-1 min-w-0 break-words"
           >
             {module.label}
           </Label>
@@ -182,18 +182,22 @@ export function PermisosGrid({
             const isDisabled = isLocked;
 
             return (
-              <div key={perm.code} className="flex items-center gap-2">
+              <div key={perm.code} className="flex items-start gap-2">
                 <Checkbox
                   id={`perm-${perm.code}`}
                   checked={isChecked}
                   disabled={isDisabled}
                   onCheckedChange={() => toggle(perm.code)}
+                  className="mt-0.5"
                 />
                 <Label
                   htmlFor={`perm-${perm.code}`}
-                  className={`font-normal text-xs ${isPending ? 'text-muted-foreground select-none' : ''}`}
+                  className={`font-normal text-xs flex-1 min-w-0 ${isPending ? 'text-muted-foreground select-none' : ''}`}
                 >
-                  {perm.label}
+                  {/* Label es display:flex (shadcn) -- un span propio es el que necesita
+                      min-w-0/break-words para poder encogerse y envolver, el texto suelto
+                      no basta porque hereda el min-width:auto del item flex anónimo. */}
+                  <span className="min-w-0 break-words">{perm.label}</span>
                   {/* Post-save: came from a role, fully editable */}
                   {isFromRole && !isPending && !isLocked && (
                     <span

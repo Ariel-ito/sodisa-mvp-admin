@@ -1,6 +1,6 @@
 'use client';
 
-import { use, useMemo, useState } from 'react';
+import { use, useEffect, useMemo, useState } from 'react';
 import useSWR from 'swr';
 import Link from 'next/link';
 import { ChevronRight, Plus, Pencil, ShieldCheck, CheckCircle2, AlertCircle, XCircle, KeyRound, Eye, Search, X, Trash2, Loader2, RefreshCw } from 'lucide-react';
@@ -11,6 +11,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { adminFetch, ApiError, swrFetcher } from '@/lib/api';
+import { getUser } from '@/lib/auth';
 import { toast } from 'sonner';
 import { UserInfoDialog } from '@/components/accesos/UserInfoDialog';
 import { SyncBicUsersDialog } from '@/components/empresas/SyncBicUsersDialog';
@@ -101,6 +102,11 @@ export default function UsuariosEmpresaPage({ params }: { params: Promise<{ id: 
   const { data: company }  = useSWR<Company>(`/portal/companies/${id}`, swrFetcher);
   const { data: accesos, isLoading, mutate } = useSWR<UcaItem[]>(`/portal/access?companyId=${id}`, swrFetcher);
   const [page, setPage] = useState(0);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    setIsAdmin(getUser()?.role === 'admin');
+  }, []);
 
   const { data: bicEmployees } = useSWR<BicEmployee[]>(
     `/portal/companies/${id}/bic-entities`,
@@ -195,11 +201,13 @@ export default function UsuariosEmpresaPage({ params }: { params: Promise<{ id: 
             Usuarios de {company?.name}
           </h1>
           <div className="flex items-center gap-2 shrink-0">
-            <Button type="button" variant="outline" onClick={() => setSyncOpen(true)}>
-              <RefreshCw className="size-4" />
-              <span className="hidden sm:inline">Sincronizar BIC</span>
-              <span className="sm:hidden">Sync</span>
-            </Button>
+            {isAdmin && (
+              <Button type="button" variant="outline" onClick={() => setSyncOpen(true)}>
+                <RefreshCw className="size-4" />
+                <span className="hidden sm:inline">Sincronizar BIC</span>
+                <span className="sm:hidden">Sync</span>
+              </Button>
+            )}
             <Button nativeButton={false} render={<Link href={`/empresas/${id}/usuarios/nuevo`} />}>
               <Plus className="size-4" />
               <span className="hidden sm:inline">Nuevo acceso</span>

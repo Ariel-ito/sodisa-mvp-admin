@@ -608,6 +608,22 @@ export const PERMISSIONS = {
       { code: 'scheduling.publish',   label: 'Publicar horario oficial' },
     ],
   },
+  // Recursos Humanos -- hub del módulo (acceso general, futuras funcionalidades cuelgan de acá)
+  rrhh: {
+    label: '🧑‍💼 Recursos Humanos',
+    perms: [
+      { code: 'rrhh.access', label: 'Acceso al módulo' },
+    ],
+  },
+  // RRHH -- Clases y Tipos de Planilla: primera funcionalidad del módulo.
+  rrhh_clases_planilla: {
+    label: '📋 Clases y Tipos de Planilla',
+    perms: [
+      { code: 'rrhh.clases-planilla.create', label: 'Crear clases/tipos de planilla' },
+      { code: 'rrhh.clases-planilla.edit',   label: 'Editar clases/tipos de planilla' },
+      { code: 'rrhh.clases-planilla.delete', label: 'Eliminar clases/tipos de planilla' },
+    ],
+  },
 } as const;
 
 export type PermissionCode = string;
@@ -638,6 +654,7 @@ export const PERMISSION_CATEGORIES = [
   { key: 'reportes',      label: 'Reportes',             modules: ['statistics'] },
   { key: 'escuela',       label: 'Horarios escolares',   modules: ['scheduling'] },
   { key: 'administracion', label: 'Administración',      modules: ['usuarios_empresa', 'actividad_empresa'] },
+  { key: 'rrhh',           label: 'Recursos Humanos',    modules: ['rrhh', 'rrhh_clases_planilla'] },
 ] as const;
 
 /** Roles legacy del sistema */

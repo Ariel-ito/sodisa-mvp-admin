@@ -104,49 +104,36 @@ function LoginForm() {
   }
 
   return (
-    <div className="flex min-h-screen">
-      {/* Left panel — brand */}
-      <div className="hidden lg:flex lg:w-[42%] flex-col justify-between bg-primary text-primary-foreground p-10">
-        <div className="flex items-center">
-          <Image
-            src="/logo-sodisa-blanco.png"
-            alt="SODISA"
-            width={220}
-            height={83}
-            className="h-14 w-auto"
-            priority
-          />
-        </div>
+    <div
+      className="relative flex min-h-screen flex-col items-center justify-center gap-8 overflow-hidden px-4 py-12"
+      style={{ background: '#4b94d0' }}
+    >
+      {/* Marca de agua: isotipo blanco, tamaño fijo en px (no %, ver mvp_app/CLAUDE.md) */}
+      <img
+        src="/logo-isotipo-blanco.svg"
+        alt=""
+        aria-hidden="true"
+        className="pointer-events-none absolute max-w-none select-none opacity-[0.12]"
+        style={{ width: 710, left: -230, bottom: 20 }}
+      />
 
-        <div className="space-y-4">
-          <h1 className="text-4xl font-bold leading-tight">
-            Panel de<br />Administración
-          </h1>
-          <p className="text-primary-foreground/60 text-base leading-relaxed max-w-xs">
-            Gestiona empresas, usuarios y permisos del sistema de facturación.
-          </p>
+      <div className="relative z-10 flex flex-col items-center gap-2">
+        <Image
+          src="/logo-sodisa-blanco.png"
+          alt="SODISA"
+          width={280}
+          height={105}
+          className="h-16 w-auto"
+          priority
+        />
+        <div className="mt-4 text-center text-white">
+          <h1 className="text-3xl font-bold leading-tight">Bienvenido</h1>
+          <p className="text-2xl text-white/85 leading-tight">Eleva tu negocio</p>
         </div>
-
-        <p className="text-primary-foreground/30 text-sm">
-          © 2025 SODISA · Acceso restringido
-        </p>
       </div>
 
-      {/* Right panel — form */}
-      <div className="flex flex-1 flex-col items-center justify-center px-6 bg-background">
-        <div className="w-full max-w-sm space-y-8">
-          {/* Mobile logo */}
-          <div className="flex items-center lg:hidden">
-            <Image
-              src="/logo-sodisa.png"
-              alt="SODISA"
-              width={180}
-              height={68}
-              className="h-12 w-auto"
-              priority
-            />
-          </div>
-
+      {/* Card blanca centrada con el form */}
+      <div className="relative z-10 w-full max-w-sm space-y-8 rounded-2xl bg-white p-8 shadow-2xl">
           {tempToken ? (
             <>
               <div className="space-y-1">
@@ -254,10 +241,15 @@ function LoginForm() {
                     'Iniciar sesión'
                   )}
                 </Button>
+
+                {/* TODO: sin flujo de solicitud de reset para staff todavía (solo existe para
+                    usuarios de empresa vía mvp_app + mvp_admin/solicitudes) -- placeholder visual */}
+                <p className="text-center text-sm font-medium text-accent">
+                  ¿Olvidaste tu contraseña?
+                </p>
               </form>
             </>
           )}
-        </div>
       </div>
     </div>
   );

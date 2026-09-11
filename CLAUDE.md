@@ -1,5 +1,3 @@
-@AGENTS.md
-
 # mvp_admin — Lineamientos para agentes IA
 
 Panel administrativo (Next.js App Router + shadcn/ui). Antes de generar código nuevo, sigue los patrones **reales** de este repo — no introduzcas librerías o abstracciones que no estén ya en uso, aunque estén instaladas.

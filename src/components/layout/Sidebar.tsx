@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
-import { Building2, Users, Shield, LayoutDashboard, LogOut, ClipboardList } from 'lucide-react';
+import { Building2, Users, Shield, LayoutDashboard, LogOut, ClipboardList, KeyRound } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getUser, clearToken, AdminRole } from '@/lib/auth';
 import { useEffect, useState } from 'react';
@@ -15,6 +15,7 @@ const NAV_ITEMS: { href: string; label: string; icon: typeof LayoutDashboard; ex
   { href: '/',          label: 'Dashboard', icon: LayoutDashboard, exact: true, roles: ['admin', 'support', 'qa'] },
   { href: '/empresas',  label: 'Empresas',  icon: Building2,       roles: ['admin', 'support', 'qa'] },
   { href: '/usuarios',  label: 'Usuarios',  icon: Users,           roles: ['admin'] },
+  { href: '/solicitudes', label: 'Solicitudes', icon: KeyRound,    roles: ['admin', 'support'] },
   { href: '/roles',     label: 'Roles',     icon: Shield,          roles: ['admin'] },
   { href: '/auditoria', label: 'Auditoría', icon: ClipboardList,   roles: ['admin'] },
 ];

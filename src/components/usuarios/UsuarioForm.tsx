@@ -218,10 +218,11 @@ export function UsuarioForm({ initial, mode }: Props) {
         </div>
       )}
 
-      {/* Empresas que puede administrar — solo Soporte, modo edición */}
-      {mode === 'edit' && initial?.id && initial.role === 'support' && (
+      {/* Empresas asignadas manualmente — Soporte (única fuente de acceso) y QA
+          (adicional a su acceso automático a empresas demo) — modo edición */}
+      {mode === 'edit' && initial?.id && (initial.role === 'support' || initial.role === 'qa') && (
         <div className="mt-4 border-t pt-6">
-          <SupportCompanyScopeSection userId={initial.id} />
+          <SupportCompanyScopeSection userId={initial.id} role={initial.role === 'qa' ? 'qa' : 'support'} />
         </div>
       )}
 

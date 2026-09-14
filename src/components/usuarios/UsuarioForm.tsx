@@ -9,7 +9,6 @@ import { adminFetch, ApiError } from '@/lib/api';
 import { toast } from 'sonner';
 import { Banner } from '@/components/ui/Banner';
 import { Loader2, Lock, LockOpen, ShieldCheck, ShieldOff } from 'lucide-react';
-import { UserEmpresasSection } from './UserEmpresasSection';
 import { SupportCompanyScopeSection } from './SupportCompanyScopeSection';
 
 export interface PortalUserData {
@@ -219,17 +218,18 @@ export function UsuarioForm({ initial, mode }: Props) {
       )}
 
       {/* Empresas asignadas manualmente — Soporte (única fuente de acceso) y QA
-          (adicional a su acceso automático a empresas demo) — modo edición */}
+          (adicional a su acceso automático a empresas demo) — modo edición.
+          Nota: esta pantalla solo edita usuarios STAFF (admin/support/qa, ver
+          <select> de Rol arriba) -- nunca un usuario CLIENT. Por eso ya no se
+          renderiza acá "Acceso a empresas" (UserCompanyAccess): esa tabla da
+          una identidad real de empleado de empresa, pero para un usuario
+          staff el flujo de seleccionar-empresa SIEMPRE fuerza impersonar
+          (`isSodisaStaff` en mvp_app), así que esa identidad nunca se llega a
+          usar -- quedaba como una segunda sección "asignar empresa" que
+          duplicaba visualmente esta de acá sin aportar nada funcional. */}
       {mode === 'edit' && initial?.id && (initial.role === 'support' || initial.role === 'qa') && (
         <div className="mt-4 border-t pt-6">
           <SupportCompanyScopeSection userId={initial.id} role={initial.role === 'qa' ? 'qa' : 'support'} />
-        </div>
-      )}
-
-      {/* Acceso a empresas — solo en modo edición */}
-      {mode === 'edit' && initial?.id && (
-        <div className="mt-4 border-t pt-6">
-          <UserEmpresasSection userId={initial.id} userEmail={initial.email} />
         </div>
       )}
     </form>

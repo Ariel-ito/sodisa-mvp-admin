@@ -1,5 +1,3 @@
-@AGENTS.md
-
 # mvp_admin — Lineamientos para agentes IA
 
 Panel administrativo (Next.js App Router + shadcn/ui). Antes de generar código nuevo, sigue los patrones **reales** de este repo — no introduzcas librerías o abstracciones que no estén ya en uso, aunque estén instaladas.
@@ -90,6 +88,10 @@ Antes de crear un componente nuevo, revisa si ya existe:
 - `PingStatus` (`components/ui/PingStatus.tsx`) — indicador de estado de conexión (icono + texto + "hace X").
 
 Antes de declarar una función de presentación local dentro de un `page.tsx` (como se hacía antes con `StatCard`/`PingStatus`), revisa si ya existe en `components/ui/` o en la carpeta de la feature correspondiente.
+
+## Solicitudes (`/solicitudes`) -- cola global, staff SODISA
+
+No hay sistema de correo en el portal, así que "olvidé mi contraseña" (y cualquier otro tipo de solicitud futuro) queda en una tabla genérica (`portal_requests`, ver `mvp_api/CLAUDE.md`) que un admin humano resuelve a mano. `/solicitudes` es la cola GLOBAL (todas las empresas, todos los tipos) -- cubre el caso "el propio admin de la empresa quedó bloqueado", que la cola scoped-a-una-empresa de mvp_app no puede resolver. "Resolver" genera una contraseña temporal en el cliente y reusa `POST /portal/access/:id/reset-password` (ya existía en el backend, esta pantalla es su primer botón de UI) -- no inventes un endpoint de reset nuevo. Ver `src/app/(dashboard)/solicitudes/page.tsx` como referencia para agregar un tipo de solicitud nuevo (branch de renderizado/acción por `type`, misma tabla, misma pantalla).
 
 ## Naming
 

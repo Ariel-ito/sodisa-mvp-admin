@@ -53,6 +53,8 @@ const ACTION_CONFIG: Record<string, { label: string; cls: string }> = {
   'permissions.synced':           { label: 'Permisos modificados',        cls: 'bg-blue-50 text-blue-700 ring-blue-200' },
   'roles.synced':                 { label: 'Roles modificados',           cls: 'bg-blue-50 text-blue-700 ring-blue-200' },
   'impersonation.session_viewed': { label: 'Impersonación',               cls: 'bg-orange-50 text-orange-700 ring-orange-200' },
+  'impersonation.admin_access':   { label: 'Acceso directo staff',        cls: 'bg-orange-50 text-orange-700 ring-orange-200' },
+  'impersonation.bic_access':     { label: 'Impersonación de empleado BIC', cls: 'bg-orange-50 text-orange-700 ring-orange-200' },
   'remote_migration.executed':    { label: 'Migración remota ejecutada',  cls: 'bg-purple-50 text-purple-700 ring-purple-200' },
 };
 

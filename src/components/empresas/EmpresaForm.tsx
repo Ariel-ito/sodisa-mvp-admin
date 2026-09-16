@@ -23,6 +23,7 @@ export interface CompanyData {
   dbDatabase: string;
   isActive: boolean;
   isDemo: boolean;
+  dbLegacyTls: boolean;
 }
 
 interface Props {
@@ -44,6 +45,7 @@ export function EmpresaForm({ initial, mode }: Props) {
       dbDatabase: '',
       isActive: true,
       isDemo: false,
+      dbLegacyTls: false,
     }
   );
   const [saving, setSaving] = useState(false);
@@ -209,6 +211,18 @@ export function EmpresaForm({ initial, mode }: Props) {
               required={mode === 'create'}
             />
           </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <input
+            id="dbLegacyTls"
+            type="checkbox"
+            checked={form.dbLegacyTls}
+            onChange={e => set('dbLegacyTls', e.target.checked)}
+            className="size-4"
+          />
+          <Label htmlFor="dbLegacyTls">
+            Servidor viejo sin parchar (solo soporta TLS 1.0 -- ej. SQL Server 2014 RTM)
+          </Label>
         </div>
       </section>
 

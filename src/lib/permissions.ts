@@ -206,6 +206,12 @@ export const PERMISSIONS = {
       { code: 'general.branches.users.view',   label: 'Ver empleados asignados a sucursales' },
       { code: 'general.branches.users.assign', label: 'Asignar empleado a una sucursal' },
       { code: 'general.branches.users.remove', label: 'Quitar empleado de una sucursal' },
+      { code: 'general.branches.warehouses.view',   label: 'Ver bodegas asignadas a sucursales' },
+      { code: 'general.branches.warehouses.assign', label: 'Asignar bodega a una sucursal' },
+      { code: 'general.branches.warehouses.remove', label: 'Quitar bodega de una sucursal' },
+      { code: 'general.branches.costcenters.view',   label: 'Ver centros de costo asignados a sucursales' },
+      { code: 'general.branches.costcenters.assign', label: 'Asignar centro de costo a una sucursal' },
+      { code: 'general.branches.costcenters.remove', label: 'Quitar centro de costo de una sucursal' },
     ],
   },
   general_departments: {

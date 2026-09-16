@@ -4,7 +4,7 @@ import { use, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import useSWR from 'swr';
 import Link from 'next/link';
-import { ChevronRight, Loader2, Trash2, Users } from 'lucide-react';
+import { ChevronRight, Loader2, ShieldCheck, Trash2, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { EmpresaForm, CompanyData } from '@/components/empresas/EmpresaForm';
 import { PingHistoryChart } from '@/components/empresas/PingHistoryChart';
@@ -71,10 +71,16 @@ export default function EditarEmpresaPage({ params }: { params: Promise<{ id: st
           <h1 className="text-2xl font-semibold">Editar empresa</h1>
         </div>
         {company.id !== undefined && (
-          <Button variant="outline" nativeButton={false} render={<Link href={`/empresas/${company.id}/usuarios`} />}>
-            <Users className="size-4" />
-            Ver usuarios
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" nativeButton={false} render={<Link href={`/auditoria?companyId=${company.id}`} />}>
+              <ShieldCheck className="size-4" />
+              Ver auditoría
+            </Button>
+            <Button variant="outline" nativeButton={false} render={<Link href={`/empresas/${company.id}/usuarios`} />}>
+              <Users className="size-4" />
+              Ver usuarios
+            </Button>
+          </div>
         )}
       </div>
 

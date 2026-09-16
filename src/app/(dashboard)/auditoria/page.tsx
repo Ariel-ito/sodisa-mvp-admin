@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import useSWR from 'swr';
 import { Shield, LogIn, AlertTriangle, Lock } from 'lucide-react';
 import {
@@ -52,6 +53,8 @@ const ACTION_CONFIG: Record<string, { label: string; cls: string }> = {
   'permissions.synced':           { label: 'Permisos modificados',        cls: 'bg-blue-50 text-blue-700 ring-blue-200' },
   'roles.synced':                 { label: 'Roles modificados',           cls: 'bg-blue-50 text-blue-700 ring-blue-200' },
   'impersonation.session_viewed': { label: 'Impersonación',               cls: 'bg-orange-50 text-orange-700 ring-orange-200' },
+  'impersonation.admin_access':   { label: 'Acceso directo staff',        cls: 'bg-orange-50 text-orange-700 ring-orange-200' },
+  'impersonation.bic_access':     { label: 'Impersonación de empleado BIC', cls: 'bg-orange-50 text-orange-700 ring-orange-200' },
   'remote_migration.executed':    { label: 'Migración remota ejecutada',  cls: 'bg-purple-50 text-purple-700 ring-purple-200' },
 };
 
@@ -94,12 +97,17 @@ function getTodayKey() {
 
 // ── Page ───────────────────────────────────────────────────────────────────────
 
-export default function AuditoriaPage() {
+function AuditoriaPageInner() {
+  // Deep-link desde el detalle de una empresa (botón "Ver auditoría" en
+  // empresas/[id]/page.tsx) -- preselecciona el filtro de empresa al llegar
+  // con ?companyId=X en la URL, en vez de arrancar siempre en "Todas".
+  const searchParams = useSearchParams();
+
   const [action,    setAction]    = useState('');
   const [email,     setEmail]     = useState('');
   const [fromDate,  setFromDate]  = useState('');  // YYYY-MM-DD
   const [toDate,    setToDate]    = useState('');  // YYYY-MM-DD
-  const [companyId, setCompanyId] = useState('');
+  const [companyId, setCompanyId] = useState(searchParams.get('companyId') ?? '');
   const [offset,    setOffset]    = useState(0);
 
   const { data: companies } = useSWR<CompanyOption[]>('/portal/companies', swrFetcher);
@@ -308,5 +316,13 @@ export default function AuditoriaPage() {
         </>
       )}
     </div>
+  );
+}
+
+export default function AuditoriaPage() {
+  return (
+    <Suspense>
+      <AuditoriaPageInner />
+    </Suspense>
   );
 }

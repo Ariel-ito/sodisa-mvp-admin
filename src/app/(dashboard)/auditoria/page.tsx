@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import useSWR from 'swr';
 import { Shield, LogIn, AlertTriangle, Lock } from 'lucide-react';
 import {
@@ -94,12 +95,17 @@ function getTodayKey() {
 
 // ── Page ───────────────────────────────────────────────────────────────────────
 
-export default function AuditoriaPage() {
+function AuditoriaPageInner() {
+  // Deep-link desde el detalle de una empresa (botón "Ver auditoría" en
+  // empresas/[id]/page.tsx) -- preselecciona el filtro de empresa al llegar
+  // con ?companyId=X en la URL, en vez de arrancar siempre en "Todas".
+  const searchParams = useSearchParams();
+
   const [action,    setAction]    = useState('');
   const [email,     setEmail]     = useState('');
   const [fromDate,  setFromDate]  = useState('');  // YYYY-MM-DD
   const [toDate,    setToDate]    = useState('');  // YYYY-MM-DD
-  const [companyId, setCompanyId] = useState('');
+  const [companyId, setCompanyId] = useState(searchParams.get('companyId') ?? '');
   const [offset,    setOffset]    = useState(0);
 
   const { data: companies } = useSWR<CompanyOption[]>('/portal/companies', swrFetcher);
@@ -308,5 +314,13 @@ export default function AuditoriaPage() {
         </>
       )}
     </div>
+  );
+}
+
+export default function AuditoriaPage() {
+  return (
+    <Suspense>
+      <AuditoriaPageInner />
+    </Suspense>
   );
 }

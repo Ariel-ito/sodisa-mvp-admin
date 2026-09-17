@@ -7,6 +7,13 @@ export interface AdminUser {
   email: string;
   name: string;
   role: AdminRole;
+  totpEnabled?: boolean;
+  /** true si este usuario tiene 2FA obligatorio y no lo ha configurado -- ver TotpPolicyService (mvp_api). */
+  totpSetupRequired?: boolean;
+  totpGraceUntil?: string | null;
+  /** true si ya venció el período de gracia -- pasa de banner descartable a modal bloqueante. */
+  totpGraceExpired?: boolean;
+  totpPostponeCount?: number;
 }
 
 // Access token lives only in memory — cleared on page reload, re-hydrated via /api/auth/refresh

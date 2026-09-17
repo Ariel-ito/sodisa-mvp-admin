@@ -7,6 +7,7 @@ import { Plus, Pencil, Trash2, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { LockButton } from '@/components/ui/LockButton';
+import { ResetTotpButton } from '@/components/ui/ResetTotpButton';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
@@ -22,6 +23,8 @@ interface PortalUser {
   isActive: boolean;
   lockedUntil?: string | null;
   failedLoginAttempts?: number;
+  totpEnabled?: boolean;
+  totpConfiguredAt?: string | null;
 }
 
 export default function UsuariosPortalPage() {
@@ -76,13 +79,14 @@ export default function UsuariosPortalPage() {
                   <TableHead>Email</TableHead>
                   <TableHead>Rol</TableHead>
                   <TableHead>Estado</TableHead>
+                  <TableHead>2FA</TableHead>
                   <TableHead className="text-right">Acciones</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {users?.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
+                    <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
                       No hay usuarios registrados.
                     </TableCell>
                   </TableRow>
@@ -100,11 +104,28 @@ export default function UsuariosPortalPage() {
                       </Badge>
                     </TableCell>
                     <TableCell>
+                      <div className="flex flex-col gap-0.5">
+                        <Badge variant={user.totpEnabled ? 'default' : 'secondary'} className="w-fit">
+                          {user.totpEnabled ? 'Activo' : 'Inactivo'}
+                        </Badge>
+                        {user.totpEnabled && user.totpConfiguredAt && (
+                          <span className="text-xs text-muted-foreground">
+                            desde {new Date(user.totpConfiguredAt).toLocaleDateString('es-HN')}
+                          </span>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
                       <div className="flex items-center justify-end gap-0.5">
                         <LockButton
                           userId={user.id}
                           lockedUntil={user.lockedUntil}
                           failedLoginAttempts={user.failedLoginAttempts}
+                          onSuccess={() => mutate()}
+                        />
+                        <ResetTotpButton
+                          totpResetPath={`portal/users/${user.id}/totp/reset`}
+                          totpEnabled={!!user.totpEnabled}
                           onSuccess={() => mutate()}
                         />
                         <Button variant="ghost" size="icon-sm" title="Editar"
@@ -149,6 +170,9 @@ export default function UsuariosPortalPage() {
                     <Badge variant={user.isActive ? 'default' : 'secondary'} className="text-xs">
                       {user.isActive ? 'Activo' : 'Inactivo'}
                     </Badge>
+                    <Badge variant={user.totpEnabled ? 'default' : 'secondary'} className="text-xs">
+                      2FA {user.totpEnabled ? 'activo' : 'inactivo'}
+                    </Badge>
                   </div>
                   <p className="text-xs text-muted-foreground truncate mt-0.5">{user.email}</p>
                 </div>
@@ -157,6 +181,11 @@ export default function UsuariosPortalPage() {
                     userId={user.id}
                     lockedUntil={user.lockedUntil}
                     failedLoginAttempts={user.failedLoginAttempts}
+                    onSuccess={() => mutate()}
+                  />
+                  <ResetTotpButton
+                    totpResetPath={`portal/users/${user.id}/totp/reset`}
+                    totpEnabled={!!user.totpEnabled}
                     onSuccess={() => mutate()}
                   />
                   <Button variant="ghost" size="icon-sm" title="Editar" className="shrink-0"

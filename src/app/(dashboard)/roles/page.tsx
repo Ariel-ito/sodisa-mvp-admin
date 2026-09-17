@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import useSWR from 'swr';
 import Link from 'next/link';
-import { Plus, Pencil, ShieldCheck, Trash2, Loader2 } from 'lucide-react';
+import { Plus, Pencil, ShieldCheck, Trash2, Loader2, KeyRound } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -18,6 +18,7 @@ interface Role {
   description: string;
   isSystem: boolean;
   permissions: string[];
+  requiere2fa: boolean;
 }
 
 export default function RolesPage() {
@@ -90,10 +91,18 @@ export default function RolesPage() {
                     </TableCell>
                     <TableCell className="text-sm">{role.permissions?.length ?? 0} permisos</TableCell>
                     <TableCell>
-                      {role.isSystem
-                        ? <Badge variant="secondary">Sistema</Badge>
-                        : <Badge>Personalizado</Badge>
-                      }
+                      <div className="flex flex-wrap items-center gap-1">
+                        {role.isSystem
+                          ? <Badge variant="secondary">Sistema</Badge>
+                          : <Badge>Personalizado</Badge>
+                        }
+                        {role.requiere2fa && (
+                          <Badge variant="outline" className="gap-1">
+                            <KeyRound className="size-3" />
+                            2FA obligatorio
+                          </Badge>
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center justify-end gap-0.5">
@@ -168,6 +177,13 @@ export default function RolesPage() {
                   <ShieldCheck className="size-3" />
                   {role.permissions?.length ?? 0} permisos
                 </span>
+
+                {role.requiere2fa && (
+                  <Badge variant="outline" className="gap-1 w-fit text-xs">
+                    <KeyRound className="size-3" />
+                    2FA obligatorio
+                  </Badge>
+                )}
 
               </div>
             ))}

@@ -1,0 +1,8 @@
+{
+  "$schema": "https://github.com/IBM/audit-ci/raw/main/docs/schema.json",
+  // Falla el pipeline si aparece una vulnerabilidad de severidad alta o crítica
+  // (prod + dev -- una dependencia de build comprometida también puede robar
+  // secretos del propio pipeline, no solo el código que corre en producción).
+  "high": true,
+  "allowlist": []
+}

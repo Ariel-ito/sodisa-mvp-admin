@@ -2,10 +2,11 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { getToken, getTokenExp, clearToken } from '@/lib/auth';
+import { getToken, getTokenExp, clearToken, getUser, type AdminUser } from '@/lib/auth';
 import { hydrateToken } from '@/lib/api';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { TopBar } from '@/components/layout/TopBar';
+import { Totp2faGate } from '@/components/auth/Totp2faGate';
 
 const INACTIVITY_MS = 30 * 60 * 1000; // 30 min
 const REFRESH_LEAD  = 60 * 1000;       // refrescar 1 min antes del vencimiento
@@ -13,6 +14,7 @@ const REFRESH_LEAD  = 60 * 1000;       // refrescar 1 min antes del vencimiento
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [hydrated, setHydrated]       = useState(false);
+  const [currentUser, setCurrentUser] = useState<AdminUser | null>(null);
   const router          = useRouter();
   const inactivityRef   = useRef<ReturnType<typeof setTimeout> | null>(null);
   const refreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -37,6 +39,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     refreshTimerRef.current = setTimeout(async () => {
       const data = await hydrateToken();
       if (!data) { doLogout(); return; }
+      setCurrentUser(data.user ?? getUser());
       scheduleRefresh(data.accessToken);
     }, delay);
   }, [doLogout]);
@@ -46,6 +49,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     hydrateToken().then((data) => {
       if (!data) { router.push('/login'); return; }
       scheduleRefresh(data.accessToken);
+      setCurrentUser(data.user ?? getUser());
       setHydrated(true);
     });
 
@@ -68,8 +72,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       const exp   = token ? getTokenExp(token) : null;
       if (!exp || exp <= Date.now()) {
         hydrateToken().then(data => {
-          if (!data) doLogout();
-          else scheduleRefresh(data.accessToken);
+          if (!data) { doLogout(); return; }
+          setCurrentUser(data.user ?? getUser());
+          scheduleRefresh(data.accessToken);
         });
       }
     }
@@ -90,6 +95,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div className="flex flex-1 flex-col overflow-hidden min-w-0">
         <TopBar onMenuOpen={() => setSidebarOpen(true)} />
+        {currentUser && (
+          <Totp2faGate
+            user={currentUser}
+            onPostponed={(count) => setCurrentUser(u => u && { ...u, totpPostponeCount: count })}
+          />
+        )}
         <main className="flex-1 overflow-y-auto p-4 pb-[100px] md:p-6">
           {children}
         </main>

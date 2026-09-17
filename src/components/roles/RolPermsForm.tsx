@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
 import { PermisosGrid } from '@/components/accesos/PermisosGrid';
 import { PERMISSION_LABEL_MAP } from '@/lib/permissions';
 import { adminFetch, ApiError } from '@/lib/api';
@@ -43,6 +44,7 @@ export interface RolData {
   type?: string;
   isSystem?: boolean;
   permissions?: string[];
+  requiere2fa?: boolean;
 }
 
 interface Props {
@@ -62,6 +64,7 @@ export function RolPermsForm({ initial, mode }: Props) {
   const [name, setName]               = useState(initial?.name ?? '');
   const [description, setDescription] = useState(initial?.description ?? '');
   const [permissions, setPermissions] = useState<string[]>(initial?.permissions ?? []);
+  const [requiere2fa, setRequiere2fa] = useState(initial?.requiere2fa ?? false);
   const [saving, setSaving]           = useState(false);
   const [formError, setFormError]     = useState<string | null>(null);
   const [propagating, setPropagating] = useState(false);
@@ -79,7 +82,12 @@ export function RolPermsForm({ initial, mode }: Props) {
     }
 
     try {
-      const payload = { name: finalName, description, permissions, type: 'company' };
+      // Un rol de sistema no permite editar nombre/descripción/permisos (son plantillas
+      // compartidas entre todas las empresas) -- pero "Forzar 2FA" es una política de
+      // seguridad, no parte del template de permisos, así que sí se puede guardar sola.
+      const payload = initial?.isSystem
+        ? { requiere2fa }
+        : { name: finalName, description, permissions, type: 'company', requiere2fa };
 
       if (mode === 'create') {
         await adminFetch('/portal/roles', { method: 'POST', body: JSON.stringify(payload) });
@@ -185,17 +193,35 @@ export function RolPermsForm({ initial, mode }: Props) {
               onChange={e => setDescription(e.target.value)}
               className="resize-none h-20"
               placeholder="Descripción del rol y sus responsabilidades…"
+              disabled={initial?.isSystem}
             />
           </div>
         </div>
 
+        <div className="flex items-start gap-2 rounded-lg border p-3">
+          <Checkbox
+            id="requiere2fa"
+            checked={requiere2fa}
+            onCheckedChange={(checked) => setRequiere2fa(checked === true)}
+          />
+          <Label htmlFor="requiere2fa" className="flex flex-col gap-0.5 font-normal cursor-pointer">
+            <span className="font-medium">Forzar 2FA para este rol</span>
+            <span className="text-xs text-muted-foreground">
+              Cualquier usuario con este rol activo (en cualquier empresa) tendrá 14 días de
+              gracia para configurar 2FA antes de que se le bloquee la pantalla hasta hacerlo.
+            </span>
+          </Label>
+        </div>
+
         <div className="flex flex-col gap-3">
           <h2 className="font-medium text-sm border-b pb-2">Permisos del rol</h2>
-          <PermisosGrid selected={permissions} onChange={setPermissions} />
+          <div className={initial?.isSystem ? 'pointer-events-none opacity-60' : undefined}>
+            <PermisosGrid selected={permissions} onChange={setPermissions} />
+          </div>
         </div>
 
         <div className="flex items-center gap-3 mt-2">
-          <Button type="submit" disabled={saving || initial?.isSystem}>
+          <Button type="submit" disabled={saving}>
             {saving && <Loader2 className="size-4 animate-spin" />}
             {saving ? 'Guardando…' : mode === 'create' ? 'Crear rol' : 'Guardar cambios'}
           </Button>
@@ -203,7 +229,9 @@ export function RolPermsForm({ initial, mode }: Props) {
             Cancelar
           </Button>
           {initial?.isSystem && (
-            <span className="text-xs text-muted-foreground">Este es un rol de sistema y no puede modificarse.</span>
+            <span className="text-xs text-muted-foreground">
+              Es un rol de sistema — sus permisos no pueden modificarse, pero sí puedes forzar 2FA.
+            </span>
           )}
         </div>
       </form>

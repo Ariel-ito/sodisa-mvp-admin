@@ -190,6 +190,13 @@ export const PERMISSIONS = {
       { code: 'inventory.purchases.receive', label: 'Recibir compras' },
     ],
   },
+  inventory_kiosk: {
+    label: '📟 Kiosko de Consulta',
+    perms: [
+      { code: 'inventory.kiosk.access', label: 'Usar la pantalla de consulta (usuario-kiosco)' },
+      { code: 'inventory.kiosk.manage', label: 'Gestionar configuraciones de kiosko' },
+    ],
+  },
   // Catálogos Generales
   general: {
     label: '🗂️ Catálogos Generales',
@@ -655,7 +662,7 @@ export const PERMISSION_CATEGORIES = [
   { key: 'inventario',    label: 'Inventario', modules: [
     'inventory', 'inventory_warehouses', 'inventory_types', 'inventory_packages',
     'inventory_units', 'inventory_articles', 'inventory_price_lists', 'inventory_groupings', 'inventory_transfers',
-    'inventory_requisitions', 'inventory_purchases',
+    'inventory_requisitions', 'inventory_purchases', 'inventory_kiosk',
   ] },
   { key: 'contabilidad',  label: 'Contabilidad',         modules: ['accounting'] },
   { key: 'personal',      label: 'Personal y clientes', modules: ['staff', 'customers'] },

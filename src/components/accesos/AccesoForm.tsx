@@ -129,6 +129,7 @@ export function AccesoForm({ initial, companyId, mode, companyModules }: Props) 
         await adminFetch(`/portal/access/${initial!.id}`, {
           method: 'PUT',
           body: JSON.stringify({
+            email,
             externalId:    externalId || null,
             supervisorPin: pinPayload,
             isActive,
@@ -240,8 +241,19 @@ export function AccesoForm({ initial, companyId, mode, companyModules }: Props) 
                 <Input value={initial?.user?.name ?? ''} disabled className="bg-muted" />
               </div>
               <div className="flex flex-col gap-1.5">
-                <Label>Email</Label>
-                <Input value={initial?.user?.email ?? ''} disabled className="bg-muted" />
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  required
+                />
+                {email !== (initial?.user?.email ?? '') && (
+                  <p className="text-xs text-muted-foreground">
+                    Este es el email de login de la cuenta -- si esta persona tiene acceso a más de una empresa, el cambio aplica a todas.
+                  </p>
+                )}
               </div>
             </>
           )}

@@ -518,6 +518,9 @@ export const PERMISSIONS = {
       { code: 'bic.view',   label: 'Ver base de información central' },
       { code: 'bic.create', label: 'Crear BIC' },
       { code: 'bic.edit',   label: 'Editar BIC' },
+      // Hard delete real del registro BIC -- distinto de los bic.<rol>.delete de abajo,
+      // que solo quitan el rol (ej. vendedor) sin tocar BASE_INFO_CENTRAL.
+      { code: 'bic.central.delete', label: 'Eliminar BIC (borrado definitivo)' },
     ],
   },
   // BIC -- Vendedores: extiende un BIC ya existente con el rol Vendedor (VENDEDOR_TABLA).

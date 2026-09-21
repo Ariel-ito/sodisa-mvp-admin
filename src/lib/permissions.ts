@@ -641,6 +641,76 @@ export const PERMISSIONS = {
       { code: 'scheduling.publish',   label: 'Publicar horario oficial' },
     ],
   },
+  // Recursos Humanos -- hub del módulo (acceso general, futuras funcionalidades cuelgan de acá)
+  rrhh: {
+    label: '🧑‍💼 Recursos Humanos',
+    perms: [
+      { code: 'rrhh.access', label: 'Acceso al módulo' },
+    ],
+  },
+  // RRHH -- Clases y Tipos de Planilla: primera funcionalidad del módulo.
+  rrhh_clases_planilla: {
+    label: '📋 Clases y Tipos de Planilla',
+    perms: [
+      { code: 'rrhh.clases-planilla.create', label: 'Crear clases/tipos de planilla' },
+      { code: 'rrhh.clases-planilla.edit',   label: 'Editar clases/tipos de planilla' },
+      { code: 'rrhh.clases-planilla.delete', label: 'Eliminar clases/tipos de planilla' },
+    ],
+  },
+  // RRHH -- Causas de Aumento: catálogo simple (legacy LY71vF).
+  rrhh_causas_aumento: {
+    label: '📈 Causas de Aumento',
+    perms: [
+      { code: 'rrhh.causas-aumento.create', label: 'Crear causas de aumento' },
+      { code: 'rrhh.causas-aumento.edit',   label: 'Editar causas de aumento' },
+      { code: 'rrhh.causas-aumento.delete', label: 'Eliminar causas de aumento' },
+    ],
+  },
+  // RRHH -- Causas de Baja: catálogo simple (legacy LY71wF).
+  rrhh_causas_baja: {
+    label: '📉 Causas de Baja',
+    perms: [
+      { code: 'rrhh.causas-baja.create', label: 'Crear causas de baja' },
+      { code: 'rrhh.causas-baja.edit',   label: 'Editar causas de baja' },
+      { code: 'rrhh.causas-baja.delete', label: 'Eliminar causas de baja' },
+    ],
+  },
+  // RRHH -- Relación Laboral: catálogo simple (legacy LY71xF).
+  rrhh_relacion_laboral: {
+    label: '🤝 Relación Laboral',
+    perms: [
+      { code: 'rrhh.relacion-laboral.create', label: 'Crear relaciones laborales' },
+      { code: 'rrhh.relacion-laboral.edit',   label: 'Editar relaciones laborales' },
+      { code: 'rrhh.relacion-laboral.delete', label: 'Eliminar relaciones laborales' },
+    ],
+  },
+  // RRHH -- Agrupaciones de Empleado: catálogo maestro-detalle (legacy LY71zF).
+  rrhh_agrupaciones_empleado: {
+    label: '🗂️ Agrupaciones de Empleado',
+    perms: [
+      { code: 'rrhh.agrupaciones-empleado.create', label: 'Crear agrupaciones de empleado' },
+      { code: 'rrhh.agrupaciones-empleado.edit',   label: 'Editar agrupaciones de empleado' },
+      { code: 'rrhh.agrupaciones-empleado.delete', label: 'Eliminar agrupaciones de empleado' },
+    ],
+  },
+  // RRHH -- Niveles de Jerarquía: catálogo simple con código numérico (legacy LY726F).
+  rrhh_niveles_jerarquia: {
+    label: '🪜 Niveles de Jerarquía',
+    perms: [
+      { code: 'rrhh.niveles-jerarquia.create', label: 'Crear niveles de jerarquía' },
+      { code: 'rrhh.niveles-jerarquia.edit',   label: 'Editar niveles de jerarquía' },
+      { code: 'rrhh.niveles-jerarquia.delete', label: 'Eliminar niveles de jerarquía' },
+    ],
+  },
+  // RRHH -- Relaciones Familiares: catálogo simple (legacy LY71tF).
+  rrhh_relaciones_familiares: {
+    label: '👪 Relaciones Familiares',
+    perms: [
+      { code: 'rrhh.relaciones-familiares.create', label: 'Crear relaciones familiares' },
+      { code: 'rrhh.relaciones-familiares.edit',   label: 'Editar relaciones familiares' },
+      { code: 'rrhh.relaciones-familiares.delete', label: 'Eliminar relaciones familiares' },
+    ],
+  },
 } as const;
 
 export type PermissionCode = string;
@@ -671,6 +741,7 @@ export const PERMISSION_CATEGORIES = [
   { key: 'reportes',      label: 'Reportes',             modules: ['statistics'] },
   { key: 'escuela',       label: 'Horarios escolares',   modules: ['scheduling'] },
   { key: 'administracion', label: 'Administración',      modules: ['usuarios_empresa', 'actividad_empresa'] },
+  { key: 'rrhh',           label: 'Recursos Humanos',    modules: ['rrhh', 'rrhh_clases_planilla', 'rrhh_causas_aumento', 'rrhh_causas_baja', 'rrhh_relacion_laboral', 'rrhh_agrupaciones_empleado', 'rrhh_niveles_jerarquia', 'rrhh_relaciones_familiares'] },
 ] as const;
 
 /** Roles legacy del sistema */

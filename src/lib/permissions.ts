@@ -12,6 +12,7 @@ export const PERMISSIONS = {
       { code: 'billing.print',   label: 'Imprimir facturas' },
       { code: 'billing.cancel',  label: 'Anular facturas' },
       { code: 'billing.reverse', label: 'Reversar facturas' },
+      { code: 'billing.configure', label: 'Configurar plantilla de factura' },
     ],
   },
   billing_facturadores: {

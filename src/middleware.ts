@@ -16,6 +16,7 @@ const ADMIN_ONLY_PATTERNS = [
   /^\/usuarios(\/.*)?$/,
   /^\/roles(\/.*)?$/,
   /^\/auditoria(\/.*)?$/,
+  /^\/plantillas-factura-recomendadas(\/.*)?$/,
   /^\/empresas\/nueva$/,
   /^\/empresas\/[^/]+$/,
 ];

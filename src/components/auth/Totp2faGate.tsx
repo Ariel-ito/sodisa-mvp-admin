@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { ShieldAlert } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -26,10 +26,19 @@ interface Props {
  */
 export function Totp2faGate({ user, onPostponed }: Props) {
   const router = useRouter();
+  const pathname = usePathname();
   const [dismissed, setDismissed] = useState(false);
   const [postponing, setPostponing] = useState(false);
 
   if (!user.totpSetupRequired) return null;
+  // En /perfil vive el formulario que resuelve esto -- el modal bloqueante
+  // (overlay que captura todos los clics) no se cerraba al navegar ahí desde
+  // "Configurar ahora" porque `totpSetupRequired`/`totpGraceExpired` no
+  // cambian solo por cambiar de ruta, solo cuando el usuario termina de
+  // configurar el TOTP de verdad -- así que se quedaba tapando el propio
+  // formulario que se supone debía dejar usar. Se oculta en esta ruta en vez
+  // de depender de ese estado para saber cuándo "ya se puede ver la pantalla".
+  if (pathname === '/perfil') return null;
 
   const deadline = user.totpGraceUntil ? new Date(user.totpGraceUntil) : null;
 

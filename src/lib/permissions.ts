@@ -34,6 +34,14 @@ export const PERMISSIONS = {
       { code: 'statistics.articles',  label: 'Ver por artículos' },
     ],
   },
+  // Reportes -- constructor de reportes custom del cliente (distinto de Insights,
+  // que son los dashboards/gráficos fijos de SODISA).
+  reportes_custom: {
+    label: '📑 Reportes',
+    perms: [
+      { code: 'reportes.access', label: 'Acceso al módulo' },
+    ],
+  },
   // Cajas -- operación diaria del cajero (abrir/cerrar SU caja), no el catálogo de cajas
   // que existen ni quién puede usarlas (ver cashbox_config).
   cashbox: {
@@ -742,7 +750,8 @@ export const PERMISSION_CATEGORIES = [
   { key: 'personal',      label: 'Personal y clientes', modules: ['staff', 'customers'] },
   { key: 'generales',     label: 'Catálogos Generales', modules: ['general', 'general_branches', 'general_departments', 'general_countries', 'general_cost_centers', 'general_currencies', 'general_languages', 'general_zones', 'general_professions', 'general_education_levels', 'general_trades', 'general_socioeconomic_sectors', 'general_brands', 'general_geo_locations', 'general_comm_equipment_params', 'general_shipping_methods', 'general_calendars', 'general_routes', 'general_expense_types', 'general_cost_center_groups', 'general_process_areas', 'general_destination_units', 'general_taxes', 'general_tax_rates', 'general_tax_exemptions', 'general_purchase_managers', 'logistics', 'logistics_freight', 'logistics_trucks', 'logistics_carriers', 'logistics_origins', 'logistics_carrier_price_lists'] },
   { key: 'bic',           label: 'Base de Información Central', modules: ['bic', 'bic_vendedores', 'bic_cajeros', 'bic_cobradores', 'bic_tecnicos', 'bic_gerentes_ventas', 'bic_bancos', 'bic_clientes', 'bic_proveedores', 'bic_relaciones', 'bic_numeradores'] },
-  { key: 'reportes',      label: 'Reportes',             modules: ['statistics'] },
+  { key: 'insights',      label: 'Insights',             modules: ['statistics'] },
+  { key: 'reportes',      label: 'Reportes',             modules: ['reportes_custom'] },
   { key: 'escuela',       label: 'Horarios escolares',   modules: ['scheduling'] },
   { key: 'administracion', label: 'Administración',      modules: ['usuarios_empresa', 'actividad_empresa'] },
   { key: 'rrhh',           label: 'Recursos Humanos',    modules: ['rrhh', 'rrhh_clases_planilla', 'rrhh_causas_aumento', 'rrhh_causas_baja', 'rrhh_relacion_laboral', 'rrhh_agrupaciones_empleado', 'rrhh_niveles_jerarquia', 'rrhh_relaciones_familiares'] },

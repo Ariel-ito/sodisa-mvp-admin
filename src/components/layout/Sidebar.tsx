@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
-import { Building2, Users, Shield, LayoutDashboard, LogOut, ClipboardList, KeyRound, FileBarChart } from 'lucide-react';
+import { Building2, Users, Shield, LayoutDashboard, LogOut, ClipboardList, KeyRound, FileBarChart, FileText } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getUser, clearToken, AdminRole } from '@/lib/auth';
 import { useEffect, useState } from 'react';
@@ -18,6 +18,7 @@ const NAV_ITEMS: { href: string; label: string; icon: typeof LayoutDashboard; ex
   { href: '/solicitudes', label: 'Solicitudes', icon: KeyRound,    roles: ['admin', 'support'] },
   { href: '/roles',     label: 'Roles',     icon: Shield,          roles: ['admin'] },
   { href: '/reportes-recomendados', label: 'Reportes Recomendados', icon: FileBarChart, roles: ['admin'] },
+  { href: '/plantillas-factura-recomendadas', label: 'Plantillas de Factura', icon: FileText, roles: ['admin'] },
   { href: '/auditoria', label: 'Auditoría', icon: ClipboardList,   roles: ['admin'] },
 ];
 
